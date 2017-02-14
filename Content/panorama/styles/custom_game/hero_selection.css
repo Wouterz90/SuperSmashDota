@@ -1,0 +1,297 @@
+
+.Hero_Selection
+{
+  width:100%;
+  height: 100%;
+  flow-children: none;
+  z-index: 2;
+
+}
+.Hero_Selection_Main
+{
+  width:100%;
+  height: 100%;
+  margin-right: 0%;
+  margin-top: 0%; 
+  background-color: #0d1c22ff, gradient( radial, 100% -0%, 100px -40px, 320% 270%, from( #3a464bff ), color-stop( 0.23, #0d1c22ff ), to( #0d1c22ff ) );
+  flow-children: right;
+  opacity: 1;
+  visibility: visible;
+}
+
+.Hero_Selection_HeroBox
+{
+  width:fit-children;
+  height: fit-children;
+  margin-left: 3%;
+  margin-top: 3%;
+  margin-bottom: 3%;
+  border-radius: 25px; 
+  background-color: black;
+  opacity: 0.7;
+  flow-children: down;
+  visibility: visible;
+}
+
+.HeroPickContainerRow
+{
+  margin-left:10px;
+  margin-top: 10px;
+  margin-right:10px;
+  margin-bottom:10px;
+  border-radius: 25px;
+  flow-children: right;  
+}
+
+.heroImage
+{
+  margin-left:10px;
+  margin-top: 5px;
+  margin-right:10px;
+  margin-bottom:5px;
+  height:200px;
+  width:150px; 
+  border-radius: 25px;
+  opacity: 0.7;
+
+}
+.heroImage:Hover
+{
+  margin-left:10px;
+  margin-top: 5px;
+  margin-right:10px;
+  margin-bottom:5px;
+  border-radius: 25px;
+  box-shadow: #ffffff80 4px 4px 4px -6px;
+  opacity: 1;
+  height:200px;
+  width:150px; 
+}
+.Hero_Selection_Abilities
+{
+  width:620px;
+  height: 930px;
+  horizontal-align:right;
+  margin-right:3%;
+  margin-top: 3%;
+  margin-bottom: 3%;
+  border-radius: 25px; 
+  background-color: black;
+  opacity: 0.7;
+  flow-children: down;
+  visibility: visible;
+}
+.SelectedHero
+{
+  margin-left:10px;
+  margin-top: 15px;
+  margin-right:10px;
+  margin-bottom:5px;
+  height:200px;
+  width:150px; 
+  border-radius: 25px;
+  opacity: 1;
+  horizontal-align:center;
+}
+
+.Hero_Selection_Abilities_Bar
+{
+  margin-left:10px;
+  margin-top: 10px;
+  margin-right:10px;
+  margin-bottom:5px;
+  flow-children: right;
+}
+
+.abilityImage
+{
+  margin-left:10px;
+  margin-top: 10px;
+  margin-right:10px;
+  margin-bottom:5px;
+  border-radius: 25px;
+  opacity: 0.7;
+
+}
+.abilityImage:Hover
+{
+  margin-left:10px;
+  margin-top: 10px;
+  margin-right:10px;
+  margin-bottom:5px;
+  border-radius: 25px;
+  box-shadow: #ffffff80 4px 4px 4px -6px;
+  opacity: 1;
+}
+.TooltipBox
+{ 
+  margin-left:20px;
+  margin-top: 10px;
+  margin-right:20px;
+  margin-bottom:5px;
+  width:100%;
+  height: fit-children;
+  horizontal-align:center;
+  border-radius: 25px;
+  background-color: #0d1c22ff;
+  opacity: 0.3;
+  
+}
+.TooltipBox Label,
+{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 22px;
+  margin-right:22px;
+  font-size: 22px;
+  color:white;
+  opacity: 1;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+}
+.HeroRatingBox
+{
+  height: fit-children;
+  width: 100%;
+  vertical-align: bottom;
+  flow-children:right;
+}
+.HeroRatingBoxInside
+{
+  margin-left:20px;
+  margin-top: 10px;
+  margin-right:20px;
+  margin-bottom:10px;
+  
+  background-color: #0d1c22ff;
+  width: 100%;
+  height: fit-children;
+  border-radius: 25px;
+  opacity: 0.3;
+  flow-children:right;
+
+}
+.HeroRatingBoxLabels
+{
+  width: 35%;
+  height: fit-children;
+  flow-children:down;
+}
+.RatingTextBox
+{ 
+  margin-left:20px;
+  margin-top: 3px;
+  margin-right:20px;
+  margin-bottom:2px;
+  width:100%;
+  height: fit-children;
+  horizontal-align:left;
+  border-radius: 25px;
+  background-color: black;
+  opacity: 1;
+}
+.RatingTextBox Label,
+{
+  margin-top: 8px;
+  margin-bottom:8px;
+  margin-left: 18px;
+  margin-right:18px;
+  font-size: 18px;
+  font-family: arial;
+  color:white;
+  opacity: 1;
+}
+.HeroRatingBoxRatings
+{
+  width: 100%;
+  height: fit-children;
+
+  flow-children:down;
+
+}
+.RatingBar
+{
+  margin-left:0px;
+  margin-top: 3px;
+  margin-right:20px;
+  margin-bottom:2px;
+  width:100%;
+  height: 34px;
+  horizontal-align:left;
+  border-radius: 25px;
+  background-color: black;
+  opacity: 1;
+  flow-children:right;
+}
+.RatingPoints
+{
+  height:66%;
+  width:29.4%;
+  margin-left: 3%;
+  margin-right: 0.1%;
+  vertical-align: center;
+  horizontal-align:left;
+  background-color: gradient( radial, 50% 50%, 0% 0%, 80% 80%, from( yellow ), to( gold ) );
+
+  border-radius: 10px;
+}
+
+.LockHeroButton
+{
+  margin-bottom: 20px;
+  margin-right:20px;
+  width: 300px;
+  height: 50px;
+  vertical-align: bottom;
+  horizontal-align:right;
+  background-color: black;
+  box-shadow: fill #002a6644 -4px -4px 8px 9px;
+  border-top: 1px solid #ffffff44;
+  border-right: 1px solid #00000088;
+  border-left: 1px solid #ffffff44;
+  border-bottom: 1px solid #00000088;
+  
+  transition-property: background-color;
+  transition-duration: .2s;
+
+  wash-color: #99999922;
+}
+
+.LockHeroButton:hover
+{
+  
+  background-color: gradient( linear, 0% 0%, 0% 100%, from( #5f6663 ), to( #b4c2c1 ));
+}
+
+.LockHeroButton Label
+{
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #d5d7d7;
+  vertical-align: middle;
+  horizontal-align:center;
+}
+
+.LockHeroButton:hover Label
+{
+  color: white;
+}
+
+.SteamAvatar  
+{
+  margin-left: 10%;
+  margin-top: 30%;
+  horizontal-align:left;
+  width: 100px;
+  height: 100px;
+  
+  
+}
+.SteamAvatar #AvatarImageProfile
+{
+  width: 100px;
+  height: 100px;
+}
+

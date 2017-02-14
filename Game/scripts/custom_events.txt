@@ -1,0 +1,64 @@
+"CustomEvents"
+{
+  "register_keys"
+  {
+    "player_ID" "short"
+  }
+  "key_event"
+  { 
+
+    "action" "string"
+    "button" "string"
+  }
+  "fix_camera"
+  {
+    "player_ID" "short"
+  }
+  "reset_camera"
+  {
+    "player_ID" "short"
+  }
+  "ability_cooldown"
+  {
+    "player_ID" "short"
+    "cooldown" "float"
+  }
+  "setup_settings"
+  {
+    "player_ID" "short"
+  }
+  "create_ally_selection"
+  {
+    "player_ID" "short"
+  }
+  "confirm_allies"
+  {
+    "player_ID" "short"
+    "requested" "short"
+    "requesting" "short"
+  }
+  "ally_selection"
+  {
+    "player_ID" "short"
+    "requested_ally" "short"
+  }
+  "pick_heroes"
+  {
+    "player_ID" "short"
+  }
+  "submit_pick"
+  {
+    "player_ID" "short"
+    "heroname" = "string"
+  }
+  "hero_pick_accepted"
+  {
+    "player_ID" "short"
+    "heroname" "string"
+  }
+  "kill_pick_screen"
+  {
+    "played_ID" "short"
+  }
+
+}

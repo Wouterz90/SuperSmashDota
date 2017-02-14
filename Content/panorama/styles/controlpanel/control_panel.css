@@ -1,0 +1,26 @@
+.MainPanel
+{
+    width: 100%;
+    height: 100%;
+    flow-children: down;
+}
+
+#InfoPanelBox
+{
+  width: 20%;
+  height: 20%;
+  margin-top: 5%;
+  margin-left: 0.5%;
+  border: 5px solid #111111FF;
+  vertical-align: top;
+  background-color: #0d1c22ff, gradient( radial, 100% -0%, 100px -40px, 320% 270%, from( #3a464bff ), color-stop( 0.23, #0d1c22ff ), to( #0d1c22ff ) );
+
+}
+
+.CurrentRoundHeader
+{
+  horizontal-align: left;
+  margin-top: 0px;
+  margin-left: 5px;
+  font-weight: bold;
+}

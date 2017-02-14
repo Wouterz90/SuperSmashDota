@@ -1,0 +1,105 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	_class = "CParticleSystemDefinition"
+	m_bShouldHitboxesFallbackToRenderBounds = false
+	m_nMaxParticles = 16
+	m_flConstantRadius = 32.0
+	m_nConstantSequenceNumber = 6
+	m_bShouldSort = false
+	m_Renderers = 
+	[
+		{
+			_class = "C_OP_RenderSprites"
+			m_nSequenceCombineMode = "SEQUENCE_COMBINE_MODE_USE_SEQUENCE_0"
+			m_bAdditive = true
+			m_hTexture = resource:"materials/particle/particle_glow_irregular1.vtex"
+		},
+		{
+			_class = "C_OP_RenderScreenVelocityRotate"
+			m_flForwardDegrees = 90.0
+		},
+	]
+	m_Operators = 
+	[
+		{
+			_class = "C_OP_BasicMovement"
+		},
+		{
+			_class = "C_OP_Decay"
+		},
+		{
+			_class = "C_OP_SetChildControlPoints"
+			m_nFirstControlPoint = 3
+		},
+		{
+			_class = "C_OP_SetControlPointPositions"
+			m_vecCP1Pos = [ 16.0, 16.0, 1140.0 ]
+			m_nCP2 = 4
+			m_nCP3 = 4
+			m_flOpStartFadeOutTime = 0.1
+			m_flOpEndFadeOutTime = 0.1
+			m_vecCP2Pos = [ 0.0, 0.0, 32.0 ]
+			m_vecCP3Pos = [ 0.0, 0.0, 32.0 ]
+			m_vecCP4Pos = [ 0.0, 0.0, 32.0 ]
+		},
+	]
+	m_Initializers = 
+	[
+		{
+			_class = "C_INIT_CreateWithinSphere"
+			m_nControlPointNumber = 1
+		},
+		{
+			_class = "C_INIT_RandomLifeTime"
+			m_fLifetimeMin = 0.5
+			m_fLifetimeMax = 0.5
+		},
+		{
+			_class = "C_INIT_RandomColor"
+			m_ColorMin = [ 255, 137, 11, 255 ]
+			m_ColorMax = [ 255, 137, 11, 255 ]
+		},
+		{
+			_class = "C_INIT_VelocityFromCP"
+		},
+	]
+	m_Emitters = 
+	[
+		{
+			_class = "C_OP_InstantaneousEmitter"
+			m_nParticlesToEmit = 12
+		},
+	]
+	m_Constraints = 
+	[
+		{
+			_class = "C_OP_ConstrainDistanceToPath"
+			m_flMaxDistance0 = 0.0
+			m_flTravelTime = 0.5
+			m_PathParameters = 
+			{
+				m_nStartControlPointNumber = 1
+			}
+		},
+	]
+	m_Children = 
+	[
+		{
+			m_flDelay = 0.5
+			m_ChildRef = resource:"particles/units/heroes/hero_mirana/mirana_starfall_explosion.vpcf"
+		},
+		{
+			m_ChildRef = resource:"particles/units/heroes/hero_mirana/mirana_starfall_trail.vpcf"
+		},
+		{
+			m_ChildRef = resource:"particles/units/heroes/hero_mirana/mirana_starfall_trail_c.vpcf"
+		},
+		{
+			m_ChildRef = resource:"particles/units/heroes/hero_mirana/mirana_starfall_trail_b.vpcf"
+		},
+		{
+			m_flDelay = 0.5
+			m_ChildRef = resource:"particles/units/heroes/hero_mirana/mirana_starfall_explosion_flash.vpcf"
+		},
+	]
+}

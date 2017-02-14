@@ -1,0 +1,35 @@
+﻿"lang"
+{
+  "Language" "English"
+  "Tokens"
+  {
+    "game_mode_15" "SUPER SMASH DOTA"
+    "addon_game_name" "SMASH"
+
+    // Roles
+    "DOTA_HeroRole_Carry" "Cast Animations"
+    "DOTA_HeroRole_Support" "Damage"
+    "DOTA_HeroRole_Nuker" "Cooldowns"
+    "DOTA_HeroRole_Disabler" "Disables"
+    "DOTA_HeroRole_Jungler" "Evasive"
+
+    // Puck
+    "npc_dota_hero_puck" "Puck"
+    "npc_dota_hero_puck_bio" "Puck is great at evading it's foes and reacting before they were ready. Puck can hurt them from distance, silence units around it, remove itself temporatily from the game and send an orb to which it can jaunt at any point."
+	"DOTA_Tooltip_Ability_puck_special_top" "Illusiory Orb"
+	"DOTA_Tooltip_Ability_puck_special_top_description" "Puck fires a projectile, if a projectile exists casting this spell will move puck to the projectile location."
+	// Tusk
+    "npc_dota_hero_tusk" "Tuskar"
+    "npc_dota_hero_tusk_bio" "Tuskar has excellent mobility due to his snowball, which he exploits with hard punches and brutal kicks. Can even use his sigil to lift up him."
+		
+	// Tusk
+    "npc_dota_hero_lina" "Lina"
+    "npc_dota_hero_lina_bio" "Lina may not be the quickest caster, but noone likes being hit by her spells. Laguna blade hurts so much you wished you paid attention, while Light Strike Array and Dragon Slave are no joke either, to top it all of Lina can lift her up with her favorite item"
+	
+	// Tusk
+    "npc_dota_hero_earthshaker" "Earthshaker"
+    "npc_dota_hero_earthshaker_bio" "Earthshaker loves the environment here, he can create a platform for his team with his fissure or even shake his current platform. Seeing how earthshaker acts it's not the jump that hurts but the landing. To finish this off he has a good punch. Needless to say, Earthshaker knows how to stun his foes."
+	
+	
+  }
+}
