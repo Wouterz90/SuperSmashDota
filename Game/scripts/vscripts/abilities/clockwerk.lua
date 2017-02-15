@@ -267,7 +267,9 @@ function rattletrap_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
   --local cogs = self:GetSpecialValueFor("cogs")
-  local duration = self:GetSpecialValueFor("cog_duration")   
+  local duration = self:GetSpecialValueFor("cog_duration")
+
+  caster:EmitSound("Hero_Rattletrap.Power_Cogs")
 
   local upVector = caster:GetUpVector()
   local cogUnits = {}
@@ -327,7 +329,9 @@ function modifier_rattletrap_cogs:OnIntervalThink()
         ability = ability,
       }
       ApplyDamage(damageTable)
-      self.targets[v] = true
+      --self.targets[v] = true
+      caster:EmitSound("Hero_Rattletrap.Power_Cogs_Impact")
+      UTIL_Remove(unit)
     end
   end
 end

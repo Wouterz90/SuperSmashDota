@@ -265,7 +265,7 @@ function lina_special_bottom:OnSpellStart()
       bCutTrees = false,
       bTreeFullCollision = false,
       WallBehavior = PROJECTILES_NOTHING,
-      GroundBehavior = PROJECTILES_BOUNCE,
+      GroundBehavior = PROJECTILES_FOLLOW,
       fGroundOffset = 0,
       nChangeMax = 1,
       bRecreateOnChange = true,

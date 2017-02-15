@@ -44,6 +44,7 @@
   vertical-align: top;
   horizontal-align:right;
 }
+
 .BottomPanelBox
 {
   
@@ -55,6 +56,59 @@
   border-right: 250% solid transparent;
   border-bottom: 25% solid red;
   opacity: 0.05;
+  vertical-align: bottom;
+  horizontal-align:left;
+}
+
+.TopPanelBox:Hover
+{
+  
+  width: 100%;
+  height: 30%;
+  margin-top: 0%;
+  margin-left: 0%;
+  border-left: 250% solid transparent;
+  border-right: 250% solid transparent;
+  border-top: 25% solid green;
+  opacity: 0.15;
+}
+.LeftPanelBox:Hover
+{
+  width: 28%;
+  height: 100%;
+  margin-top: 0%;
+  margin-left: 0%;
+  border-bottom: 95% solid transparent;
+  border-top: 95% solid transparent;
+  border-left: 80% solid blue;
+  opacity: 0.15;
+  vertical-align: top;
+  horizontal-align:left;
+}
+.RightPanelBox:Hover
+{
+  width: 28%;
+  height: 100%;
+  margin-top: 0%;
+  margin-right: 0%;
+  border-bottom: 95% solid transparent;
+  border-top: 95% solid transparent;
+  border-right: 80% solid yellow;
+  opacity: 0.15;
+  vertical-align: top;
+  horizontal-align:right;
+}
+.BottomPanelBox:Hover
+{
+  
+  width: 100%;
+  height: 30%;
+  margin-bottom: 0%;
+  margin-left: 0%;
+  border-left: 250% solid transparent;
+  border-right: 250% solid transparent;
+  border-bottom: 25% solid red;
+  opacity: 0.15;
   vertical-align: bottom;
   horizontal-align:left;
 }

@@ -10,7 +10,7 @@ var colorPlayer4 = "yellow"
 function BuildAllySelectionScreen()
 {
     
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox").GetParent().visible  = false 
+    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox").GetParent().visible  = false
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible  = false 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").visibility = "visible"
     // Create panels for each player, refuse selfpicking send an event about the choice only if 2 players chose each other they certainly get matched together

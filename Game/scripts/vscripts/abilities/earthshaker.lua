@@ -189,6 +189,7 @@ function earthshaker_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
 
+  caster:EmitSound("Hero_EarthShaker.EchoSlam")
   -- Show the particle
   local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf",PATTACH_ABSORIGIN,caster)
   ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
@@ -253,7 +254,7 @@ function earthshaker_special_mid:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
   local radius = ability:GetSpecialValueFor("radius")
-  
+  caster:EmitSound("Hero_EarthShaker.Totem")
   -- Getting all the units in front of the hero and damaging them
   local units = FindUnitsInLine(caster:GetTeamNumber(),caster:GetAbsOrigin(),caster:GetAbsOrigin() + (caster:GetForwardVector() * radius),nil,radius,DOTA_UNIT_TARGET_TEAM_ENEMY,DOTA_UNIT_TARGET_HERO,FIND_CLOSEST)
   units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin() + (caster:GetForwardVector() * radius),radius)
@@ -267,5 +268,6 @@ function earthshaker_special_mid:OnSpellStart()
       ability = self,
     }
     ApplyDamage(damageTable) -- Push
+    caster:EmitSound("Hero_EarthShaker.Totem.Attack")
   end
 end

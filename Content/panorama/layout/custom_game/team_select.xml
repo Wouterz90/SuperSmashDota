@@ -50,18 +50,18 @@
             <Panel class="EntryPanel">
                 <Label class="OptionLabel" text="Starting Lifes:" />
                 <Panel class="ValuePanel">
-                    <Label class="LabelEntry" id="nStartingLives" text="0"/>
+                    <Label class="LabelEntry" id="nStartingLifes" text="0"/>
                     <Panel class="PlusMinus">
-                        <Button class="Plus" onactivate="ValueChange('nStartingLives', 1);">
+                        <Button class="Plus" onactivate="ValueChange('nStartingLifes', 1);">
                             <Label id="Plus" text="+"/>
                         </Button>
-                        <Button class="Minus" onactivate="ValueChange('nStartingLives', -1);">
+                        <Button class="Minus" onactivate="ValueChange('nStartingLifes', -1);">
                             <Label id="Minus" text="-"/>
                         </Button>
                     </Panel>
                 </Panel>
             </Panel>
-            
+            <!--
             <Panel id="RadioButtons">
                 <Label class="OptionLabel" text="Gamemode:" />
                 <Panel class="RadioSection">
@@ -71,7 +71,7 @@
                     <RadioButton group="Format" onactivate="SelectRadioGameMode('2')" id="tier2" text="2 v 2" />
                 </Panel>
             </Panel>  
-
+			-->
             
             <Panel id="RadioButtons">
                 <Label class="OptionLabel" text="Hero selection:" />

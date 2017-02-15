@@ -11,7 +11,7 @@
       Show steam name and their avatar
   --> 
   <Panel class="Ally_Selection" hittest="true">
-    <Panel id="Ally_Selection_Main" class="Ally_Selection_Main" hittest="false">
+    <Panel id="Ally_Selection_Main" class="Ally_Selection_Main" hittest="false" visible="false">
       <Panel id="Ally_Selection_HeaderBox" class="Ally_Selection_HeaderBox">
         <Panel id="Ally_Selection_Header" class="Ally_Selection_Header">
           <Label text="#ChooseAlly"/>

@@ -88,8 +88,9 @@ function mirana_special_mid:OnSpellStart()
     }
     Projectiles:CreateProjectile(projectile)
 
-    Timers:CreateTimer(1,function()
+    Timers:CreateTimer(0.5,function()
       local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+      
       -- Not filtering for height
       local projectile = {
         --EffectName = "particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf",
@@ -139,7 +140,9 @@ function mirana_special_mid:OnSpellStart()
           caster:EmitSound("Ability.StarfallImpact")
         end,
       }
-      Projectiles:CreateProjectile(projectile)
+      if IsValidEntity(units[1]) then
+        Projectiles:CreateProjectile(projectile)
+      end
     end)
   end
 end

@@ -1,5 +1,14 @@
 function HeroRatingsPlayerTable()
   local HeroRatings = {
+  wispValues = {
+      Animations =    0,
+      Disables =      0,
+      Cooldowns =     0,
+      Evasiveness =   0,
+      Push =          0,
+      Damage =        0,
+      Likelyness =    0,
+    },
     puckValues = {
       Animations =    3,
       Disables =      1,

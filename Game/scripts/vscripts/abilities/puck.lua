@@ -82,6 +82,7 @@ function puck_special_top:OnSpellStart()
         ApplyDamage(damageTable)
       end,
       OnFinish = function(self,unit)
+      caster:StopSound("Hero_Puck.Illusory_Orb")
         caster:FindAbilityByName("puck_special_top").orb = nil
         caster:FindAbilityByName("puck_special_top"):StartCooldown(caster:FindAbilityByName("puck_special_top"):GetSpecialValueFor("cooldown"))
         if caster:isOnPlatform() then
@@ -91,6 +92,7 @@ function puck_special_top:OnSpellStart()
     }
     self.orb = Projectiles:CreateProjectile(projectile)
   else
+    caster:StopSound("Hero_Puck.Illusory_Orb")
     caster:EmitSound("Hero_Puck.EtherealJaunt")
     caster:SetAbsOrigin(self.orb:GetPosition())
 
@@ -201,7 +203,7 @@ function puck_special_side:OnAbilityPhaseStart()
 end
 function puck_special_side:OnSpellStart()
   local caster = self:GetCaster()
-  caster:EmitSound("sounds/weapons/hero/puck/attack.vsnd")
+  caster:EmitSound("Hero_Puck.Attack")
     local projectile = {
       --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
       EffectName = "particles/puck_side/puck_side.vpcf",
@@ -252,7 +254,8 @@ function puck_special_side:OnSpellStart()
       --bUseFindUnitsInRadius = false,
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
-      OnUnitHit = function(self, unit) 
+      OnUnitHit = function(self, unit)
+        caster:EmitSound("Hero_Puck.ProjectileImpact")
         local damageTable = {
           victim = unit,
           attacker = caster,
@@ -261,6 +264,9 @@ function puck_special_side:OnSpellStart()
           ability = caster:FindAbilityByName("puck_special_side"),
         }
         ApplyDamage(damageTable)
+      end,
+      OnGroundHit = function(self, unit)
+        caster:EmitSound("Hero_Puck.ProjectileImpact")
       end,
     }
     Projectiles:CreateProjectile(projectile)

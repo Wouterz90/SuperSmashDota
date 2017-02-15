@@ -1,5 +1,6 @@
 -- This is the entry-point to your game mode and should be used primarily to precache models/particles/sounds/etc
 
+SMASHVERSION = 0.6
 require('internal/util')
 require('gamemode')
 

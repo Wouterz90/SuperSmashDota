@@ -3,6 +3,7 @@ var PlayerTables = GameUI.CustomUIConfig().PlayerTables
 
 function BuildHeroSelectionScreen()
 {
+	// Make them all visible again
     var panel =  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox")
     panel.GetParent().GetParent().visible = true
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox").GetParent().visible  = true 
@@ -17,6 +18,20 @@ function BuildHeroSelectionScreen()
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).style.opacity = 1
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).style.opacity = 1
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).style.opacity = 1
+	
+	// Hide heroes players already picked
+	 
+	var table = PlayerTables.GetAllTableValues(Players.GetLocalPlayer().toString().concat("heroes"))
+	for (var k in table)
+	{
+			
+		
+		var string = k.substr(14)
+		
+		string = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat(string)).style.opacity = 0.1
+		
+	}
+	
 }
 
 
@@ -161,18 +176,21 @@ function LockHeroAndReady()
 function HeroPickAccepted(keys)
 {
     // Put player avatar above the hero
-    $.Msg(keys.heroname)
+    //$.Msg(keys.heroname)
     var pan = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat(keys.heroname))
     //var idpanel = $.CreatePanel("DOTAAvatarImage", pan, "" ) 
     pan.style.opacity = 0.1
-
-    if (keys.pid == Players.GetLocalPlayer())
-    {   
-        // Remove the button
-        $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible = false
+	if (keys.pid)
+	{
+		if (keys.pid == Players.GetLocalPlayer())
+		{   
+			// Remove the button
+			$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible = false
+		}
     }
-    
 }
+
+
 
 function KillPickScreen()
 {
@@ -180,8 +198,8 @@ function KillPickScreen()
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_Main").GetParent().visible = false 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_Main").visible = false 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible = false 
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().visible = false
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").visible = false
+    //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().visible = false
+    //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").visible = false
 }
 
 (function()

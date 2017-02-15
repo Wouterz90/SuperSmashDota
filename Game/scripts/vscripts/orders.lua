@@ -6,8 +6,8 @@ function GameMode:FilterExecuteOrder(filterTable)
   local ability = EntIndexToHScript(abilityIndex)
   local targetIndex = filterTable["entindex_target"]
   local target = EntIndexToHScript(targetIndex)
-  return true
-  --[[ if issuer == -1 then 
+  
+  if issuer == -1 then 
     return true
   else
     return false
@@ -17,7 +17,7 @@ function GameMode:FilterExecuteOrder(filterTable)
     return false
   else
     return true
-  end]]
+  end
   
 
 end

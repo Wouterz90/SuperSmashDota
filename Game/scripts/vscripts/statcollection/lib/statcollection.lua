@@ -99,6 +99,10 @@ function statCollection:init()
     self.OVERRIDE_AUTOMATIC_SEND_STAGE_2 = tobool(statInfo.OVERRIDE_AUTOMATIC_SEND_STAGE_2)
     self.TESTING = tobool(statInfo.TESTING)
 
+    if not TESTING or TESTING == false then
+        self.TESTING = IsInToolsMode()
+    end
+
     -- Store the modIdentifier
     self.modIdentifier = modIdentifier
 

@@ -9,7 +9,7 @@ if GameMode == nil then
     DebugPrint( '[BAREBONES] creating barebones game mode' )
     _G.GameMode = class({})
 end
--- STATS!
+-- STATS! 
 require("statcollection/init")
 
 -- This library allow for easily delayed/timed actions
@@ -113,6 +113,7 @@ end
 function GameMode:OnAllPlayersLoaded()
   DebugPrint("[BAREBONES] All Players have loaded into the game")
   spawnPlatform()
+  
 
   for i=0,3 do
     if PlayerResource:GetPlayer(i) then
@@ -120,6 +121,7 @@ function GameMode:OnAllPlayersLoaded()
       if player ~= nil then
         --player:MakeRandomHeroSelection()
         --PlayerResource:SetHasRepicked(i)
+        PlayerTables:CreateTable(tostring(i).."heroes",{},true)
       end
     end
   end
@@ -241,8 +243,22 @@ end
   is useful for starting any game logic timers/thinkers, beginning the first round, etc.
 ]]
 function GameMode:OnGameInProgress()
+
   DebugPrint("[BAREBONES] The game has officially begun")
-  if CustomNetTables:GetTableValue("settings","Format").value ~= "2" or PlayerResource:GetTeamPlayerCount() ~= 4 then -- not 2v2
+  GameMode.flags = {
+    version = SMASHVERSION,
+    HeroSelection = CustomNetTables:GetTableValue("settings","HeroSelection").value,
+    Format = CustomNetTables:GetTableValue("settings","Format").value,
+    StartingLifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value,
+    PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
+  }
+  statCollection:setFlags(GameMode.flags) 
+  statCollection:sendStage2() 
+  -- Set the format to ffa if there aren't 4 players
+  if PlayerResource:GetTeamPlayerCount() ~= 4 then
+    CustomNetTables:SetTableValue("settings","Format",{value = "1"})
+  end
+  if CustomNetTables:GetTableValue("settings","Format").value ~= "2" then -- not 2v2
     --Timers:CreateTimer(0.25,function()
       GameMode:HeroPickStarted()
     --  end)
@@ -258,19 +274,24 @@ function GameMode:Reset()
   if not CustomNetTables:GetTableValue("settings","nAmountOfRounds").value then
     CustomNetTables:SetTableValue("settings","nAmountOfRounds",{value = "5"})
   end
-  if tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) ~= -1 and resetcount > tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) then 
-    GameRules:SetGameWinner(2)
+  if tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) ~= -1 and resetcount >= tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) then 
+    local score = 0
+    local winner = DOTA_TEAM_GOODGUYS
+    for i=0,PlayerResource:GetTeamPlayerCount()-1 do
+      assists = PlayerResource:GetAssists(i)
+      if assists > score then
+        score = assists
+        winner = PlayerResource:GetTeam(i)
+      end
+    end
+    DeclareWinningTeam(winner)
+    
+    statCollection:submitRound(true)
+  else
+    statCollection:submitRound(false)
   end
   
-  --[[Remove all the platforms and walls
-  for k,v in pairs(platform) do
-    UTIL_Remove(v)
-    v = nil
-  end
-  for k,v in pairs(wall) do
-    UTIL_Remove(v)
-    v = nil
-  end]]
+  
   
   GameMode.heroesPicked = nil
   GameMode.heroesPicked = {}
@@ -282,7 +303,10 @@ function GameMode:Reset()
   GameMode:HeroPickStarted()
 
 end
+function DeclareWinningTeam(winningTeam)
 
+  GameRules:SetGameWinner(winningTeam)
+end
 
 
 -- This function initializes the game mode and is called before anyone loads into the game
@@ -394,4 +418,64 @@ end
 function GameMode:ChangeSettings(keys)
   
   CustomNetTables:SetTableValue("settings",keys.setting,{value =keys.value})
+end
+
+function GameMode:OnHeroDeath(hero)
+  -- Store the lifes to display on client
+  PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes", PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes") -1)
+  if hero.lastAttacker then
+    killerID = hero.lastAttacker:GetPlayerOwnerID()
+    PlayerResource:IncrementKills(killerID, 1)
+    hero.lastAttacker = nil
+  end
+  
+  if PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()),"lifes") <= -1 then
+    hero:SetRespawnsDisabled(true)
+    deadplayers = deadplayers + 1
+    if deadplayers >= PlayerResource:GetTeamPlayerCount() -1 then
+      -- Resetting
+      deadplayers = 0
+
+      -- Find the player with lives left
+      for i=0, PlayerResource:GetTeamPlayerCount() -1 do
+        if PlayerTables:GetTableValue(tostring(i),"lifes") >= 0 then
+          -- Use assists to track score for now
+          GameRules.Winner = PlayerResource:GetTeam(i)
+          PlayerResource:IncrementAssists(i,i)
+        end
+      end
+      GameMode:Reset()
+    end
+
+    -- If there are teams, check if there is someone on a team still alive
+    if PlayerResource:GetPlayerCountForTeam(DOTA_TEAM_BADGUYS) == 2 or PlayerResource:GetPlayerCountForTeam(DOTA_TEAM_GOODGUYS) == 2 then
+      
+      local A0 = CustomNetTables:GetTableValue("settings","A0").value
+      local A1 = CustomNetTables:GetTableValue("settings","A1").value
+      local B0 = CustomNetTables:GetTableValue("settings","B0").value
+      local B1 = CustomNetTables:GetTableValue("settings","B1").value
+
+      -- Check for A0 and A1 if they have lifes
+      if PlayerTables:GetTableValue(tostring(A0), "lifes") + PlayerTables:GetTableValue(tostring(A1), "lifes") < -1 then
+        -- No lifes
+        PlayerResource:IncrementAssists(B0)
+        PlayerResource:IncrementAssists(B1)
+        GameMode:Reset()
+      end
+      if PlayerTables:GetTableValue(tostring(B0), "lifes") + PlayerTables:GetTableValue(tostring(B1), "lifes") < -1 then
+        -- No lifes
+        PlayerResource:IncrementAssists(A0)
+        PlayerResource:IncrementAssists(A1)
+        GameMode:Reset()
+      end
+    end
+    
+  end
+
+
+
+  -- Remove ourselves from any platform
+  for k,v in pairs(platform) do
+    v.unitsOnPlatform[hero] = nil
+  end
 end

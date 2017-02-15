@@ -9,7 +9,7 @@
   </scripts>
   
   <Panel class="Hero_Selection" hittest="true" visible="false">
-    <Panel id="Hero_Selection_Main" class="Hero_Selection_Main" hittest="false">
+    <Panel id="Hero_Selection_Main" class="Hero_Selection_Main" hittest="true">
       <Panel id="Hero_Selection_HeroBox" class="Hero_Selection_HeroBox" hittest="false">
         <Panel id="HeroPickContainerRow1" class="HeroPickContainerRow" hittest="false"> <!--94x71-->
           <DOTAHeroImage id="HeroPickpuck" class="heroImage" heroname="npc_dota_hero_puck" heroimagestyle="portrait" onactivate="selectedHeroPuck()"/>

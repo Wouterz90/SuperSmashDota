@@ -1,7 +1,7 @@
 <root> 
   <scripts>
-    <include src="file://{resources}/scripts/smash/mouse_control.js" />
-    <include src="file://{resources}/scripts/smash/camera.js" />
+    <include src="file://{resources}/scripts/custom_game/mouse_control.js" />
+    <include src="file://{resources}/scripts/custom_game/camera.js" />
     <include src="file://{resources}/scripts/playertables/playertables_base.js" />
     
   </scripts>
@@ -52,8 +52,10 @@
     
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/modmaker/modmaker.xml" />
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/selection.xml" />
+	
+	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/ally_selection.xml" />
     -->
-    <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/ally_selection.xml" />
+    
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/hero_selection.xml" />
 
 

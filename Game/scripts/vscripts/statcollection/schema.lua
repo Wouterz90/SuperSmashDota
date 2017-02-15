@@ -4,9 +4,20 @@ function customSchema:init()
 
     -- Check the schema_examples folder for different implementations
 
-    -- Flag Example
-    -- statCollection:setFlags({version = GetVersion()})
+    --Flag Example
+    -- Doing this in OnGameInProgress because this doesnt work here
+    --statCollection:setFlags(GameMode.flags) 
 
+    --[[ Data
+        GameMode.flags = {
+        version = SMASHVERSION,
+        HeroSelection = CustomNetTables:GetTableValue("settings","HeroSelection").value,
+        Format = CustomNetTables:GetTableValue("settings","Format").value,
+        StartingLifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value,
+        PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
+    }
+    ]]
+    
     -- Listen for changes in the current state
     ListenToGameEvent('game_rules_state_change', function(keys)
         local state = GameRules:State_Get()
@@ -70,6 +81,7 @@ function BuildPlayersArray()
 
                     -- Example functions for generic stats are defined in statcollection/lib/utilities.lua
                     -- Add player values here as someValue = GetSomePlayerValue(),
+                    heroname = GetHeroName(playerID)
                 })
             end
         end

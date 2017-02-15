@@ -249,7 +249,7 @@
     "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
     "ScriptFile"            "abilities/puck.lua"
     "AbilityCastPoint"        "0.05"
-    "AbilityCooldown"       "0.25"
+    "AbilityCooldown"       "0.35"
     "precache"
     {
       "particle" "particles/puck_side/puck_side.vpcf"
@@ -1020,10 +1020,10 @@
     "ScriptFile"            "abilities/earthshaker.lua"
     "AbilityCastPoint"        "0.5"
     
-    "AbilityCooldown"       "1"
+    "AbilityCooldown"       "1.5"
     "precache"
     {
-      "particle" "particles/items_fx/cyclone.vpcf"
+      "particle" "particles/econ/items/earthshaker/earthshaker_totem_ti6/earthshaker_totem_ti6_blur.vpcf"
       "soundfile" "soundevents/game_sounds_heroes/game_sounds_earthshaker.vsndevts"
     }
     "AbilitySpecial"
@@ -1036,7 +1036,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"    "300"
+        "radius"    "200"
       }
       "03"
       {

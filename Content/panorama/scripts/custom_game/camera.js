@@ -31,10 +31,8 @@ function CameraSettings(){
   // Do the health part stuff
   
   var top = $.GetContextPanel().GetParent().GetParent();
-  var next = top.FindChild("CustomUIRoot");
-  var next = next.FindChild("CustomUIContainer_Hud")
-  var next = next.GetChild(2)
-  var next = next.FindChild("HealthPanel")
+  
+  var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("HealthPanel")
   var Player1_Health = next.GetChild(0).GetChild(0)
   var Player2_Health = next.GetChild(1).GetChild(0)
   var Player3_Health = next.GetChild(2).GetChild(0)
@@ -163,11 +161,7 @@ function CameraSettings(){
 function CancelCameraSettings(){
   $.Msg("CancelCameraSettings")
   // Place to control triangles
-  var top = $.GetContextPanel().GetParent().GetParent();
-  var next = top.FindChild("CustomUIRoot");
-  var next = next.FindChild("CustomUIContainer_Hud")
-  var next = next.GetChild(1)
-  var next = next.FindChild("MainPanel")
+  var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("MainPanel")
   var topbox = next.GetChild(0)
   var leftbox = next.GetChild(1)
   var rightbox = next.GetChild(2)
@@ -210,3 +204,6 @@ function CreatePlayerHeroAvatars()
   GameEvents.Subscribe( "fix_camera", CameraSettings)
   GameEvents.Subscribe( "reset_camera", CameraSettings)
 })();
+
+
+

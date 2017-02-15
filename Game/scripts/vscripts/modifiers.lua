@@ -105,24 +105,7 @@ end
 end]]
 function modifier_basic:OnDeath(keys)
   if self:GetParent() == keys.unit and IsServer() then
-    local hero = self:GetParent()
-    -- Store the lifes to display on client
-    PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes", PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes") -1)
-   
-    if PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()),"lifes") <= -1 then
-      self:GetParent():SetRespawnsDisabled(true)
-
-      deadplayers = deadplayers + 1
-      if deadplayers >= PlayerResource:GetTeamPlayerCount() -1 then
-        -- Resetting
-        deadplayers = 0
-        GameMode:Reset()
-      end
-    end
-    -- Remove ourselves from any platform
-    for k,v in pairs(platform) do
-      v.unitsOnPlatform[self:GetParent()] = nil
-    end
+    GameMode:OnHeroDeath(self:GetParent())
   end
 end
 

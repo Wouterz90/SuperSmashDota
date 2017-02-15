@@ -6,13 +6,13 @@
   </styles>
   <Panel class="MainPanel" hittest="false">
     <Panel id="MainPanel" class="MainPanel" hittest="false">
-      <Panel id= "TopPanelBox" class="TopPanelBox" hittest="false">
+      <Panel id= "TopPanelBox" class="TopPanelBox" hittest="true">
       </Panel>  
-      <Panel id= "LeftPanelBox" class="LeftPanelBox" hittest="false">
+      <Panel id= "LeftPanelBox" class="LeftPanelBox" hittest="true">
       </Panel>  
-      <Panel id= "RightPanelBox" class="RightPanelBox" hittest="false">
+      <Panel id= "RightPanelBox" class="RightPanelBox" hittest="true">
       </Panel>
-      <Panel id= "BottomPanelBox" class="BottomPanelBox" hittest="false">
+      <Panel id= "BottomPanelBox" class="BottomPanelBox" hittest="true">
       </Panel>
     </Panel>
     <Panel class="HealthPanel" id="HealthPanel" hittest="false"> 
