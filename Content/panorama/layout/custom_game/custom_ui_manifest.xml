@@ -1,10 +1,10 @@
 <root> 
   <scripts>
-    <include src="file://{resources}/scripts/custom_game/mouse_control.js" />
+	<include src="file://{resources}/scripts/custom_game/mouse_control.js" />
     <include src="file://{resources}/scripts/custom_game/camera.js" />
     <include src="file://{resources}/scripts/playertables/playertables_base.js" />
-    
   </scripts>
+  
   <script>
     // Uncomment any of the following lines in order to disable that portion of the default UI
 
@@ -53,19 +53,20 @@
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/modmaker/modmaker.xml" />
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/selection.xml" />
 	
-	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/ally_selection.xml" />
+	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/map_selection.xml" />
     -->
     
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/hero_selection.xml" />
-
+	
 
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/control_panel.xml" />
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/custom_timer.xml" />
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/barebones_worldpanels.xml" />
     
+	
     <CustomUIElement type="GameSetup" layoutfile="file://{resources}/layout/custom_game/team_select.xml" />
 
-    <CustomUIElement type="Hud"                 layoutfile="file://{resources}/layout/custom_game/statcollection.xml" />
+    <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/statcollection.xml" />
 
     
     

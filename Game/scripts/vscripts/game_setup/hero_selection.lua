@@ -25,7 +25,7 @@ function GameMode:ConfirmHeroPick(keys)
     Timers:CreateTimer(10,function()
       for i=0, PlayerResource:GetTeamPlayerCount()-1 do
         if not GameMode.playersPicked[i] and PlayerResource:GetPlayer(i) then
-          GetRandomHero(i)
+          GetRandomHero(i,true)
         end
       end
       -- Remove the pick screen and play!
@@ -41,21 +41,23 @@ function GameMode:ConfirmHeroPick(keys)
   end
 end
 
-function GetRandomHero(pID)
+function GetRandomHero(pID,bForced)
   local random = RandomInt(1,#allowedHeroes)
   local fullHeroname = allowedHeroes[random]
-  while GameMode.heroesPicked[fullHeroname] or PlayerTables:GetTableValue(tostring(pID.."heroes"),fullHeroname) do
-    random = RandomInt(1,#allowedHeroes)
-    fullHeroname = allowedHeroes[random]
-  end
+  
   
   heroname=string.sub(allowedHeroes[random], 15)
   
-  Timers:CreateTimer(0.1,function()
+  Timers:CreateTimer(function()
     if not PlayerResource:GetSelectedHeroEntity(pID) then
       return 0.1
     else
-      SubmitHeroPick(pID,heroname)
+      while GameMode.heroesPicked[fullHeroname] or PlayerTables:GetTableValue(tostring(pID.."heroes"),fullHeroname) do
+        random = RandomInt(1,#allowedHeroes)
+        fullHeroname = allowedHeroes[random]
+      end
+      heroname=string.sub(fullHeroname, 15)
+      SubmitHeroPick(pID,heroname,bForced)
       return nil
     end
   end)
@@ -63,7 +65,7 @@ end
 
 function RandomForAll()
   for i=0,PlayerResource:GetTeamPlayerCount()-1 do
-    GetRandomHero(i)
+    GetRandomHero(i,true)
   end
   CustomGameEventManager:Send_ServerToAllClients("kill_pick_screen",{})
   for i=0,3 do
@@ -92,20 +94,23 @@ function ReplaceHero(pID,heroname)
   end
 end
 
-function SubmitHeroPick(pID,heroname)
+function SubmitHeroPick(pID,heroname,bForcedRandom)
   CustomGameEventManager:Send_ServerToAllClients("hero_pick_accepted",{pid=pID,heroname=heroname})
   --[[local playerID = "Player"..pID
   if not playerID then
     playerID = {}
   end]]
 
-  GameMode.heroesPicked[heroname] = true
+  
+
   GameMode.playersPicked[pID] = true
   fullHeroname = "npc_dota_hero_"..heroname
   ReplaceHero(pID,fullHeroname)
   -- Stun heroes so they dont do stuff while we cant see it
-  PlayerResource:GetSelectedHeroEntity(pID):AddNewModifier(PlayerResource:GetSelectedHeroEntity(pID),nil,"modifier_smash_stun",{})
-
+  if not bForcedRandom then
+    PlayerResource:GetSelectedHeroEntity(pID):AddNewModifier(PlayerResource:GetSelectedHeroEntity(pID),nil,"modifier_smash_stun",{})
+  end
+  GameMode.heroesPicked[fullHeroname] = true
   PlayerTables:SetTableValue(tostring(pID.."heroes"),PlayerResource:GetSelectedHeroEntity(pID):GetUnitName(),true)
   
 end

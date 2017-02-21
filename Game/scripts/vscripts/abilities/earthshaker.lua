@@ -2,9 +2,43 @@ earthshaker_special_side = class({})
 
 function earthshaker_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
-  if not self:IsCooldownReady() then return false end 
+  if not self:IsCooldownReady() then return false end
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_OVERRIDE_ABILITY_1, rate=0.1})
+  -- Create block to throw
+  if self.block and IsValidEntity(self.block) then
+    UTIL_Remove(self.block)
+  end
+  self.block = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/items/earthshaker/totem_dragon_wall/fissure_body.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  self.block:SetAbsOrigin(self:GetCaster():GetAbsOrigin() + Vector(0,0,150))
+  self.block.height = 100
+  self.block.radius = 100
+  self.block.unitsOnPlatform = {}  
+  self.block.owner = self:GetCaster()
+  self.block.canDropThrough = false
+  table.insert(platform, #platform + 1, self.block)
+  table.insert(wall, #wall + 1, self.block)
   return true
 end
+
+function earthshaker_special_side:OnAbilityPhaseInterrupted()
+  local caster = self:GetCaster()
+  UTIL_Remove(self.block)
+  for k,v in pairs(platform) do
+    if v.owner and v.owner == caster then
+      platform[k] = nil
+      break
+    end
+  end
+  for k,v in pairs(wall) do
+    if v.owner and v.owner == caster then
+      wall[k] = nil
+      break
+    end
+  end
+  EndAnimation(caster)
+end
+
+--  Throw a fissure block, that block will have the wall and platform properties
 function earthshaker_special_side:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
@@ -13,9 +47,63 @@ function earthshaker_special_side:OnSpellStart()
   local range = ability:GetSpecialValueFor("range")
   local radius = ability:GetSpecialValueFor("radius")
   local duration = ability:GetSpecialValueFor("duration")
-
+  local direction = self.mouseVector
+  local throw_speed = 600 /32
+  self.targets = {}
   -- Sound
-  caster:EmitSound("Hero_EarthShaker.Fissure")
+  caster:EmitSound("Ability.TossThrow")
+
+  -- Throw the block in the direction, make it lose speed (vector.x closer to 0) and make it lose height ( vector.z closer to -1)
+  Timers:CreateTimer(function()
+    if GetGroundPosition(self.block:GetAbsOrigin(),caster).z >= self.block:GetAbsOrigin().z then
+      -- Do some effects
+      caster:EmitSound("Ability.TossImpact")
+      local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_earthshaker/earthshaker_totem_leap_impact.vpcf",PATTACH_ABSORIGIN,caster)
+      ParticleManager:SetParticleControl(particle, 0, self.block:GetAbsOrigin())
+      Timers:CreateTimer(1,function()
+        ParticleManager:DestroyParticle(particle,false)
+        ParticleManager:ReleaseParticleIndex(particle)
+      end)  
+      return nil
+    else
+      self.block:SetAbsOrigin(self.block:GetAbsOrigin()+direction*throw_speed)
+      -- Update the platform position
+      for k,v in pairs(platform) do
+        if not v:IsNull() then
+          if v.owner and v.owner == caster then
+            platform[k]:SetAbsOrigin(self.block:GetAbsOrigin())
+            break
+          end
+        end
+      end
+      for k,v in pairs(wall) do
+        if not v:IsNull() then
+          if v.owner and v.owner == caster then
+            wall[k]:SetAbsOrigin(self.block:GetAbsOrigin())
+            break
+          end
+        end
+      end
+
+
+      -- Update the direction
+      if direction.x > 0.05 then
+        direction = Vector(direction.x-0.03,0,direction.z-0.03)
+      elseif direction.x < - 0.05 then
+        direction = Vector(direction.x+0.03,0,direction.z-0.03)
+      else
+        direction = Vector(0,0,direction.z-0.03)
+      end
+      --if direction.z <= -0.95 then
+      --  direction = Vector(direction.x,0,-1)
+      --end
+      return 1/32
+    end
+  end)
+end
+
+
+  --[[
 
   -- Set the direction either left or right
   -- a rotated platform hasnt been fixed yet
@@ -44,7 +132,7 @@ function earthshaker_special_side:OnSpellStart()
     fissure.rotation = VectorToAngles(self.mouseVector).x
   end
   fissure:SetAngles(fissure.rotation,0,0)
-  --print(fissure.rotation)]]
+  --print(fissure.rotation) ] ]
   table.insert(platform, #platform + 1, fissure)
   
   -- Create the visual stuff
@@ -68,7 +156,7 @@ function earthshaker_special_side:OnSpellStart()
       UTIL_Remove(v)
     end
   end)
-end
+end]]
 
 earthshaker_special_top = class({})
 
@@ -89,7 +177,7 @@ function earthshaker_special_top:OnSpellStart()
   caster:RemoveModifierByName("modifier_jump")
   caster:AddNewModifier(caster,self,"modifier_earthshaker_jump",{duration = ability:GetSpecialValueFor("duration")})
   -- Start this to check if the target is on a platform
-  Timers:CreateTimer(0.25,function()
+  Timers:CreateTimer(0.75,function()
     caster:AddNewModifier(caster,self,"modifier_eartshaker_slam",{})
   end)
 end
@@ -117,7 +205,7 @@ function modifier_earthshaker_jump:OnDestroy()
   if IsServer() then
     -- Make sure the animation stays the same and not his drop animation
     StartAnimation(self:GetParent(), {duration=1, activity=ACT_DOTA_CAST_ABILITY_2, rate=4 })
-    FreezeAnimation(self:GetParent(),5)
+    FreezeAnimation(self:GetParent(),3)
     self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
 end
@@ -130,7 +218,11 @@ function modifier_eartshaker_slam:OnCreated()
     self:StartIntervalThink(1/32)
   end
 end
-
+function modifier_eartshaker_slam:OnDestroy()
+  if IsServer() then
+    UnfreezeAnimation(self:GetParent())
+  end
+end
 function modifier_eartshaker_slam:OnIntervalThink()
   --Check when the units hits the platform
   if self:GetParent():isOnPlatform() then

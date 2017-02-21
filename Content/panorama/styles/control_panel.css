@@ -5,6 +5,34 @@
     flow-children: none;
     z-index: 1;
 }
+.TopIcon
+{
+	vertical-align:top;
+	horizontal-align:center;
+	border-radius: 25px;
+	opacity:0.5;
+}
+.RightIcon
+{
+	vertical-align:center;
+	horizontal-align:right;
+	border-radius: 25px;
+	opacity:0.5;
+}
+.LeftIcon
+{
+	vertical-align:center;
+	horizontal-align:left;
+	border-radius: 25px;
+	opacity:0.5;
+}
+.BottomIcon
+{
+	vertical-align:bottom;
+	horizontal-align:center;
+	border-radius: 25px;
+	opacity:0.5;
+}
 
 .TopPanelBox
 {
@@ -18,6 +46,7 @@
   border-top: 25% solid green;
   opacity: 0.05;
 }
+
 .LeftPanelBox
 {
   width: 28%;

@@ -13,12 +13,33 @@ function spawnPlatform()
   wall = {}
   platform = {}
   
-  -- Get map name from some event
-  mapname = "MapSmallMedium"
+  -- Get map name from nettable or pick it randomly
+  
+  mapnames = {
+    [1] = "MapSmall",
+    [2] = "MapMedium",
+    [3] = "MapSmallWalls"
+  }
+  local mapname
+  if PlayerResource:GetTeamPlayerCount() == 1 then
+    mapname = mapnames[RandomInt(1,3)]
+  elseif PlayerResource:GetTeamPlayerCount() == 2 then
+    mapname = "MapSmall"
+  elseif PlayerResource:GetTeamPlayerCount() == 3 then
+    mapname =  mapnames[RandomInt(1,2)]
+  else
+    mapname = "MapMedium"
+  end
+
   _G[mapname]()
 
+end
 
-  
+function ClearPlatforms()
+  for k,v in pairs(platform) do
+    UTIL_Remove(v)
+  end
+  platform = nil
 end
 
 function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirection inputs are (up,down,left,right)
@@ -88,8 +109,9 @@ function CDOTA_BaseNPC:isOnPlatform()
     if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
       if not v.rotation then -- Use the straightforward method
         -- Check if the height matches as well
-        if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed *2) and z<= v:GetAbsOrigin().z + v.height then
+        if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5)then
           v.unitsOnPlatform[self] = true
+
           return true
         end
       --[[else
@@ -112,15 +134,18 @@ function CDOTA_BaseNPC:isOnPlatform()
 end
 
 function CDOTA_BaseNPC:isUnderPlatform()
+  if not platform then return end
   local origin = self:GetAbsOrigin()
   local x = origin.x
   local z = origin.z
   local v = platform[1]
   -- Check if x coordinates match with platform
-  if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
-    -- Check height
-    if z >= v:GetAbsOrigin().z - Laws.flJumpSpeed and z<= v:GetAbsOrigin().z + v.height - Laws.flJumpSpeed then
-      return true
+  if not v:IsNull() then
+    if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
+      -- Check height
+      if z >= v:GetAbsOrigin().z - Laws.flJumpSpeed and z<= v:GetAbsOrigin().z + v.height - Laws.flJumpSpeed then
+        return true
+      end
     end
   end
   return false
@@ -128,10 +153,13 @@ end
 
 
 function sortPlatforms()
+  if not platform then return end
   local sorted = {}
   local tempTable = {}
   for k,v in pairs(platform) do
-    table.insert(sorted, k, v:GetAbsOrigin().z)  
+    if not v:IsNull() then
+      table.insert(sorted, k, v:GetAbsOrigin().z) 
+    end 
   end
   local i=1
   -- spairs is found in util.lua, sorting the table with platform so that units will stay on the highest
@@ -154,11 +182,13 @@ function CDOTA_BaseNPC:CheckForWalls()
   if self.lastLocation then 
   
     for k,v in pairs(wall) do
-      if v.owner and v.owner:GetTeamNumber() ~= self:GetTeamNumber() then return end
+      --if v.owner and v.owner:GetTeamNumber() ~= self:GetTeamNumber() then return end
       -- Check if height matches first, then check position
-      if z >= v:GetAbsOrigin().z - v.height and z<= v:GetAbsOrigin().z  + (v.height) -80 then
-        if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
-          self:SetAbsOrigin(Vector(self.lastLocation.x,0,self:GetAbsOrigin().z))
+      if not v:IsNull() then
+        if z >= v:GetAbsOrigin().z - v.height and z<= v:GetAbsOrigin().z  + (v.height) -40 then
+          if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
+            self:SetAbsOrigin(Vector(self.lastLocation.x,0,self:GetAbsOrigin().z))
+          end
         end
       end
     end
@@ -167,37 +197,52 @@ function CDOTA_BaseNPC:CheckForWalls()
   
 end
 
---[[function CreateSimpleObstruction(flObjectRadius, flObjectHeight,vObjectCenter)
-  local scale = 1
-  local l = 128 * scale
-  local h = 96 * scale
+function DestroyPlatform(hPlatform,flDuration)
+  if not platform then return end
+  local fadeTime = 5 -- 1 Divided by this
+  local blinks = 5 -- Should be uneven
+  local model = hPlatform:GetModelName()
+  local radius = hPlatform.radius
 
-  -- Table for storing the objects
-  local tab = {}
+  if not hPlatform.isDestructable then return end
 
-  local startingPoint = vObjectCenter - Vector(flObjectRadius,0,flObjectHeight)
-  -- Move it a bit because it's centered
-  startingPoint = startingPoint + Vector(l/2,0,0)
+  -- Do not interupt the platform movement, that doesn't matter
 
-  -- Get the lowest amount of blocks to fully fill the object
-  local num_blocks_height = math.ceil(flObjectHeight/h)
-  local height_distance = flObjectHeight/num_blocks_height
-  num_blocks_height = num_blocks_height * 2
-
-  local num_blocks_length = math.ceil(flObjectRadius/l)
-  local length_distance = flObjectRadius/num_blocks_length
-  num_blocks_length = num_blocks_length * 2
-
-  for i = 0,num_blocks_height-1 do
-    for j = 0,num_blocks_length-1 do
-      local point = startingPoint + Vector(j*length_distance,0,i*height_distance)
-      local obs = SpawnEntityFromTableSynchronous("point_simple_obstruction", {origin = point})
-      for k,v in pairs(obs:GetBounds()) do
-        print(k,v)
+  -- Make it blink a few times before really being gone
+  local hide = 1
+  Timers:CreateTimer(1/fadeTime,function()
+    if hide <= blinks then
+      if math.fmod(hide,2) == 1 then
+        hPlatform:SetModel("")
+      else
+        hPlatform:SetModel(model)
       end
-      obs:SetEnabled(true,true)
-      table.insert(tab, obs)
+      hide = hide +1
+      return 1/fadeTime
+    else
+      hPlatform.radius = 0
+      return nil
+    end
+  end)
+
+  
+
+  if flDuration then
+    Timers:CreateTimer(flDuration,function()
+      hPlatform:SetModel(model)
+      hPlatform.radius = radius
+    end)
+  end
+end
+
+function FindNearestPlatform(vLocation)
+  -- Use the location to spot nearby platforms
+  for k,v in pairs(platform) do
+    local abs = v:GetAbsOrigin()
+    if abs.x - v.radius <= vLocation.x and abs.x + v.radius >= vLocation.x then
+      if abs.z - v.height <= vLocation.z and abs.z + v.height >= vLocation.z then
+        return v
+      end
     end
   end
-  return tab
-end]]
+end

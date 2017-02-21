@@ -683,7 +683,7 @@
        "06"
       {
         "var_type"      "FIELD_FLOAT"
-        "speed_increase"    "0.06"
+        "speed_increase"    "0.04"
       }
        "07"
       {
@@ -891,6 +891,7 @@
     {
       "particle" "particles/items_fx/cyclone.vpcf"
       "soundfile" "soundevents/game_sounds_heroes/game_sounds_earthshaker.vsndevts"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_tiny.vsndevts"
     }
     "AbilitySpecial"
     {
@@ -1257,7 +1258,7 @@
     "ScriptFile"            "abilities/tinker.lua"
     "AbilityCastPoint"        "0.6"
     
-    "AbilityCooldown"       "6"
+    "AbilityCooldown"       "12"
     "precache"
     {
       "particle" "particles/items_fx/cyclone.vpcf"
@@ -1307,7 +1308,7 @@
     "ScriptFile"            "abilities/tinker.lua"
     "AbilityCastPoint"        "0.5"
     
-    "AbilityCooldown"       "7"
+    "AbilityCooldown"       "12"
     "precache"
     {
       "particle" "particles/items_fx/cyclone.vpcf"
@@ -1356,7 +1357,7 @@
     "ScriptFile"            "abilities/tinker.lua"
     "AbilityCastPoint"        "0.3"
     
-    "AbilityCooldown"       "4"
+    "AbilityCooldown"       "2"
     "precache"
     {
       "particle" "particles/items_fx/blink_dagger_start.vpcf"
@@ -1387,7 +1388,7 @@
     "ScriptFile"            "abilities/tinker.lua"
     "AbilityCastPoint"        "0.8"
     
-    "AbilityCooldown"       "8"
+    "AbilityCooldown"       "12"
     "precache"
     {
       "particle" "particles/items_fx/cyclone.vpcf"
@@ -1501,7 +1502,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"    "200"
+        "radius"    "300"
       }
       "03"
       {
@@ -1599,7 +1600,7 @@
       "05"
       {
         "var_type"      "FIELD_INTEGER"
-        "push"    "3"
+        "push"    "2.5"
       }
       "02"
       {

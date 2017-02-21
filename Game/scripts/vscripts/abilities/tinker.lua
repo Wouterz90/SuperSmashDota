@@ -115,6 +115,7 @@ function tinker_special_side:OnSpellStart()
         ability = ability,
       }
       ApplyDamage(damageTable)
+      caster:EmitSound("Hero_Tinker.LaserImpact")
     end,
     OnFinish = function(self,unit)
       if not unit.GetUnitName then
@@ -231,62 +232,105 @@ end
 function tinker_special_mid:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
-
-  caster:EmitSound("Hero_Tinker.Heat-Seeking_Missile")
-
-  self.targets = {}
-  self.projectiles = {}
   local ability = self
+  caster:EmitSound("Hero_Tinker.Heat-Seeking_Missile")
+  self.targets = {}
+  
   local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),radius)
 
   self.targets[1] = units[1]
   self.targets[2] = units[2]
-  if ability.targets[1] then
-    local projTable = {
-      Target = self.targets[1],
-      Source = caster,
-      Ability = ability,
-      EffectName = "particles/units/heroes/hero_tinker/tinker_missile.vpcf",
-      bDodgeable = false,
-      bProvidesVision = true,
-      iMoveSpeed = ability:GetSpecialValueFor("projectile_speed"), 
-      vSpawnOrigin = caster:GetAbsOrigin(),
-    }
-    ProjectileManager:CreateTrackingProjectile(projTable)
+  if self.targets[1] then
     
+    local table =
+    {
+      hTarget = self.targets[1],
+      hCaster = caster,
+      iMoveSpeed = ability:GetSpecialValueFor("projectile_speed"),
+      iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_2,
+      EffectName = "particles/units/heroes/hero_tinker/tinker_missile.vpcf",
+      SoundName = "Hero_Tinker.Heat-Seeking_Missile.Impact",
+      hAbility = self,
+      flExpireTime = 4,
+      bDestroyOnGroundHit = true,
+      flRadius = 10,
+      DestructionEffectName = "particles/units/heroes/hero_tinker/tinker_missile_dud.vpcf",
+      HitEffectNme = "particles/units/heroes/hero_gyrocopter/gyro_guided_missile_explosion.vpcf",
+      OnProjectileHitUnit = function(params, projectileID)
+        local particle = ParticleManager:CreateParticle(params.HitEffectNme, PATTACH_ABSORIGIN_FOLLOW, params.hTarget) 
+          ParticleManager:SetParticleControl( particle, 0, projectileID.projectile ) 
+          ParticleManager:SetParticleControlEnt(particle, 1, params.hTarget, PATTACH_POINT_FOLLOW, "attach_hitloc", projectileID.projectile , true)
+          Timers:CreateTimer(1,function()
+            ParticleManager:DestroyParticle(particle,false)
+            ParticleManager:ReleaseParticleIndex(particle)
+          end)
+        local damageTable = {
+          victim = params.hTarget,
+          attacker = params.hCaster,
+          damage =  params.hAbility:GetSpecialValueFor("damage"),
+          damage_type = --[[params.hAbility:GetAbilityDamageType() or]] DAMAGE_TYPE_MAGICAL,
+          ability = params.hAbility,
+        }
+        ApplyDamage(damageTable)
+      end,
+      OnProjectileDestroy = function(params, projectileID) 
+          local particle = ParticleManager:CreateParticle(params.DestructionEffectName, PATTACH_ABSORIGIN_FOLLOW, params.hCaster) 
+          ParticleManager:SetParticleControl( particle, 0, projectileID.projectile ) 
+          ParticleManager:SetParticleControlEnt(particle, 1, params.hTarget, PATTACH_POINT_FOLLOW, "attach_hitloc", projectileID.projectile, true)
+          Timers:CreateTimer(1,function()
+            ParticleManager:DestroyParticle(particle,false)
+            ParticleManager:ReleaseParticleIndex(particle)
+          end)
+      end,
+    }
+    TrackingProjectiles:Projectile(table)
   end
 
   if ability.targets[2] then
-    local projTable = {
-      Target = self.targets[2],
-      Source = caster,
-      Ability = ability,
+    local table =
+    {
+      hTarget = self.targets[2],
+      hCaster = caster,
+      iMoveSpeed = ability:GetSpecialValueFor("projectile_speed"),
+      iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_2,
       EffectName = "particles/units/heroes/hero_tinker/tinker_missile.vpcf",
-      bDodgeable = false,
-      bProvidesVision = true,
-      iMoveSpeed = ability:GetSpecialValueFor("projectile_speed"), 
-      vSpawnOrigin = caster:GetAbsOrigin()
+      SoundName = "Hero_Tinker.Heat-Seeking_Missile.Impact",
+      hAbility = self,
+      flExpireTime = 4,
+      bDestroyOnGroundHit = true,
+      flRadius = 10,
+      DestructionEffectName = "particles/units/heroes/hero_tinker/tinker_missile_dud.vpcf",
+      HitEffectNme = "particles/units/heroes/hero_gyrocopter/gyro_guided_missile_explosion.vpcf",
+      OnProjectileHitUnit = function(params, projectileID)
+        local particle = ParticleManager:CreateParticle(params.HitEffectNme, PATTACH_ABSORIGIN_FOLLOW, params.hTarget) 
+          ParticleManager:SetParticleControl( particle, 0, projectileID.projectile ) 
+          ParticleManager:SetParticleControlEnt(particle, 1, params.hTarget, PATTACH_POINT_FOLLOW, "attach_hitloc", projectileID.projectile + Vector(0,0,100), true)
+          Timers:CreateTimer(1,function()
+            ParticleManager:DestroyParticle(particle,false)
+            ParticleManager:ReleaseParticleIndex(particle)
+          end)
+        local damageTable = {
+          victim = params.hTarget,
+          attacker = params.hCaster,
+          damage =  params.hAbility:GetSpecialValueFor("damage"),
+          damage_type = --[[params.hAbility:GetAbilityDamageType() or]] DAMAGE_TYPE_MAGICAL,
+          ability = params.hAbility,
+        }
+        ApplyDamage(damageTable)
+      end,
+      OnProjectileDestroy = function(params, projectileID) 
+          local particle = ParticleManager:CreateParticle(params.DestructionEffectName, PATTACH_ABSORIGIN_FOLLOW, params.hCaster) 
+          ParticleManager:SetParticleControl( particle, 0, projectileID.projectile ) 
+          ParticleManager:SetParticleControlEnt(particle, 1, params.hTarget, PATTACH_POINT_FOLLOW, "attach_hitloc", projectileID.projectile , true)
+          Timers:CreateTimer(1,function()
+            ParticleManager:DestroyParticle(particle,false)
+            ParticleManager:ReleaseParticleIndex(particle)
+          end)
+      end,
+
+      
     }
-    ProjectileManager:CreateTrackingProjectile(projTable)
+    TrackingProjectiles:Projectile(table)
   end
-end
-
-function tinker_special_mid:OnProjectileHit(hTarget,vLocation)
-  local caster = self:GetCaster()
-  local ability = self
-
-  -- Add a little delay because the rockets don't disappear as soon as this happens :s
-  Timers:CreateTimer(0.1,function()
-    if IsValidEntity(hTarget) then
-      local damageTable = {
-        victim = hTarget,
-        attacker = caster,
-        damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-        damage_type = DAMAGE_TYPE_MAGICAL,
-        ability = ability,
-      }
-      ApplyDamage(damageTable)
-    end
-  end)
 end

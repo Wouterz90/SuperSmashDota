@@ -5,7 +5,7 @@ LinkLuaModifier("modifier_left","movement.lua",LUA_MODIFIER_MOTION_HORIZONTAL)
 LinkLuaModifier("modifier_right","movement.lua",LUA_MODIFIER_MOTION_HORIZONTAL)
 -- Basic control modifier
 LinkLuaModifier("modifier_basic","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
-LinkLuaModifier("modifier_push","modifiers.lua",LUA_MODIFIER_MOTION_BOTH)
+
 
 
 LinkLuaModifier("modifier_smash_root","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
@@ -117,7 +117,7 @@ end
 
 function modifier_basic:OnIntervalThink()
   
-  --[[if not GridNav:IsTraversable(self:GetParent():GetAbsOrigin()) or GridNav:IsBlocked(self:GetParent():GetAbsOrigin()) night_stalker_hunter_in_the_night
+  --[[if not GridNav:IsTraversable(self:GetParent():GetAbsOrigin()) or GridNav:IsBlocked(self:GetParent():GetAbsOrigin()) then
     print(GridNav:IsTraversable(self:GetParent():GetAbsOrigin()))
     PauseGame(true)
   end]]
@@ -132,7 +132,7 @@ function modifier_basic:OnIntervalThink()
     self:GetParent():ForceKill(false)
   end
   -- Make sure gravity works when we are not on a platform
-  if not self:GetParent():isOnPlatform() then
+  if not self:GetParent():isOnPlatform() and not self:GetParent():HasModifier("modifier_jump") then
     self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
   
@@ -147,25 +147,3 @@ function modifier_basic:CheckState()
   return funcs
 end
 
-modifier_push = class({})
-
-function modifier_push:OnCreated()
-  if IsServer() then
-    self:StartIntervalThink(1/32)
-    local unit = self:GetParent()
-    local distance = unit.pushDistance
-    local duration = unit.pushDistance /push.flPushSpeed
-    self:SetDuration(duration,true)
-  end
-end
-
-function modifier_push:OnIntervalThink()
-  local unit = self:GetParent()
-  local distance = unit.pushDistance /32
-
-  -- Prevent the unit from going through a platform, it bounces back with half power
-  if unit:isOnPlatform() and unit.pushDirection.z < 0 then
-    unit.pushDirection = Vector(unit.pushDirection.x,0,unit.pushDirection.z * -0.5)
-  end
-  unit:SetAbsOrigin(unit:GetAbsOrigin() + unit.pushDirection * distance)
-end

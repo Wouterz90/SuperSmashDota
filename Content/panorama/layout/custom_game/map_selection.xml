@@ -1,0 +1,34 @@
+<root>
+  <styles>
+    <include src="s2r://panorama/styles/dotastyles.vcss_c" />
+	<include src="file://{resources}/styles/custom_game/map_selection.css" />
+  </styles>
+  <scripts>
+     <include src="file://{resources}/scripts/custom_game/map_selection.js" />
+  </scripts>
+  <!--This shows the map in a list
+  --> 
+  <Panel class="Map_Selection" hittest="true">
+    <Panel id="Map_Selection_Main" class="Map_Selection_Main" hittest="false" visible="false">
+		<Panel id="Map_Selection_HeaderBox" class="Map_Selection_HeaderBox">
+			<Panel id="Map_Selection_Header" class="Map_Selection_Header">
+				<Label text="#ChooseMap"/>
+			</Panel>
+		
+		<Panel id="Map_Selection_List_Container" class="Map_Selection_List_Container">
+			<Panel id="Map_Selection_List_Item_1" class="Map_Selection_List_Item">
+				<Label text="#MapSmallName">
+				<Label text="#MapSmallDescription">
+			</Panel>
+			<Panel id="Map_Selection_List_Item_2" class="Map_Selection_List_Item">
+				<Label text="#MapLargeName">
+				<Label text="#MapLargeDescription">
+			</Panel>
+			<Panel id="Map_Selection_List_Item_2" class="Map_Selection_List_Item">
+				<Label text="#MapLargeName">
+				<Label text="#MapLargeDescription">
+			</Panel>
+		</Panel>
+    </Panel>
+  </Panel>
+</root>

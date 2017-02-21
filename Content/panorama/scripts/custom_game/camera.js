@@ -4,7 +4,8 @@ var colorPlayer2 = "blue"
 var colorPlayer3 = "green"
 var colorPlayer4 = "yellow"
 
-function CameraSettings(){ 
+function CameraSettings()
+{ 
   // Do camera stuff
   GameUI.SetCameraYaw( 0 ); 
   GameUI.SetCameraPitchMin(10);
@@ -14,13 +15,16 @@ function CameraSettings(){
   var hero = PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"hero");
   //$.Msg(hero)
   //$.Msg(PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes"))
-  if (hero && PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes") >= 0) { 
+  if (hero && PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes") >= 0) 
+  { 
     GameUI.SetCameraTarget(hero);
-    if (Entities.GetAbsOrigin(hero)) { 
+    if (Entities.GetAbsOrigin(hero)) 
+	{ 
       GameUI.SetCameraLookAtPositionHeightOffset(Entities.GetAbsOrigin(hero)[2]-100);
     }
   }
-  else { 
+  else 
+  { 
     GameUI.SetCameraTarget(-1)
     GameUI.SetCameraLookAtPositionHeightOffset(700);
   }
@@ -49,107 +53,156 @@ function CameraSettings(){
 
 
   // Player 1
-  if (PlayerTables.GetTableValue(0,"hero") > 0) {
+  if (PlayerTables.GetTableValue(0,"hero") > 0) 
+  {
     var hero = PlayerTables.GetTableValue(0,"hero");
-    if (Entities.IsAlive(hero)){
+    if (Entities.IsAlive(hero))
+	{
       var player_1_hp = Entities.GetMaxHealth(hero) - Entities.GetHealth(hero)
-    } else {
+    } 
+	else 
+	{
       var player_1_hp = 0
     }
     Player1_Health.text = player_1_hp;
 
-    if (PlayerTables.GetTableValue(0, "lifes") !== null)  {
+    if (PlayerTables.GetTableValue(0, "lifes") !== null)  
+	{
     var player_1_life = (PlayerTables.GetTableValue(0, "lifes")).toString()
     
     Player1_Lifes.text = player_1_life.concat("x")
     }  
-    // Player 1 is always red
-    Player1_Health.style.color = colorPlayer1
-    Player1_Health.style.opacity = 0.75
+    if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+	{
+	  Player1_Health.style.color = colorPlayer1
+	}
+	else if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
+	{
+	  Player1_Health.style.color = colorPlayer2
+	}
+	else if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
+	{
+	  Player1_Health.style.color = colorPlayer3
+	}
+	else if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
+	{
+	  Player1_Health.style.color = colorPlayer4
+	}
+	Player1_Health.style.opacity = 0.75
 
   }
   // Player 2
-  if (PlayerTables.GetTableValue(1,"hero") > 0) {
+  if (PlayerTables.GetTableValue(1,"hero") > 0) 
+  {
     var hero = PlayerTables.GetTableValue(1,"hero");
-    if (Entities.IsAlive(hero)){
+    if (Entities.IsAlive(hero))
+	{
       var player_2_hp = Entities.GetMaxHealth(hero) - Entities.GetHealth(hero)
-    } else {
+    } 
+	else 
+	{
       var player_2_hp = 1
     }
     Player2_Health.text = player_2_hp;
-    if (PlayerTables.GetTableValue(1, "lifes") !== null)  {
+    if (PlayerTables.GetTableValue(1, "lifes") !== null)  
+	{
     var player_2_life = (PlayerTables.GetTableValue(1, "lifes")).toString()
     
     Player2_Lifes.text = player_2_life.concat("x")
-    }  
-    //Set the color based on team
+      
     if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-    {
-      Player2_Health.style.color = colorPlayer1
-    }
-    else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-    {
-      Player2_Health.style.color = colorPlayer2
-    }
-    Player2_Health.style.opacity = 0.75
+		{
+		  Player2_Health.style.color = colorPlayer1
+		}
+		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
+		{
+		  Player2_Health.style.color = colorPlayer2
+		}
+		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
+		{
+		  Player2_Health.style.color = colorPlayer3
+		}
+		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
+		{
+		  Player2_Health.style.color = colorPlayer4
+		}
+		Player2_Health.style.opacity = 0.75
+	}
 
   }
   // Player 3
-  if (PlayerTables.GetTableValue(2,"hero") > 0) {
+  if (PlayerTables.GetTableValue(2,"hero") > 0) 
+  {
     var hero = PlayerTables.GetTableValue(2,"hero");
-    if (Entities.IsAlive(hero)){
+    if (Entities.IsAlive(hero))
+	{
       var player_3_hp = Entities.GetMaxHealth(hero) - Entities.GetHealth(hero)
-    } else {
+    } 
+	else 
+	{
       var player_3_hp = 0
     }
     Player3_Health.text = player_3_hp;
-    if (PlayerTables.GetTableValue(2, "lifes") !== null)  {
-    var player_3_life = (PlayerTables.GetTableValue(2, "lifes")).toString()
-    
-    Player3_Lifes.text = player_3_life.concat("x")
-    //Set the color based on team
-    if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-    {
-      Player3_Health.style.color = colorPlayer1
-    }
-    else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-    {
-      Player3_Health.style.color = colorPlayer2
-    }
-    else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
-    {
-      Player3_Health.style.color = colorPlayer3
-    }
-    Player3_Health.style.opacity = 0.75
-    
+    if (PlayerTables.GetTableValue(2, "lifes") !== null)  
+	{
+		var player_3_life = (PlayerTables.GetTableValue(2, "lifes")).toString()
+		
+		Player3_Lifes.text = player_3_life.concat("x")
+		if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+		{
+		  Player3_Health.style.color = colorPlayer1
+		}
+		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
+		{
+		  Player3_Health.style.color = colorPlayer2
+		}
+		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
+		{
+		  Player3_Health.style.color = colorPlayer3
+		}
+		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
+		{
+		  Player3_Health.style.color = colorPlayer4
+		}
+		Player3_Health.style.opacity = 0.75
     }  
   }
   // Player 4
-  if (PlayerTables.GetTableValue(3,"hero") > 0) {
+  if (PlayerTables.GetTableValue(3,"hero") > 0) 
+  {
     var hero = PlayerTables.GetTableValue(3,"hero");
-    if (Entities.IsAlive(hero)){
+    if (Entities.IsAlive(hero))
+	{
       var player_4_hp = Entities.GetMaxHealth(hero) - Entities.GetHealth(hero)
-    } else {
+    } 
+	else 
+	{
       var player_4_hp = 0
     }
     Player3_Health.text = player_3_hp;
-    if (PlayerTables.GetTableValue(3, "lifes") !== null)  {
-    var player_4_life = (PlayerTables.GetTableValue(3, "lifes")).toString()
-    
-    Player4_Lifes.text = player_4_life.concat("x")
-    if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-    {
-      Player4_Health.style.color = colorPlayer1
-    }
-    else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-    {
-      Player4_Health.style.color = colorPlayer2
-    }
-    else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
-    {
-      Player4_Health.style.color = colorPlayer4
-    }
-    Player4_Health.style.opacity = 0.75
+    if (PlayerTables.GetTableValue(3, "lifes") !== null)  
+	{
+		var player_4_life = (PlayerTables.GetTableValue(3, "lifes")).toString()
+		
+		Player4_Lifes.text = player_4_life.concat("x")
+		if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+		{
+		  Player4_Health.style.color = colorPlayer1
+		}
+		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
+		{
+		  Player4_Health.style.color = colorPlayer2
+		}
+		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
+		{
+		  Player4_Health.style.color = colorPlayer3
+		}
+		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
+		{
+		  Player4_Health.style.color = colorPlayer4
+		}
+		Player4_Health.style.opacity = 0.75
+	
     }  
   }
   
@@ -171,7 +224,7 @@ function CancelCameraSettings(){
   rightbox.style.visibility = "collapse";
   bottombox.style.visibility = "collapse";
 
-
+	
 
   // Unlock the camera
   GameUI.SetCameraTarget(-1)
@@ -183,8 +236,10 @@ function CancelCameraSettings(){
 
 function CreatePlayerHeroAvatars()
 {
-  $.Schedule(1, function()
-  {
+  $.Schedule(2, function()
+  
+  {	
+	// Create the avatars in the bottom for the players
     var playerIDs = Game.GetAllPlayerIDs()     
     for (var i = 1; i < playerIDs.length +1; i++) 
     {
@@ -195,6 +250,13 @@ function CreatePlayerHeroAvatars()
       Player_Avatar.heroname = Entities.GetUnitName(hero);
       Player_Avatar.heroimagestyle = "portrait"
     }
+	var hero = Players.GetPlayerHeroEntityIndex(Players.GetLocalPlayer())
+	var str = Entities.GetUnitName(hero).substr(14)
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").abilityname = str.concat("_special_top")
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").abilityname = str.concat("_special_side")
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").abilityname = str.concat("_special_side")
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").abilityname = str.concat("_special_bottom")
+	
   })
 }
 

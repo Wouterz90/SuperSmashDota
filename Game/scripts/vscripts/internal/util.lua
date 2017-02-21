@@ -174,14 +174,9 @@ function FilterUnitsBasedOnHeight(tableUnits,vOrigin,flRadius)
   local units = {}
 
   for k,v in pairs (tableUnits) do
-    z = v:GetAbsOrigin().z
-    c = vOrigin.z
-    if math.abs(z-c) <= flRadius then
+    if (vOrigin-v:GetAbsOrigin()):Length() <= flRadius then
       table.insert(units,v)
     end
   end
   return units
 end
-
---function GetGroundPosition(vLocation,hNPC)
-  -- Get the height of the platform below

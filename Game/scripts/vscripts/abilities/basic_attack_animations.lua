@@ -23,7 +23,7 @@ attackAnimationBottom = {
   npc_dota_hero_earthshaker = ACT_DOTA_IDLE,
   npc_dota_hero_mirana = ACT_DOTA_CAST_ABILITY_2,
   npc_dota_hero_tinker = ACT_DOTA_CAST_ABILITY_1, -- ??
-  npc_dota_hero_rattletrap = ACT_DOTA_CAST2_STATUE,
+  npc_dota_hero_rattletrap = ACT_DOTA_CAST_ABILITY_2,
   npc_dota_hero_zuus = ACT_DOTA_CAST_ABILITY_1,  --??
 }
 

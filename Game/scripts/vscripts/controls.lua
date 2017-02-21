@@ -27,8 +27,11 @@ function control:KeyEvent(keys)
     if hero:HasModifier("modifier_smash_root") then
       return
     end
-    hero:RemoveModifierByName("modifier_jump")
-    hero:AddNewModifier(hero,nil,"modifier_jump",{duration=Laws.flJumpDuration})
+    if hero.jumps < 2 then
+      hero:RemoveModifierByName("modifier_jump")
+      --hero:RemoveModifierByName("modifier_drop")
+      hero:AddNewModifier(hero,nil,"modifier_jump",{duration=Laws.flJumpDuration})
+    end
   end
 
   -- left

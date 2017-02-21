@@ -19,6 +19,7 @@ require('libraries/worldpanels')
 --require('libraries/physics')
 -- This library can be used for advanced 3D projectile systems.
 require('libraries/projectiles')
+require('libraries/trackingprojectile')
 -- This library can be used for sending panorama notifications to the UIs of players/teams/everyone
 require('libraries/notifications')
 -- This library can be used for starting customized animations on units from lua
@@ -167,6 +168,7 @@ function GameMode:OnHeroInGame(hero)
     hero.amplify = 1
     hero.movespeedFactor = 1
     hero.attackspeedFactor = 1
+    hero.jumpfactor = 1
     -- Place the hero
     --hero:SetAbsOrigin(Vector(0,0,RandomInt(-500,500)))
     --PlayerResource:ReplaceHeroWith(hero:GetPlayerOwnerID(),hero:GetUnitName(),0,0)
@@ -217,16 +219,17 @@ function GameMode:OnNPCSpawned(keys)
         hero:RemoveNoDraw()
       end
       
+      hero:RemoveModifierByName("modifer_smash_stun")
       --print(hero:GetUnitName()..hero:GetPlayerOwnerID())
       if not hero.firstRespawn then
         if not CustomNetTables:GetTableValue("settings","nStartingLifes") then
-          CustomNetTables:SetTableValue("settings","nStartingLifes",{value = 5})
+          CustomNetTables:SetTableValue("settings","nStartingLifes",{value = 2})
         end 
         PlayerTables:CreateTable(tostring(hero:GetPlayerOwnerID()),{lifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value},true)
         PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()),"hero",hero:entindex())
         hero.firstRespawn = true  
       end
-      hero:SetAbsOrigin(Vector(RandomInt(-500,500),0,500))
+      hero:SetAbsOrigin(Vector(RandomInt(-platform[1].radius,platform[1].radius),0,600))
       hero.jumps = 0 
       hero:AddNewModifier(hero,nil,"modifier_jump",{duration=1})
       Timers:CreateTimer(1.5,function()
@@ -245,6 +248,11 @@ end
 function GameMode:OnGameInProgress()
 
   DebugPrint("[BAREBONES] The game has officially begun")
+  -- Allow the teams to have 2 players per team
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_GOODGUYS,2)
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_BADGUYS,2)
+
+  -- Statcollection stuff
   GameMode.flags = {
     version = SMASHVERSION,
     HeroSelection = CustomNetTables:GetTableValue("settings","HeroSelection").value,
@@ -252,6 +260,7 @@ function GameMode:OnGameInProgress()
     StartingLifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value,
     PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
   }
+
   statCollection:setFlags(GameMode.flags) 
   statCollection:sendStage2() 
   -- Set the format to ffa if there aren't 4 players
@@ -266,13 +275,22 @@ function GameMode:OnGameInProgress()
   
 end
 function GameMode:Reset()
-  --CustomGameEventManager:Send_ServerToAllClients("reset_camera",{})
-  -- This might have to change into round, counted from start
+  if not self.playersLeft then self.playersLeft = 0 end
+
+  -- Remove all the platforms
+  ClearPlatforms()
+
+  if PlayerResource:GetTeamPlayerCount() <= 1 and not IsInToolsMode() then
+    statCollection:submitRound(true)
+    DeclareWinningTeam(DOTA_TEAM_GOODGUYS)
+    return
+  end
+
   if not resetcount then resetcount = 0 end
   resetcount = resetcount +1
 
   if not CustomNetTables:GetTableValue("settings","nAmountOfRounds").value then
-    CustomNetTables:SetTableValue("settings","nAmountOfRounds",{value = "5"})
+    CustomNetTables:SetTableValue("settings","nAmountOfRounds",{value = "2"})
   end
   if tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) ~= -1 and resetcount >= tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) then 
     local score = 0
@@ -284,22 +302,27 @@ function GameMode:Reset()
         winner = PlayerResource:GetTeam(i)
       end
     end
+    statCollection:submitRound(true)
     DeclareWinningTeam(winner)
     
-    statCollection:submitRound(true)
   else
     statCollection:submitRound(false)
+    spawnPlatform()
   end
   
+  -- Map pick stuff -- Before or after hero pick?
+  --[[mapPickTimerStarted = false
+  GameMode:MapPickStarted()
   
-  
+  ]]
+
+  -- Hero pick stuff
   GameMode.heroesPicked = nil
   GameMode.heroesPicked = {}
   GameMode.playersPicked = nil
   GameMode.playersPicked = {}
   
   heroPickTimerStarted = false
-  
   GameMode:HeroPickStarted()
 
 end
@@ -326,6 +349,7 @@ function GameMode:InitGameMode()
   DebugPrint('[BAREBONES] Starting to load Barebones gamemode...')
   GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(GameMode,"FilterExecuteOrder"),self)
   GameRules:GetGameModeEntity():SetDamageFilter(Dynamic_Wrap(push,"DamageFilter"),self)
+  GameRules:GetGameModeEntity():SetModifierGainedFilter(Dynamic_Wrap(GameMode,"ModifierGainedFilter"),self)
 
   --Listening to events
   CustomGameEventManager:RegisterListener("key_event", Dynamic_Wrap(control, 'KeyEvent'))
@@ -338,6 +362,7 @@ function GameMode:InitGameMode()
   -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
   Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
   Convars:RegisterCommand( "reload_kv", Dynamic_Wrap(GameMode, 'Reload_KeyValues'), "A console command example", FCVAR_CHEAT )
+
 
   DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
 end
@@ -383,11 +408,13 @@ function GameMode:SetupGame()
   Laws = {
 
     
-    flJumpSpeed = 30,
+    flJumpSpeed = 17.5,
     flJumpDuration = 0.5,
-    flDropSpeed = 20,
+    flDropSpeed = 25,
     flMove = 20,
 
+    flPushDeceleration = 0.5, -- 0.5 per second
+    flPushDeceleration = math.pow(0.5,1/32), -- Converting the number to 1/32th
     flMinDamage = 4,
     flMaxDamage = 8,
     flAttackRange = 75,
@@ -402,7 +429,7 @@ function GameMode:SetupGame()
   Rules = {
     -- Things that should be changable
     nStartingLifes= 0, -- Starting Lifes
-    nAmountOfRounds = 5, -- How many rounds are we playing?
+    nAmountOfRounds = 2, -- How many rounds are we playing?
 
     -- Radio options
     MapSelection = 1, -- Should the maps be switched
@@ -438,7 +465,7 @@ function GameMode:OnHeroDeath(hero)
 
       -- Find the player with lives left
       for i=0, PlayerResource:GetTeamPlayerCount() -1 do
-        if PlayerTables:GetTableValue(tostring(i),"lifes") >= 0 then
+        if tonumber(  PlayerTables:GetTableValue(tostring(i),"lifes")) >= 0 then
           -- Use assists to track score for now
           GameRules.Winner = PlayerResource:GetTeam(i)
           PlayerResource:IncrementAssists(i,i)
@@ -475,7 +502,106 @@ function GameMode:OnHeroDeath(hero)
 
 
   -- Remove ourselves from any platform
-  for k,v in pairs(platform) do
-    v.unitsOnPlatform[hero] = nil
+  if platform then
+    for k,v in pairs(platform) do
+      v.unitsOnPlatform[hero] = nil
+    end
   end
+end
+
+function GameMode:OnDisconnect(keys)
+  DebugPrint('[BAREBONES] Player Disconnected ' .. tostring(keys.userid))
+  DebugPrintTable(keys)
+
+  local name = keys.name
+  local networkid = keys.networkid
+  local reason = keys.reason
+  local userid = keys.PlayerID
+
+  Timers:CreateTimer(1,function()
+    local hero = PlayerResource:GetSelectedHeroEntity(userid)
+    if not hero:IsAlive() then
+      hero:RespawnHero(false,false,false)
+    end
+    
+    PlayerTables:SetTableValue(tostring(userid),"lifes",0)
+    hero:ForceKill(false)
+
+    if not self.playersLeft then
+      self.playersLeft = 1
+    else
+      self.playersLeft = self.playersLeft+1
+    end
+  end)
+end
+  --[[
+  local team = PlayerResource:GetTeam(userid)
+  -- Check if the team still has players
+  print("teams in leaver team "..PlayerResource:GetPlayerCountForTeam(team))
+  if PlayerResource:GetPlayerCountForTeam(team) > 0 then
+    return
+  end
+
+  if CustomNetTables:GetTableValue("settings","Format").value ~= "2" then -- not 2v2
+    -- Here the team has no more players left
+    if PlayerResource:GetTeamPlayerCount() <= 1 then
+      DeclareWinningTeam(FindTheOnlyConnectedTeam())
+      return
+    else
+      return
+    end
+  else -- Game is 2v2
+    DeclareWinningTeam(FindTheOnlyConnectedTeam())
+    return
+  end
+end
+]]
+-- Brutally stolen from CIA
+function FindTheOnlyConnectedTeam()
+  local teams = {}
+  local teamCount = 0
+  local playerCount = 0
+
+  for i=0,3 do
+    local con = PlayerResource:GetConnectionState(i)
+
+    if con and con ~= DOTA_CONNECTION_STATE_ABANDONED and con ~= DOTA_CONNECTION_STATE_DISCONNECTED then
+        teams[player.team] = true
+    end
+
+    playerCount = playerCount + 1
+  end
+
+  local connectedTeamCount = 0
+  local connectedTeam = nil
+
+  for team, _ in pairs(teams) do
+    connectedTeamCount = connectedTeamCount + 1
+    connectedTeam = team
+  end
+
+  if playerCount > 1 and connectedTeamCount == 1 then
+    return connectedTeam
+  end
+end
+
+function GameMode:ModifierGainedFilter(keys)
+  -- If the same modifier would be applied, check the duration so that the longest one counts.
+  local modifierCasterIndex = keys["entindex_caster_const"]
+  local caster = EntIndexToHScript(modifierCasterIndex)
+  local modifierAbilityIndex = keys["entindex_ability_const"]
+  if modifierAbilityIndex then
+    local modifierAbility = EntIndexToHScript(modifierAbilityIndex)
+  end
+  local modifierDuration = keys["duration"]
+  local modifierTargetIndex =  keys["entindex_parent_const"]
+  local target = EntIndexToHScript(modifierTargetIndex)
+  local modifierName = keys["name_const"]
+
+  if target:HasModifier(modifierName) then
+    if target:FindModifierByName(modifierName):GetRemainingTime() > modifierDuration then
+      keys["duration"] = target:FindModifierByName(modifierName):GetRemainingTime()
+    end
+  end
+  return true
 end

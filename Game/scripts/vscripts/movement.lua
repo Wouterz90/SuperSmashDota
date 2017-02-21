@@ -111,7 +111,7 @@ function modifier_jump:OnIntervalThink()
   if self:GetParent():isUnderPlatform() and self:GetCaster():HasModifier("modifier_basic") then return end
   --
   local vec = self:GetParent():GetAbsOrigin()
-  local z = vec[3] + Laws.flJumpSpeed
+  local z = vec[3] + Laws.flJumpSpeed * self:GetParent().jumpfactor
   vec = Vector(vec[1],vec[2],z)
   self:GetParent():SetAbsOrigin(vec)
 end
@@ -142,14 +142,34 @@ function modifier_drop:OnIntervalThink()
   local vec = self:GetParent():GetAbsOrigin()
   local z = vec[3] - Laws.flDropSpeed
   vec = Vector(vec[1],vec[2],z)
-  if (  self:GetParent():isOnPlatform() and not self:GetParent().bUnitUsedDrop) or platform[--[[#platform]]1].unitsOnPlatform[self:GetParent()] then
-    self:GetParent().jumps = 0
-    self:Destroy()
-  else
+  local bCanDrop = true
+  local my_platform
+  for k,v in pairs(platform) do
+    if v.unitsOnPlatform[self:GetParent()] then
+      my_platform = v
+      bCanDrop = v.canDropThrough
+      break
+    end
+  end
+  for k,v in pairs(jumpModifiers) do
+    if self:GetParent():HasModifier(k) then
+      self:Destroy()
+      return
+    end
+  end
+  if not self:GetParent():isOnPlatform() or self:GetParent().bUnitUsedDrop and bCanDrop then 
     if not self:GetParent():HasModifier("modifier_animation") then
       StartAnimation(self:GetCaster(), {duration=0.5, activity=ACT_DOTA_FLAIL, rate=1})
     end
     self:GetParent():SetAbsOrigin(vec)
-    --self:GetParent().bUnitUsedDrop = nil
+  else
+    self:GetParent().jumps = 0
+    self:Destroy()
   end
 end
+
+jumpModifiers = {
+  ["modifier_mirana_leap_jump"] = true,
+  ["modifier_earthshaker_jump"] = true,
+  ["modifier_jump"] = true,
+}

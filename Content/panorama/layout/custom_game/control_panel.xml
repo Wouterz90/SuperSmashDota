@@ -4,7 +4,12 @@
     <include src="file://{resources}/styles/control_panel.css" />
     <include src="file://{resources}/styles/health_lives_display.css" />
   </styles>
+  
   <Panel class="MainPanel" hittest="false">
+	<DOTAAbilityImage id="Mainspecial_top" class="TopIcon" abilityname=""/>
+	<DOTAAbilityImage id="Mainspecial_left" class="RightIcon" abilityname=""/>
+	<DOTAAbilityImage id="Mainspecial_right" class="LeftIcon" abilityname=""/>
+	<DOTAAbilityImage id="Mainspecial_bottom" class="BottomIcon" abilityname=""/>
     <Panel id="MainPanel" class="MainPanel" hittest="false">
       <Panel id= "TopPanelBox" class="TopPanelBox" hittest="true">
       </Panel>  

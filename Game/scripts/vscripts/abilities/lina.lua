@@ -190,12 +190,18 @@ function lina_special_mid:OnSpellStart()
   Timers:CreateTimer(cast_delay,function()
     -- Look for highest platform with the location to land the lsa on
     
+    local plat
     local z
     for i=#platform,1,-1 do
       if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
         z = platform[i]:GetAbsOrigin().z + platform[i].height
+        plat = platform[i]
         break
       end
+    end
+      
+    if plat then
+      DestroyPlatform(plat,10)
     end
     
     if not z then z=0 end
@@ -266,7 +272,7 @@ function lina_special_bottom:OnSpellStart()
       bTreeFullCollision = false,
       WallBehavior = PROJECTILES_NOTHING,
       GroundBehavior = PROJECTILES_FOLLOW,
-      fGroundOffset = 0,
+      fGroundOffset = 200,
       nChangeMax = 1,
       bRecreateOnChange = true,
       bZCheck = true,

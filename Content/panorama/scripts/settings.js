@@ -22,7 +22,7 @@ temppanel.FindChild("UnassignedPlayerPanel").style.opacity = 1;
 
 //Game.SetTeamSelectionLocked( true )
 
-var max_level = 15;
+var max_level = 8;
 var min_level = 0;
 function ValueChange(name, amount)
 {

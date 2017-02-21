@@ -45,8 +45,8 @@ function mirana_special_mid:OnSpellStart()
       --vSpawnOrigin = caster:GetAbsOrigin(),
       vSpawnOrigin = Vector(v:GetAbsOrigin().x,0,2500),
       fDistance = 4000,
-      fStartRadius = self:GetSpecialValueFor("radius"),
-      fEndRadius = self:GetSpecialValueFor("radius"),
+      fStartRadius = self:GetSpecialValueFor("star_radius"),
+      fEndRadius = self:GetSpecialValueFor("star_radius"),
       Source = caster,
       fExpireTime = 8,
       vVelocity = Vector(0,0,-1) * self:GetSpecialValueFor("drop_speed"), -- RandomVector(1000),
@@ -85,12 +85,19 @@ function mirana_special_mid:OnSpellStart()
 
         caster:EmitSound("Ability.StarfallImpact")
       end,
+      OnGroundHit = function(self,loc)
+        local plat = FindNearestPlatform(loc)
+        if plat then
+          DestroyPlatform(plat,10)
+        end
+      end,
     }
     Projectiles:CreateProjectile(projectile)
 
+
     Timers:CreateTimer(0.5,function()
       local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-      
+      local vSpOrigin = Vector(units[1]:GetAbsOrigin().x,0,2500)
       -- Not filtering for height
       local projectile = {
         --EffectName = "particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf",
@@ -98,10 +105,10 @@ function mirana_special_mid:OnSpellStart()
         --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
         --EeffectName = "",
         --vSpawnOrigin = caster:GetAbsOrigin(),
-        vSpawnOrigin = Vector(units[1]:GetAbsOrigin().x,0,2500),
+        vSpawnOrigin = vSpOrigin,
         fDistance = 4000,
-        fStartRadius = self:GetSpecialValueFor("radius"),
-        fEndRadius = self:GetSpecialValueFor("radius"),
+        fStartRadius = self:GetSpecialValueFor("star_radius"),
+        fEndRadius = self:GetSpecialValueFor("star_radius"),
         Source = caster,
         fExpireTime = 8,
         vVelocity = Vector(0,0,-1) * self:GetSpecialValueFor("drop_speed"), -- RandomVector(1000),
@@ -139,6 +146,12 @@ function mirana_special_mid:OnSpellStart()
           ApplyDamage(damageTable)
           caster:EmitSound("Ability.StarfallImpact")
         end,
+        OnGroundHit = function(self,loc)
+        local plat = FindNearestPlatform(loc)
+        if plat then
+          DestroyPlatform(plat,10)
+        end
+      end,
       }
       if IsValidEntity(units[1]) then
         Projectiles:CreateProjectile(projectile)
@@ -288,7 +301,7 @@ function mirana_special_side:OnSpellStart()
       TreeBehavior = PROJECTILES_NOTHING,
       bCutTrees = false,
       bTreeFullCollision = false,
-      WallBehavior = PROJECTILES_NOTHING,
+      WallBehavior = PROJECTILES_DESTROY,
       GroundBehavior = PROJECTILES_NOTHING,
       fGroundOffset = 0,
       nChangeMax = 1,

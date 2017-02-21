@@ -1,0 +1,84 @@
+.Map_Selection
+{
+  width:100%;
+  height: 100%;
+  flow-children: none;
+  z-index: 2;
+
+}
+.Map_Selection_Main
+{
+  width:100%;
+  height: 100%;
+  margin-right: 0%;
+  margin-top: 0%; 
+  background-color: #0d1c22ff, gradient( radial, 100% -0%, 100px -40px, 320% 270%, from( #3a464bff ), color-stop( 0.23, #0d1c22ff ), to( #0d1c22ff ) );
+  flow-children: right;
+  opacity: 1;
+  visibility: visible;
+}
+.Map_Selection_HeaderBox
+{
+  horizontal-align: center;
+  background-color: black;
+  border-radius: 25px;
+  opacity: 0.5;
+  margin-top: 10%;
+}
+.Map_Selection_Header
+{   
+  horizontal-align: center;
+  margin-bottom: 2%;
+  margin-top: 2%;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+.Map_Selection_Header Label,
+{   
+  font-size: 90px;
+  font-family: Impact;
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 2px 2px black;
+}
+
+.Map_Selection_List_Container
+{ 
+  margin-left:20px;
+  margin-top: 10px;
+  margin-right:20px;
+  margin-bottom:5px;
+  width:100%;
+  height: fit-children;
+  horizontal-align:center;
+  border-radius: 25px;
+  background-color: #0d1c22ff;
+  opacity: 0.3;
+  
+}
+.Map_Selection_List_Item
+{ 
+  margin-left:20px;
+  margin-top: 10px;
+  margin-right:20px;
+  margin-bottom:5px;
+  width:90%;
+  height: fit-children;
+  horizontal-align:center;
+  border-radius: 25px;
+  background-color: #0d1c22ff;
+  opacity: 0.3;
+  
+}
+.Map_Selection_List_Item Label,
+{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 22px;
+  margin-right:22px;
+  font-size: 22px;
+  color:white;
+  opacity: 1;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+}

@@ -235,14 +235,19 @@ function zuus_special_mid:OnSpellStart()
   --caster:EmitSound("Ability.LightStrikeArray")
 
   -- Look for highest platform with the location to land the spell on 
+  local plat
   local z
   for i=#platform,1,-1 do
     if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
       z = platform[i]:GetAbsOrigin().z + platform[i].height
+      plat = platform[i]
       break
     end
   end
     
+  if plat then
+    DestroyPlatform(plat,10)
+  end
 
   if not z then z=0 end
 
@@ -312,12 +317,18 @@ function zuus_special_bottom:OnSpellStart()
       --caster:EmitSound("Ability.LightStrikeArray")
 
       -- Look for highest platform with the location to land the spell on 
+      local plat
       local z
       for i=#platform,1,-1 do
         if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
           z = platform[i]:GetAbsOrigin().z + platform[i].height
+          plat = platform[i]
           break
         end
+      end
+        
+      if plat then
+        DestroyPlatform(plat,10)
       end
         
       if not z then z=0 end

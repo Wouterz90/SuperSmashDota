@@ -439,7 +439,7 @@ function Projectiles:CreateProjectile(projectile)
           end
         end
 
-        local navConnect = not GridNav:IsTraversable(subpos) or GridNav:IsBlocked(subpos) -- GNV connect
+        local navConnect = GridNav:IsWall(subpos)
         local ground = GetGroundPosition(subpos, projectile.Source) + Vector(0,0,projectile.fGroundOffset)
         local groundConnect = ground.z > pos.z -- ground
         --if groundConnect then print ("Yeah ground") end
@@ -456,7 +456,7 @@ function Projectiles:CreateProjectile(projectile)
               if not projectile.bZCheck or (pos.z < ground.z + 280 + radius - projectile.fGroundOffset and pos.z + radius + projectile.fGroundOffset > ground.z) then
                 if projectile.bCutTrees then
                   tree:CutDown(projectile.Source:GetTeamNumber())
-                  navConnect = not GridNav:IsTraversable(subpos) or GridNav:IsBlocked(subpos)
+                  navConnect = GridNav:IsWall(subpos)
                 end
 
                 if projectile.bCutTrees or projectile.TreeBehavior ~= PROJECTILES_NOTHING then
@@ -606,13 +606,29 @@ end
 function GetGroundPosition(pos,unit)
   -- Check if the bottom of a platform has been hit or if the top of a platform is near
   for i=#platform,1,-1 do
-    if pos.x > platform[i]:GetAbsOrigin().x - platform[i].radius and pos.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
-      -- If above the platform return that height
-      if pos.z < platform[i]:GetAbsOrigin().z + platform[i].height and pos.z + 100 > platform[i]:GetAbsOrigin().z + platform[i].height  then
-        return Vector(pos.x,0,platform[i]:GetAbsOrigin().z + platform[i].height)
+    if not platform[i]:IsNull() then
+      if pos.x > platform[i]:GetAbsOrigin().x - platform[i].radius and pos.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
+        -- If above the platform return that height
+        if pos.z < platform[i]:GetAbsOrigin().z + platform[i].height and pos.z + 100 > platform[i]:GetAbsOrigin().z + platform[i].height  then
+          return Vector(pos.x,0,platform[i]:GetAbsOrigin().z + platform[i].height)
+        end
       end
     end
   end
   return Vector(pos.x,0,128)
+end
+
+function GridNav:IsWall(pos)
+  for k,v in pairs(wall) do
+    if not v:IsNull() then
+      -- Check if height matches first, then check position
+      if pos.z >= v:GetAbsOrigin().z - v.height and pos.z <= v:GetAbsOrigin().z  + (v.height) -80 then
+        if pos.x >= v:GetAbsOrigin().x - v.radius and pos.x <= v:GetAbsOrigin().x + v.radius then
+          return true
+        end
+      end
+    end
+  end
+  return false
 end
 if not Projectiles.timers then Projectiles:start() end

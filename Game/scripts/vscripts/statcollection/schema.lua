@@ -81,7 +81,7 @@ function BuildPlayersArray()
 
                     -- Example functions for generic stats are defined in statcollection/lib/utilities.lua
                     -- Add player values here as someValue = GetSomePlayerValue(),
-                    heroname = GetHeroName(playerID)
+                    hn = GetHeroName(playerID)
                 })
             end
         end
