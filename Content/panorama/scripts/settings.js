@@ -1,6 +1,6 @@
 // Based on Noya's 1v5
 "use strict";
-
+var debugging = 1
 //--------------------------------------------------------------------------------------------------
 // CUSTOM HOST PANEL
 //--------------------------------------------------------------------------------------------------
@@ -26,6 +26,7 @@ var max_level = 8;
 var min_level = 0;
 function ValueChange(name, amount)
 {
+	if(debugging >= 1) {$.Msg("settings ValueChange" )}
     if (!IsHost) return
 
     var panel = $("#"+name);
@@ -48,30 +49,10 @@ function ValueChange(name, amount)
 
 
 function SelectRadioGameMode(option) {
+	if(debugging >= 1) {$.Msg("settings SelectRadioGameMode",option )}
     var currentRadioOption = '1'
     var radios = {}
-    radios['1'] = $("#Normal")
-    radios['2'] = $("#Random")
-
-    if (!IsHost)
-    {
-        for (var i in radios)
-        {
-            var panel = radios[i]
-            panel.checked = i == currentRadioOption
-        }
-    }
-    else
-    {   
-        currentRadioOption = option
-        
-        GameEvents.SendCustomGameEventToServer("setting_change", {setting: "Format", value: option}); 
-    }
-}
-function SelectRadioHeroSelection(option) {
-    var currentRadioOption = '1'
-    var radios = {}
-    radios['1'] = $("#FFA")
+	radios['1'] = $("#FFA")
     radios['2'] = $("#2v2")
 
     if (!IsHost)
@@ -79,16 +60,38 @@ function SelectRadioHeroSelection(option) {
         for (var i in radios)
         {
             var panel = radios[i]
-            panel.checked = i == currentRadioOption
+            panel.checked = i == CustomNetTables.GetTableValue("settings", "Format").value
         }
     }
     else
+    {   
+        currentRadioOption = option
+        GameEvents.SendCustomGameEventToServer("setting_change", {setting: "Format", value: option}); 
+    }
+}
+function SelectRadioHeroSelection(option) {
+if(debugging >= 1) {$.Msg("settings SelectRadioHeroSelection",option)}
+    var currentRadioOption = '1'
+    var radios = {}
+	radios['1'] = $("#Normal")
+    radios['2'] = $("#Random")
+
+    if (!IsHost)
     {
+        for (var i in radios)
+        {
+            var panel = radios[i]
+            panel.checked = i == CustomNetTables.GetTableValue("settings", "HeroSelection").value
+        }
+    }
+    else
+    {   
         currentRadioOption = option
         GameEvents.SendCustomGameEventToServer("setting_change", {setting: "HeroSelection", value: option}); 
     }
 }
 function SelectRadioMapSelection(option) {
+	if(debugging >= 1) {$.Msg("settings SelectRadioMapSelection") }
     var currentRadioOption = '1'
     var radios = {}
     radios['1'] = $("#RandomMap")
@@ -117,27 +120,47 @@ function Toggle(setting) {
     //    GameEvents.SendCustomGameEventToServer("setting_change", {setting: setting, value: $("#"+setting).checked}); 
 }
 
-var number_settings = ["nAmountOfRounds","nStartingRounds"]
+var number_settings = ["nAmountOfRounds","nStartingLifes"]
 var bool_settings = ["duplicate_rounds","duplicate_player"]
+var radios = {}
+radios['1'] = $("#RandomMap")
+radios['2'] = $("#LoserPiks")
+radios['3'] = $("#WinnerPicks")
+	
 function UpdateSettings() {
+	if(debugging >= 1) {$.Msg("settings UpdateSettings" )}
     if (!IsHost)
-    {
+    	{
         //$.Msg("Host Changed Settings: ", CustomNetTables.GetAllTableValues("settings"))
-
-        //gold = CustomNetTables.GetTableValue("settings", "starting_gold").value
         for (var k of number_settings)
         {
             $("#"+k).text = CustomNetTables.GetTableValue("settings", k).value
         }
         
         //bools
-        for (var k of bool_settings)
+        //for (var k of bool_settings)
+        //{
+        //    $("#"+k).checked = CustomNetTables.GetTableValue("settings", k).value == 1;
+        //}
+		
+		//HeroSelection
+        var currentRadioOption = CustomNetTables.GetTableValue("settings", "HeroSelection").value
+		var radios = {}
+		radios['1'] = $("#Pick")
+		radios['2'] = $("#Random")
+		
+        for (var i in radios)
         {
-            $("#"+k).checked = CustomNetTables.GetTableValue("settings", k).value == 1;
+            var panel = radios[i]
+            panel.checked = i == currentRadioOption
         }
-
-        //radio FIX THIS
-        currentRadioOption = CustomNetTables.GetTableValue("settings", "win_at_tier").value
+		
+		//GameMode
+        var currentRadioOption = CustomNetTables.GetTableValue("settings", "Format").value
+		var radios = {}
+		radios['1'] = $("#FFA")
+		radios['2'] = $("#2v2")
+		
         for (var i in radios)
         {
             var panel = radios[i]
@@ -152,33 +175,39 @@ function UpdateSettings() {
 //--------------------------------------------------------------------------------------------------
 function CheckForHostPrivileges()
 {
-    
-    var playerInfo = Game.GetLocalPlayerInfo();
-    if ( !playerInfo )
-        return;
+	if(debugging >= 2) {$.Msg("settings CheckForHostPrivileges")}	
+	if (Game.GetState() !== DOTA_GameState.DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP)
+		return
+	if (Game.GetState() == DOTA_GameState.DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP)
+	{
+		var playerInfo = Game.GetLocalPlayerInfo();
+		if ( !playerInfo )
+			return;
 
-    // Set the "player_has_host_privileges" class on the panel, this can be used 
-    // to have some sub-panels on display or be enabled for the host player.
-    IsHost = playerInfo.player_has_host_privileges;
-    $.GetContextPanel().SetHasClass( "player_has_host_privileges", IsHost );
+		// Set the "player_has_host_privileges" class on the panel, this can be used 
+		// to have some sub-panels on display or be enabled for the host player.
+		IsHost = playerInfo.player_has_host_privileges;
+		$.GetContextPanel().SetHasClass( "player_has_host_privileges", IsHost );
 
-    // Update the Host name
-    var playerIDs = Game.GetAllPlayerIDs()
-    for (var i = 0; i < playerIDs.length; i++) {
-        var pInfo = Game.GetPlayerInfo( i );
-        if ( pInfo && pInfo.player_has_host_privileges){
-            var HostName = Players.GetPlayerName( i )
-            $('#Host').text = "HOST: "+HostName
-        }
-    }
-    $.Schedule(0.1, CheckForHostPrivileges)
-}
+		// Update the Host name
+		var playerIDs = Game.GetAllPlayerIDs()
+		for (var i = 0; i < playerIDs.length; i++) {
+			var pInfo = Game.GetPlayerInfo( i );
+			if ( pInfo && pInfo.player_has_host_privileges){
+				var HostName = Players.GetPlayerName( i )
+				$('#Host').text = "HOST: "+HostName
+			}
+		}
+		
+	}
+}	
 
 //--------------------------------------------------------------------------------------------------
 // Entry point called when the team select panel is created
 //--------------------------------------------------------------------------------------------------
+var hostCheck
 (function()
 {   
-    CheckForHostPrivileges();
+    hostCheck = $.Schedule(0.1, function(){CheckForHostPrivileges();})
     CustomNetTables.SubscribeNetTableListener("settings", UpdateSettings)
 })();

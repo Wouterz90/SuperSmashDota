@@ -1,8 +1,16 @@
 "use strict";
+var debugging = 0
+var colorPlayer1 = "red"
+var colorPlayer2 = "blue"
+var colorPlayer3 = "green"
+var colorPlayer4 = "yellow"
 var PlayerTables = GameUI.CustomUIConfig().PlayerTables
+var someonePicked = false
+var LoadBarWidth = 350
 
 function BuildHeroSelectionScreen()
 {
+	if(debugging >= 1) {$.Msg("hero_selection BuildHeroSelectionScreen") }
 	// Make them all visible again
     var panel =  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox")
     panel.GetParent().GetParent().visible = true
@@ -10,16 +18,60 @@ function BuildHeroSelectionScreen()
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible  = true 
 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).style.opacity = 1
-
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).style.opacity = 1
-	
-	// Hide heroes players already picked
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).FindChild("Avatar"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).FindChild("Avatar").RemoveAndDeleteChildren()
+	}
 	 
 	var table = PlayerTables.GetAllTableValues(Players.GetLocalPlayer().toString().concat("heroes"))
 	for (var k in table)
@@ -31,6 +83,11 @@ function BuildHeroSelectionScreen()
 		string = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat(string)).style.opacity = 0.1
 		
 	}
+	someonePicked = false
+	LoadBarWidth = 350
+	var panel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("CountDownBarHS")
+	panel.style.opacity = 1
+	panel.style.width = (LoadBarWidth).toString().concat("px")
 	
 }
 
@@ -43,7 +100,7 @@ function SetSelectedHero(heroName)
     var string = heroName
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("special_top").abilityname = string.concat("_special_top")
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("special_side").abilityname = string.concat("_special_side")
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("special_mid").abilityname = string.concat("_special_mid")
+    //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("special_mid").abilityname = string.concat("_special_mid")
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("special_bottom").abilityname = string.concat("_special_bottom")
 
     // Set the values for his ratings
@@ -117,6 +174,27 @@ function selectedHeroLina()
     var heroName = "lina"
     SetSelectedHero(heroName)
 }
+
+function selectedHeroNyx()
+{
+    var heroName = "nyx_assassin"
+    SetSelectedHero(heroName)
+}
+function selectedHeroVenge()
+{
+    var heroName = "vengefulspirit"
+    SetSelectedHero(heroName)
+}
+function selectedHeroAxe()
+{
+    var heroName = "axe"
+    SetSelectedHero(heroName)
+}
+function selectedHeroStorm()
+{
+    var heroName = "storm_spirit"
+    SetSelectedHero(heroName)
+}
 function selectedHeroRandom()
 {   
     var heroName = ""
@@ -157,6 +235,7 @@ function OnSpecialSideClicked()
 }
 function OnSpecialBottomClicked()
 {
+	
     // Get the hero that is currently highlighted
     var hero = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("SelectedHero").heroname
     var string = hero.concat("_special_bottom")
@@ -166,6 +245,7 @@ function OnSpecialBottomClicked()
 
 function LockHeroAndReady()
 {
+	if(debugging >= 1) {$.Msg("hero_selection LockHeroAndReady") }
     var hero = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("SelectedHero").heroname
     var heroname = "npc_dota_hero_".concat(hero)
 
@@ -175,11 +255,24 @@ function LockHeroAndReady()
 
 function HeroPickAccepted(keys)
 {
+	
+	if(debugging >= 1) {$.Msg("hero_selection HeroPickAccepted") }
     // Put player avatar above the hero
-    //$.Msg(keys.heroname)
+    $.Msg(keys)
     var pan = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat(keys.heroname))
-    //var idpanel = $.CreatePanel("DOTAAvatarImage", pan, "" ) 
-    pan.style.opacity = 0.1
+    var steamIDpanel = $.CreatePanel("DOTAAvatarImage", pan, "" )
+	steamIDpanel.steamid = Game.GetPlayerInfo(keys.pid).player_steamid
+	//steamIDpanel.style.opacity = 0.5
+	steamIDpanel.AddClass("SteamAvatarHS")
+	steamIDpanel.hittest = true
+
+	
+	var idpaneloverlay = $.CreatePanel("Panel", pan, "AvatarOverlay" )
+	idpaneloverlay.AddClass("SteamAvatarOverlay")
+	var color = "colorPlayer".concat(Players.GetTeam(keys.pid)-5)
+	idpaneloverlay.style.backgroundColor = eval(color)
+	idpaneloverlay.hittest = false
+    idpaneloverlay.style.opacity = 0.5
 	if (keys.pid)
 	{
 		if (keys.pid == Players.GetLocalPlayer())
@@ -188,13 +281,34 @@ function HeroPickAccepted(keys)
 			$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible = false
 		}
     }
+	if (someonePicked == false)
+	{
+		SlideProgressBar()
+		someonePicked = true
+		LoadBarWidth = 350
+		var panel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("CountDownBarHS")
+		panel.style.width = (LoadBarWidth).toString().concat("px")
+	}
+}	
+
+function SlideProgressBar()
+{
+	var panel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("CountDownBarHS")
+	LoadBarWidth = LoadBarWidth - 4
+	panel.style.width = (LoadBarWidth).toString().concat("px")	
+	if (LoadBarWidth > 10)
+	{	
+		$.Schedule(0.1,function(){SlideProgressBar();})
+	}
+	else
+	{
+		panel.style.opacity = 0
+	}
 }
-
-
 
 function KillPickScreen()
 {
-    
+	if(debugging >= 1) {$.Msg("hero_selection KillPickScreen" )}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_Main").GetParent().visible = false 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_Main").visible = false 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible = false 

@@ -10,6 +10,10 @@
 	<DOTAAbilityImage id="Mainspecial_left" class="RightIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_right" class="LeftIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_bottom" class="BottomIcon" abilityname=""/>
+	<Image id="Mainspecial_topSilence" class="TopIconSilence" src="file://{images}/custom_game/silence.png"/>
+	<Image id="Mainspecial_leftSilence" class="RightIconSilence" src="file://{images}/custom_game/silence.png"/>
+	<Image id="Mainspecial_rightSilence" class="LeftIconSilence" src="file://{images}/custom_game/silence.png"/>
+	<Image id="Mainspecial_bottomSilence" class="BottomIconSilence" src="file://{images}/custom_game/silence.png"/>
     <Panel id="MainPanel" class="MainPanel" hittest="false">
       <Panel id= "TopPanelBox" class="TopPanelBox" hittest="true">
       </Panel>  
@@ -24,22 +28,23 @@
       <Panel id="Player1_box" class="Player1_box" hittest="false">
         <Label id="Player1_Health" text=""/>
         <Label id="Player1_Lifes" text=""/>
-        
+        <Panel id="Player1_Bar" class="ChargeBar">
+		</Panel> 
       </Panel>
       <Panel id="Player2_box" class="Player2_box" hittest="false">
         <Label id="Player2_Health" text=""/>
         <Label id="Player2_Lifes" text=""/>
-        
+        <Panel id="Player2_Bar" class="ChargeBar"/> 
       </Panel>
       <Panel id="Player3_box" class="Player3_box" hittest="false">
         <Label id="Player3_Health" text=""/>
         <Label id="Player3_Lifes" text=""/>
-        
+        <Panel id="Player3_Bar" class="ChargeBar"/> 
       </Panel>
       <Panel id="Player4_box" class="Player4_box" hittest="false">
         <Label id="Player4_Health" text=""/>
         <Label id="Player4_Lifes" text=""/>
-        
+        <Panel id="Player4_Bar" class="ChargeBar"/> 
       </Panel>
     </Panel>
   </Panel>

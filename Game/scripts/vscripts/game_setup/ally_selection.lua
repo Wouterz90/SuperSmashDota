@@ -1,12 +1,14 @@
-
+  
 
 function SetWantedAlliesAsSelf() -- Use this to prevent nil values in the nettable
+  DebugPrint(1,"[SMASH] [ALLY SELECTION] SetWantedAlliesAsSelf")
   for i=0,3 do 
     CustomNetTables:SetTableValue("settings","p"..i,{requested = i})
   end
 end
 
 function GameMode:StoreAlliedRequest(keys)
+  DebugPrint(1,"[SMASH] [ALLY SELECTION] StoreAlliedRequest")
   if not hasStoredRequestedAllies then
     SetWantedAlliesAsSelf()
     hasStoredRequestedAllies = true
@@ -26,7 +28,7 @@ function GameMode:StoreAlliedRequest(keys)
 
   -- Start a timer to proceed to the next screen (Show teams)
   Timers:CreateTimer(ALLY_SELECTION_TIME,function()
-    
+    DebugPrint(1,"[SMASH] [TIMER] [ALLY SELECTION] SetWantedAlliesAsSelf1")
     local A0,A1,B0,B1 = MakeTeams()
     
     
@@ -35,22 +37,35 @@ function GameMode:StoreAlliedRequest(keys)
     CustomNetTables:SetTableValue("settings","B0",{value = B0})
     CustomNetTables:SetTableValue("settings","B1",{value = B1})
 
-    PlayerResource:UpdateTeamSlot(A0,DOTA_TEAM_GOODGUYS)
-    PlayerResource:UpdateTeamSlot(A1,DOTA_TEAM_GOODGUYS)
-    PlayerResource:UpdateTeamSlot(B0,DOTA_TEAM_BADGUYS)
-    PlayerResource:UpdateTeamSlot(B1,DOTA_TEAM_BADGUYS)
+    PlayerResource:UpdateTeamSlot(A0,DOTA_TEAM_CUSTOM_1,0)  
+    PlayerResource:UpdateTeamSlot(A1,DOTA_TEAM_CUSTOM_1,1)
+    PlayerResource:UpdateTeamSlot(B0,DOTA_TEAM_CUSTOM_2,0)
+    PlayerResource:UpdateTeamSlot(B1,DOTA_TEAM_CUSTOM_2,1)
 
+    if PlayerResource:IsValidPlayerID(A0) then
+      GameMode.Players[PlayerResource:GetPlayer(A0)] = DOTA_TEAM_CUSTOM_1
+    end
+    if PlayerResource:IsValidPlayerID(A1) then
+    GameMode.Players[PlayerResource:GetPlayer(A1)] = DOTA_TEAM_CUSTOM_1
+    end
+    if PlayerResource:IsValidPlayerID(B0) then
+    GameMode.Players[PlayerResource:GetPlayer(B0)] = DOTA_TEAM_CUSTOM_2
+    end
+    if PlayerResource:IsValidPlayerID(B1) then
+    GameMode.Players[PlayerResource:GetPlayer(B1)] = DOTA_TEAM_CUSTOM_2
+    end
     
-
     CustomGameEventManager:Send_ServerToAllClients("show_teams",{})
     hasStoredRequestedAllies = nil
     Timers:CreateTimer(ALLY_DISPLAY_TIME,function()
+      DebugPrint(1,"[SMASH] [TIMER] [ALLY SELECTION] SetWantedAlliesAsSelf2")
       GameMode:HeroPickStarted()
     end)
   end)
 end
 
 function MakeTeams()
+  DebugPrint(1,"[SMASH] [ALLY SELECTION] MakeTeams")
   local A0,A1,B0,B1
   -- Find couples
   local team_a = {}

@@ -1,9 +1,9 @@
 .HealthPanel
 {
     width: 100%;
-    height: 15%;
+    height: 20%;
     flow-children: right;
-    margin-top:85%;
+    margin-top:80%;
 }
 
 .Player1_box
@@ -11,36 +11,38 @@
   width: 20%;
   height: 100%;
   margin-top: 1%;
-  margin-left: 1%;
+  margin-left: 2.5%;
 }
 #Player1_Lifes
 {
   font-family: "Carter One";
-  font-size: 40;
+  font-size: 50;
   border:1%;
   border-color: black;
   color: white;
-  margin-top:70%;
+  margin-top:72%;
   margin-left: 0%;
 }
 #Player1_Health
 {
   font-family: "Carter One";
-  font-size: 100;
+  font-size: 120;
   border:1%;
   border-color: black;
   color: white;
-  margin-bottom:10%;
-  margin-left: 25%;
+  margin-bottom:32.5%;
+  margin-left: 30%;
 }
-#Player1_Avatar
+.Player_Avatar
 {
 
-  margin-bottom:10%;
-  margin-left: 25%;
-  width: 20%;
-  height: 100%;
-  border-radius:25px;
+  margin-bottom:32.5%;
+  margin-left: 0%;
+  width: 110px;
+  height: 200px;
+  border-radius:5%;
+  opacity: 1;
+  z-index:2;
 }
 
 
@@ -50,44 +52,36 @@
   width: 20%;
   height: 100%;
   margin-top: 1%;
-  margin-left: 5%;
+  margin-left: 2.5%;
 }
 #Player2_Lifes
 {
   font-family: "Carter One";
-  font-size: 40;
+  font-size: 50;
   border:1%;
   border-color: black;
   color: white;
-  margin-top:70%;
-  margin-left: 0%;  
+  margin-top:72%;
+  margin-left: 0%;
 }
 
 #Player2_Health
 {
-  font-family: "Impact";
-  font-size: 100;
+  font-family: "Carter One";
+  font-size: 120;
   border:1%;
   border-color: black;
   color: white;
-  margin-bottom:10%;
-  margin-left: 25%;
+  margin-bottom:32.5%;
+  margin-left: 30%;
 }
-#Player2_Avatar
-{
-  margin-bottom:10%;
-  margin-left: 25%;
-  width: 20%;
-  height: 100%;
-}
-
 
 .Player3_box
 {
   width: 20%;
   height: 100%;
   margin-top: 1%;
-  margin-left: 8%;
+  margin-left: 10%;	
 }
 #Player3_Lifes
 {
@@ -102,21 +96,13 @@
 
 #Player3_Health
 {
-  font-family: "Impact";
-  font-size: 100;
+  font-family: "Carter One";
+  font-size: 120;
   border:1%;
   border-color: black;
   color: white;
-  margin-bottom:10%;
-  margin-left: 25%;
-}
-#Player3_Avatar
-{
-  margin-bottom:10%;
-  margin-left: 25%;
-  width: 20%;
-  height: 100%;
-
+  margin-bottom:32.5%;
+  margin-left: 30%;
 }
 
 .Player4_box
@@ -124,7 +110,7 @@
   width: 20%;
   height: 100%;
   margin-top: 1%;
-  margin-left: 5%;
+  margin-left: 2.5%;
 }
 #Player4_Lifes
 {
@@ -138,18 +124,32 @@
 }
 #Player4_Health
 {
-  font-family: "Impact";
-  font-size: 100;
+  font-family: "Carter One";
+  font-size: 120;
   border:1%;
   border-color: black;
   color: white;
-  margin-bottom:10%;
-  margin-left: 25%; 
+  margin-bottom:32.5%;
+  margin-left: 30%;
 }
-#Player4_Avatar
+
+#CooldownOverlay
 {
-  margin-bottom:10%;
-  margin-left: 25%;
-  width: 20%;
-  height: 100%;
+	height: 100%;
+	width: 100%;
+	background-color: #000000DD;
+	visibility: visible;
+
+	transition-property: clip;
+	transition-duration: 0.06s;
+	transition-timing-function: linear;
+}
+.ChargeBar
+{
+	height: 25px;
+	width: 0px;
+	opacity: 1;
+	background-color: gradient( linear, 0% 30%, 60% 90%, from( red ), to( darkred ) );
+	margin-top:60%;
+	margin-left:30%;
 }

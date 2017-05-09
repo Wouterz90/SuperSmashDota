@@ -1,4 +1,5 @@
 function GameMode:ConfirmHeroPick(keys)
+  DebugPrint(1,"[SMASH] [HERO SELECTION] ConfirmHeroPick")
   local pID = keys.PlayerID
   local heroname = keys.heroname
 
@@ -22,7 +23,12 @@ function GameMode:ConfirmHeroPick(keys)
   -- Start a timer to random heroes for players who haven't picked after some seconds
   if not heroPickTimerStarted then
     heroPickTimerStarted = true
-    Timers:CreateTimer(10,function()
+    local time = 10
+    if IsInToolsMode() then
+      time = 2
+    end
+    Timers:CreateTimer(time,function()
+      DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] ConfirmHeroPick")
       for i=0, PlayerResource:GetTeamPlayerCount()-1 do
         if not GameMode.playersPicked[i] and PlayerResource:GetPlayer(i) then
           GetRandomHero(i,true)
@@ -42,6 +48,7 @@ function GameMode:ConfirmHeroPick(keys)
 end
 
 function GetRandomHero(pID,bForced)
+  DebugPrint(1,"[SMASH][HERO SELECTION] GetRandomHero")
   local random = RandomInt(1,#allowedHeroes)
   local fullHeroname = allowedHeroes[random]
   
@@ -49,12 +56,14 @@ function GetRandomHero(pID,bForced)
   heroname=string.sub(allowedHeroes[random], 15)
   
   Timers:CreateTimer(function()
+    DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] GetRandomHero")
     if not PlayerResource:GetSelectedHeroEntity(pID) then
       return 0.1
     else
       while GameMode.heroesPicked[fullHeroname] or PlayerTables:GetTableValue(tostring(pID.."heroes"),fullHeroname) do
         random = RandomInt(1,#allowedHeroes)
         fullHeroname = allowedHeroes[random]
+        DebugPrint(2,"[SMASH] [HERO SELECTION] Looping in hero HeroSelection")
       end
       heroname=string.sub(fullHeroname, 15)
       SubmitHeroPick(pID,heroname,bForced)
@@ -64,6 +73,7 @@ function GetRandomHero(pID,bForced)
 end
 
 function RandomForAll()
+  DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] RandomForAll")
   for i=0,PlayerResource:GetTeamPlayerCount()-1 do
     GetRandomHero(i,true)
   end
@@ -77,16 +87,22 @@ function RandomForAll()
 end
 
 function GameMode:HeroPickStarted()
+  DebugPrint(1,"[SMASH] [Hero_Selection] The hero selection phase started")
   -- Check if all random is active
   if  CustomNetTables:GetTableValue("settings","HeroSelection").value == "2" then
     RandomForAll()
+    Timers:CreateTimer(2,function()
+      CustomGameEventManager:Send_ServerToAllClients("kill_ally_selection_screen",{})
+    end)
   else
     CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
+    
   end
 end
 
 
 function ReplaceHero(pID,heroname)
+  DebugPrint(1,"[SMASH] [HERO SELECTION] ReplaceHero")
   local oldhero = PlayerResource:GetSelectedHeroEntity(pID)
   PlayerResource:ReplaceHeroWith(pID,heroname,0,0)
   if oldhero and IsValidEntity(oldhero) then
@@ -95,6 +111,7 @@ function ReplaceHero(pID,heroname)
 end
 
 function SubmitHeroPick(pID,heroname,bForcedRandom)
+  DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] SubmitHeroPick")
   CustomGameEventManager:Send_ServerToAllClients("hero_pick_accepted",{pid=pID,heroname=heroname})
   --[[local playerID = "Player"..pID
   if not playerID then

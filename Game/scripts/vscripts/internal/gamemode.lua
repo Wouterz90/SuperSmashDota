@@ -4,7 +4,7 @@ function GameMode:_InitGameMode()
   if GameMode._reentrantCheck then
     return
   end
-
+  DebugPrint(1, '[BAREBONES] _InitGameMode' )
   -- Setup rules
   GameRules:SetHeroRespawnEnabled( ENABLE_HERO_RESPAWN )
   GameRules:SetUseUniversalShopMode( UNIVERSAL_SHOP_MODE )
@@ -45,7 +45,7 @@ function GameMode:_InitGameMode()
   end
 
 
-  -- This is multiteam configuration stuff
+  --[[ This is multiteam configuration stuff
   if USE_AUTOMATIC_PLAYERS_PER_TEAM then
     local num = math.floor(4 / MAX_NUMBER_OF_TEAMS)
     local count = 0
@@ -67,14 +67,19 @@ function GameMode:_InitGameMode()
       end
       count = count + 1
     end
-  end
-
+  end ]]
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_GOODGUYS, 0)
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_BADGUYS, 0)
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_CUSTOM_1, 1)
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_CUSTOM_2, 1)
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_CUSTOM_3, 1)
+  GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_CUSTOM_4, 1)
   if USE_CUSTOM_TEAM_COLORS then
     for team,color in pairs(TEAM_COLORS) do
       SetTeamCustomHealthbarColor(team, color[1], color[2], color[3])
     end
   end
-  DebugPrint('[BAREBONES] GameRules set')
+  DebugPrint(1,'[BAREBONES] GameRules set')
 
   --InitLogFile( "log/barebones.txt","")
 
@@ -132,7 +137,7 @@ function GameMode:_InitGameMode()
 
   local spew = 0
   if BAREBONES_DEBUG_SPEW then
-    spew = 1
+    spew = BAREBONES_DEBUG_SPEW
   end
   Convars:RegisterConvar('barebones_spew', tostring(spew), 'Set to 1 to start spewing barebones debug info.  Set to 0 to disable.', 0)
 
@@ -144,7 +149,7 @@ function GameMode:_InitGameMode()
   self.bSeenWaitForPlayers = false
   self.vUserIds = {}
 
-  DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
+  DebugPrint(1,'[BAREBONES] Done loading Barebones gamemode!\n\n')
   GameMode._reentrantCheck = true
   GameMode:InitGameMode()
   GameMode._reentrantCheck = false
@@ -154,6 +159,7 @@ mode = nil
 
 -- This function is called as the first player loads and sets up the GameMode parameters
 function GameMode:_CaptureGameMode()
+  DebugPrint(1, '[BAREBONES] _CaptureGameMode' )
   if mode == nil then
     -- Set GameMode parameters
     mode = GameRules:GetGameModeEntity()        

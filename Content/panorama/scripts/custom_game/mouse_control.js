@@ -1,7 +1,8 @@
 "use strict";
-  
+var debugging = 0  
 function RemoveHudThings() 
 {
+	if(debugging >= 1) {$.Msg("mouse_control RemoveHudThings" )}
   $.GetContextPanel().GetParent().GetParent().FindChild("HUDElements").FindChild("quickstats").style.visibility = "collapse";
   var top = $.GetContextPanel().GetParent().GetParent();
   var hud = top.FindChild("HUDElements");
@@ -14,51 +15,54 @@ function RemoveHudThings()
 
 function OnDownPressed()
 { 
+	if(debugging >= 2) {$.Msg("mouse_control OnDownPressed") }
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button:"down",action:"pressed",x:table[0],y:table[1]} )
 }
 function OnUpPressed()
 { 
+	if(debugging >= 2) {$.Msg("mouse_control OnUpPressed" )}
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "up",action: "pressed",x:table[0],y:table[1]} )
 }
 function OnLeftPressed()
 {
+	if(debugging >= 2) {$.Msg("mouse_control OnLeftPressed" )}
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "left",action: "pressed",x:table[0],y:table[1]} )
 }
 function OnRightPressed()
 {
+	if(debugging >= 2) {$.Msg("mouse_control OnRightPressed") }
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "right",action: "pressed",x:table[0],y:table[1]} )
 }
 function OnDownReleased()
 {
+	if(debugging >= 2) {$.Msg("mouse_control OnDownReleased" )}
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "down",action: "released",x:table[0],y:table[1]} )
 }
 function OnUpReleased()
 {
+	if(debugging >= 2) {$.Msg("mouse_control OnUpReleased") }
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "up",action: "released",x:table[0],y:table[1]} )
 }
 function OnLeftReleased()
 {
+	if(debugging >= 2) {$.Msg("mouse_control OnLeftReleased" )}
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "left",action: "released",x:table[0],y:table[1]} )
 }
 function OnRightReleased()
 {
+	if(debugging >= 2) {$.Msg("mouse_control OnRightReleased" )}
   var table = GetMousePosition()
   GameEvents.SendCustomGameEventToServer( "key_event", {button: "right",action: "released",x:table[0],y:table[1]} )
 }
 
 
-
-/* Action-RPG style input handling.
-Left click moves or trigger ability 1.
-Right click triggers ability 2.
-*/
 
 
 // Handle Left Button events
@@ -83,6 +87,7 @@ function OnRightButtonPressed(eventName)
 
 
 GameUI.SetMouseCallback( function( eventName, arg ) {
+  if(debugging >= 2) {$.Msg("mouse_control SetMouseCallback" )}
   var CONSUME_EVENT = true;
   var CONTINUE_PROCESSING_EVENT = false;
   //$.Msg("MOUSE: ", eventName, " -- ", arg, " -- ", GameUI.GetClickBehaviors())
@@ -96,12 +101,12 @@ GameUI.SetMouseCallback( function( eventName, arg ) {
   {
     if ( arg === 0 )
     {
-      // Left-click is move to position or attack
+      // Left-click is attack normally
       OnLeftButtonPressed(eventName);
       //$.Msg("left")
       return CONSUME_EVENT;
     }
-    // Right-click is use ability #2
+    // Right-click is use special abilities
     if ( arg === 1 )
     {
       OnRightButtonPressed(eventName);
@@ -113,6 +118,7 @@ GameUI.SetMouseCallback( function( eventName, arg ) {
 
 function GetMousePosition()
 {
+	if(debugging >= 2) {$.Msg("mouse_control GetMousePosition") }
   var position = GameUI.GetCursorPosition();
   var x = Game.GetScreenWidth();
   var y = Game.GetScreenHeight();

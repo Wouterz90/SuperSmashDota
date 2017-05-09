@@ -59,7 +59,7 @@ function modifier_tusk_walrus_kick:GetEffectAttachType()
   return PATTACH_POINT_FOLLOW
 end
 
--- Basially a copy of side
+--[[ Basially a copy of side
 tusk_special_mid = class({})
 
 function tusk_special_mid:OnAbilityPhaseStart()
@@ -124,7 +124,7 @@ function modifier_tusk_walrus_punch:GetEffectAttachType()
   return PATTACH_POINT_FOLLOW
 end
 
-
+]]
 
 tusk_special_top = class({})
 
@@ -297,19 +297,45 @@ function modifier_tusk_snowball:OnIntervalThink()
     self:Destroy()
   else
     -- Handle visual part
+    local myPlatform
+    if caster:isOnPlatform() then
+      for k,v in pairs(platform) do
+        if v.unitsOnPlatform[caster] then
+          myPlatform = v
+          break
+        end
+      end
+    end
+    local direction
+    local angles = 0
+    if myPlatform then
+      angles = myPlatform:GetAngles().x/55
+    end
+    if caster:GetForwardVector().x > 0 then
+      direction = Vector(1,0,-angles)
+    else
+      direction = Vector(-1,0,angles)
+    end
+    
     -- Increase the speed
+
     self.speedFactor = self.speedFactor + self.speedIncrement
+  
+    
     local speed = self.speed * self.speedFactor
+
     -- Move the hero and the rotating snowball along
-    caster:SetAbsOrigin(caster:GetAbsOrigin()+caster:GetForwardVector()*speed)
+    caster:SetAbsOrigin(caster:GetAbsOrigin()+direction*speed)
     self:GetAbility().dummy:SetAbsOrigin(caster:GetAbsOrigin())
 
-    -- Determine which way the snowball should rotate
-    if caster:GetForwardVector().x > 0 then
-      self:GetAbility().dummy:SetAngles(self:GetAbility().dummy:GetAngles()[1] + 10*self.speedFactor,self:GetAbility().dummy:GetAngles()[2],self:GetAbility().dummy:GetAngles()[3])
-    else
+     -- Determine which way the snowball should rotate
+     if caster:GetForwardVector().x < 0 then
       self:GetAbility().dummy:SetAngles(self:GetAbility().dummy:GetAngles()[1] - 10*self.speedFactor,self:GetAbility().dummy:GetAngles()[2],self:GetAbility().dummy:GetAngles()[3])
+    else
+      self:GetAbility().dummy:SetAngles(self:GetAbility().dummy:GetAngles()[1] + 10*self.speedFactor,self:GetAbility().dummy:GetAngles()[2],self:GetAbility().dummy:GetAngles()[3])
     end
+    
+    
     -- Handle damage
     local radius = ability:GetSpecialValueFor("radius")
     local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)

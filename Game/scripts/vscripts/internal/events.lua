@@ -3,7 +3,7 @@ function GameMode:_OnGameRulesStateChange(keys)
   if GameMode._reentrantCheck then
     return
   end
-
+  DebugPrint(1, '[BAREBONES] _OnGameRulesStateChange' )
   local newState = GameRules:State_Get()
 
   if newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
@@ -39,7 +39,8 @@ function GameMode:_OnNPCSpawned(keys)
   if GameMode._reentrantCheck then
     return
   end
-
+  DebugPrint(1, '[BAREBONES] _OnNPCSpawned' )
+  
   local npc = EntIndexToHScript(keys.entindex)
 
   if npc:IsRealHero() and npc.bFirstSpawned == nil then
@@ -57,7 +58,7 @@ function GameMode:_OnEntityKilled( keys )
   if GameMode._reentrantCheck then
     return
   end
-
+  DebugPrint(2, '[BAREBONES] _OnEntityKilled' )
   -- The Unit that was Killed
   local killedUnit = EntIndexToHScript( keys.entindex_killed )
   -- The Killing entity
@@ -68,7 +69,7 @@ function GameMode:_OnEntityKilled( keys )
   end
 
   if killedUnit:IsRealHero() then 
-    DebugPrint("KILLED, KILLER: " .. killedUnit:GetName() .. " -- " .. killerEntity:GetName())
+    DebugPrint(1,"KILLED, KILLER: " .. killedUnit:GetName() .. " -- " .. killerEntity:GetName())
     if END_GAME_ON_KILLS and GetTeamHeroKills(killerEntity:GetTeam()) >= KILLS_TO_END_GAME_FOR_TEAM then
       GameRules:SetSafeToLeave( true )
       GameRules:SetGameWinner( killerEntity:GetTeam() )
@@ -91,7 +92,7 @@ function GameMode:_OnConnectFull(keys)
   if GameMode._reentrantCheck then
     return
   end
-
+  DebugPrint(1, '[BAREBONES] _OnConnectFull' )
   GameMode:_CaptureGameMode()
 
   local entIndex = keys.index+1

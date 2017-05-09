@@ -203,9 +203,9 @@ function modifier_zuus_arc_dummy:GetEffectAttachType()
   return PATTACH_ABSORIGIN
 end
 
-zuus_special_mid = class({})
+zuus_special_bottom = class({})
 
-function zuus_special_mid:OnAbilityPhaseStart()
+function zuus_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
@@ -213,12 +213,12 @@ function zuus_special_mid:OnAbilityPhaseStart()
   return true
 end
 
-function zuus_special_mid:OnAbilityPhaseInterrupted()
+function zuus_special_bottom:OnAbilityPhaseInterrupted()
   local caster = self:GetCaster()
   EndAnimation(caster)
 end
 
-function zuus_special_mid:OnSpellStart()
+function zuus_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local range = self:GetSpecialValueFor("range")
   local radius = self:GetSpecialValueFor("radius")
@@ -281,7 +281,7 @@ function zuus_special_mid:OnSpellStart()
   end
 end
 
-zuus_special_bottom = class({})
+--[[zuus_special_bottom = class({})
 
 function zuus_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
@@ -363,4 +363,4 @@ function zuus_special_bottom:OnSpellStart()
       end
     end
   end
-end
+end]]

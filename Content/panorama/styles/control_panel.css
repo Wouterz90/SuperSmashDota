@@ -10,28 +10,66 @@
 	vertical-align:top;
 	horizontal-align:center;
 	border-radius: 25px;
-	opacity:0.5;
+	opacity:1;
 }
 .RightIcon
 {
 	vertical-align:center;
 	horizontal-align:right;
 	border-radius: 25px;
-	opacity:0.5;
+	opacity:1;
 }
 .LeftIcon
 {
 	vertical-align:center;
 	horizontal-align:left;
 	border-radius: 25px;
-	opacity:0.5;
+	opacity:1;
 }
 .BottomIcon
 {
 	vertical-align:bottom;
 	horizontal-align:center;
 	border-radius: 25px;
-	opacity:0.5;
+	opacity:1;
+}
+.TopIconSilence
+{
+	vertical-align:top;
+	horizontal-align:center;
+	border-radius: 25px;
+	opacity:0;
+	width:12%;
+	height:12%;
+}
+.RightIconSilence
+{
+	vertical-align:center;
+	horizontal-align:right;
+	border-radius: 25px;
+	margin-right:-2.5%;
+	opacity:0;
+	width:12%;
+	height:12%;
+}
+.LeftIconSilence
+{
+	vertical-align:center;
+	horizontal-align:left;
+	border-radius: 25px;
+	margin-left:-2.5%;
+	opacity:0;
+	width:12%;
+	height:12%;
+}
+.BottomIconSilence
+{
+	vertical-align:bottom;
+	horizontal-align:center;
+	border-radius: 25px;
+	opacity:0;
+	width:12%;
+	height:12%;
 }
 
 .TopPanelBox
@@ -141,3 +179,4 @@
   vertical-align: bottom;
   horizontal-align:left;
 }
+

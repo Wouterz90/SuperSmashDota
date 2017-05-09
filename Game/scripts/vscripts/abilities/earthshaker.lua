@@ -1,4 +1,4 @@
-earthshaker_special_side = class({})
+--[[earthshaker_special_side = class({})
 
 function earthshaker_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
@@ -227,9 +227,6 @@ function modifier_eartshaker_slam:OnIntervalThink()
   --Check when the units hits the platform
   if self:GetParent():isOnPlatform() then
 
-    -- Sound
-    self:GetParent():EmitSound("Hero_EarthShaker.Totem")
-
     -- Cleaning up animations, showing particles
     self:GetParent():RemoveModifierByName("modifier_animation")
     UnfreezeAnimation(self:GetParent())
@@ -262,6 +259,8 @@ function modifier_eartshaker_slam:OnIntervalThink()
 
     -- Removing this modifier
     self:Destroy()
+    -- Sound
+    self:GetParent():EmitSound("Hero_EarthShaker.Totem")
   end
 end
 
@@ -293,56 +292,51 @@ function earthshaker_special_bottom:OnSpellStart()
   -- Store the platform I am on
   local my_platform
   for k,v in pairs(platform) do
-    if v.unitsOnPlatform[caster] then
-      my_platform = v
-      break
-    end
-  end
-
-  -- Shaking the platform
-  local time = 0
-  local angles = my_platform:GetAngles()
-  Timers:CreateTimer(1/32,function()
-    if time < 16 then
-      time = time +1
-      my_platform:SetAngles(angles[1]+RandomInt(-5,5),angles[2],angles[3])
-      return 1/32
-    else
-      my_platform:SetAngles(angles[1],angles[2],angles[3])
-      return
-    end
-  end)
-
-  -- Damaging all units on the platform (units are stored in per platform in platforms.lua)  
-  for k,v in pairs(my_platform.unitsOnPlatform) do
-    if not IsValidEntity(k) then 
-      k = nil
-    else
-      if caster:GetTeamNumber() ~= k:GetTeamNumber() then
-        k:AddNewModifier(caster,self,"modifier_smash_stun",{duration = self:GetSpecialValueFor("duration")})
-        local damage = self:GetSpecialValueFor("damage") +  RandomInt(0,self:GetSpecialValueFor("damage_offset"))
-        local damageTable = {
-          victim = k,
-          attacker = caster,
-          damage = damage,
-          damage_type = DAMAGE_TYPE_MAGICAL,
-          ability = self,
-        }
-        ApplyDamage(damageTable) -- Push
+    -- Shaking the platform
+    --[[local time = 0
+    local angles = v:GetAngles()
+    Timers:CreateTimer(1/32,function()
+      if time < 16 then
+        time = time +1
+        v:SetAngles(angles[1]+RandomInt(-0.5,0.5),angles[2],angles[3])
+        return 1/32
+      else
+        v:SetAngles(angles[1],angles[2],angles[3])
+        return
+      end
+    end)]]
+    ScreenShake(caster:GetAbsOrigin(), 20, 250, 0.75, 3000, 0, true)
+    -- Damaging all units on the platform (units are stored in per platform in platforms.lua)  
+    for a,b in pairs(v.unitsOnPlatform) do
+      if not IsValidEntity(a) then 
+        a = nil
+      else
+        if caster:GetTeamNumber() ~= a:GetTeamNumber() then
+          a:AddNewModifier(caster,self,"modifier_smash_stun",{duration = self:GetSpecialValueFor("duration")})
+          local damage = self:GetSpecialValueFor("damage") +  RandomInt(0,self:GetSpecialValueFor("damage_offset"))
+          local damageTable = {
+            victim = a,
+            attacker = caster,
+            damage = damage,
+            damage_type = DAMAGE_TYPE_MAGICAL,
+            ability = self,
+          }
+          ApplyDamage(damageTable) -- Push
+        end
       end
     end
   end
 end
 
-earthshaker_special_mid = class({})
+earthshaker_special_side = class({})
 
-function earthshaker_special_mid:OnAbilityPhaseStart()
+function earthshaker_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, translate="enchant_totem", rate=1})
   return true
 end
-function earthshaker_special_mid:OnSpellStart()
+function earthshaker_special_side:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
   local radius = ability:GetSpecialValueFor("radius")

@@ -1,4 +1,5 @@
 function spawnPlatform()
+  DebugPrint(1,"[SMASH] [PLATFORMS] spawnPlatform")
   --print("Created Platforms")
   
   -- For rotation use values that are divisible by 9 instead of 10 for easier maths, also don't go over 90, use negative values then instead
@@ -10,32 +11,55 @@ function spawnPlatform()
     end
   end
 
+  if items.itemStorage then
+    for k,v in pairs(items.itemStorage) do
+      UTIL_Remove(v)
+    end
+  end
+
   wall = {}
   platform = {}
   
   -- Get map name from nettable or pick it randomly
   
-  mapnames = {
+  mapnames2 = {
     [1] = "MapSmall",
-    [2] = "MapMedium",
-    [3] = "MapSmallWalls"
+    [2] = "MapSmallDestructable",
+    [3] = "MapFerrisWheel",
+    [4] = "MapSliders",
   }
-  local mapname
+  mapnames3 = {
+    [1] = "MapSmall",
+    [2] = "MapSmallDestructable",
+    [3] = "MapMedium",
+    [4] = "MapLargeDestructable",
+    [5] = "MapFerrisWheel",
+    [6] = "MapSliders",
+  }
+  mapnames4 = {
+    [1] = "MapMedium",
+    [2] = "MapLargeDestructable",
+    [3] = "MapFerrisWheel",
+    [4] = "MapSliders",
+    
+  }
   if PlayerResource:GetTeamPlayerCount() == 1 then
-    mapname = mapnames[RandomInt(1,3)]
+    mapname =  mapnames3[RandomInt(1,#mapnames3)]
   elseif PlayerResource:GetTeamPlayerCount() == 2 then
-    mapname = "MapSmall"
+    mapname = mapnames2[RandomInt(1,#mapnames2)]
   elseif PlayerResource:GetTeamPlayerCount() == 3 then
-    mapname =  mapnames[RandomInt(1,2)]
+    mapname =  mapnames3[RandomInt(1,#mapnames3)]
   else
-    mapname = "MapMedium"
+    mapname = mapnames4[RandomInt(1,#mapnames4)]
   end
+  --print(mapname)
 
   _G[mapname]()
 
 end
 
 function ClearPlatforms()
+  DebugPrint(1,"[SMASH] [PLATFORMS] ClearPlatform")
   for k,v in pairs(platform) do
     UTIL_Remove(v)
   end
@@ -43,6 +67,7 @@ function ClearPlatforms()
 end
 
 function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirection inputs are (up,down,left,right)
+  DebugPrint(1,"[SMASH] [PLATFORMS] MovePlatform")
   local directions = {
     up = Vector(0,0,1),
     down = Vector(0,0,-1),
@@ -58,6 +83,7 @@ function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirect
 
   -- Start moving in the direction
   Timers:CreateTimer(1/32,function()
+    DebugPrint(2,"[SMASH] [TIMER] [PLATFORMS] MovePlatform")
     if not IsValidEntity(hPlatform) then return end
     if not hPlatform.count then 
       hPlatform.count = 1
@@ -90,7 +116,54 @@ function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirect
   end)
 end
 
+function RotatePlatformAroundPoint(hPlatform,vBaseLocation,flRadius,flSpeed,bClockWise)
+  DebugPrint(1,"[SMASH] [PLATFORMS] RotatePlatformAroundPoint")
+  if not hPlatform then return end
+  if hPlatform:IsNull() then return end
+  if not flSpeed then 
+    flSpeed = 1 
+  end
+
+  -- Translating the direction
+  local direction = flSpeed
+  if not bClockWise then
+    direction = -flSpeed
+  end 
+  
+
+  -- Starting the timer to loop its rotation
+  local count = 0
+
+  Timers:CreateTimer(1/32,function()
+    DebugPrint(2,"[SMASH] [TIMER] [PLATFORMS] RotatePlatformAroundPoint")
+    if not hPlatform then return end
+    if hPlatform:IsNull() then return end
+    -- Get the remainder of 360
+    local count = hPlatform.rotationCount 
+    count = math.fmod(count, 360)
+
+    -- Get the position of the platform and add the new rotation to it
+    --local pos = hPlatform:GetAbsOrigin() - vBaseLocation
+    local angle = --[[math.atan2(pos.z, pos.x) +]] 2*math.pi*(count/360)
+
+    local newPos = vBaseLocation + flRadius * Vector(math.cos(angle), 0, math.sin(angle))
+    hPlatform:SetAbsOrigin(newPos)
+
+
+    -- Move units on the platform along
+    for k,v in pairs(hPlatform.unitsOnPlatform) do
+      if hPlatform.oldPos and not k:IsNull() then
+        k:SetAbsOrigin(k:GetAbsOrigin()+(newPos - hPlatform.oldPos))
+      end
+    end
+    hPlatform.oldPos = newPos
+    hPlatform.rotationCount = count + direction
+    return 1/32
+  end)
+end
+
 function CDOTA_BaseNPC:isOnPlatform()
+  DebugPrint(2,"[SMASH] [PLATFORMS] isOnPlatform")
   local origin = self:GetAbsOrigin()
   local x = origin.x
   local z = origin.z
@@ -99,7 +172,7 @@ function CDOTA_BaseNPC:isOnPlatform()
   if not platform then return end
 
   sortPlatforms()
-  --self.rotation = nil -- Not used atm
+  self.rotation = nil
   for k,v in pairs(platform) do
     v.unitsOnPlatform[self] = nil
   end
@@ -107,40 +180,53 @@ function CDOTA_BaseNPC:isOnPlatform()
   for k,v in pairs(platform) do
     -- Check if the unit has the same x coordinates as the platform
     if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
-      if not v.rotation then -- Use the straightforward method
-        -- Check if the height matches as well
-        if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5)then
-          v.unitsOnPlatform[self] = true
 
-          return true
-        end
-      --[[else
-         Rotated platforms do not work yet
-        local distance_from_middle  =  x - v:GetAbsOrigin().x
-        local factor_to_100 = 10/900
-        local height_difference_per_unit = v.rotation * factor_to_100
-        local platform_z = v:GetAbsOrigin().z + (distance_from_middle * height_difference_per_unit)
-        --DebugDrawLine(v:GetAbsOrigin(),v:GetAbsOrigin()+Vector(v.radius,0,(distance_from_middle * height_difference_per_unit)),255,255,255,true,6)
-        if z >= platform_z + v.height - Laws.flDropSpeed and z<= platform_z + v.height then
-          self.rotation = v.rotation
-          v.unitsOnPlatform[self] = true
+      -- If rotation is over (X) then slide backward?
+      -- Adjust movement to the platform
+      self.rotation = v:GetAngles().x
+      --[[
+      if self:GetForwardVector().x >= 0 then
+        self:SetAngles(self.rotation,0,0)
+      else
+        --print(self.rotation)
+        self:SetFor
+      end]]
+      local distance_from_center = x - v:GetAbsOrigin().x
+      local delta_z = (-distance_from_center / 55) * self.rotation
 
-          return true
-        end]]
+      -- Check if the height matches as well
+      if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) + delta_z and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5) + delta_z then
+
+        -- Slide the unit down
+        -- 0 means nothing, 45 means half general movespeed so 90 is general movespeed.
+        local delta_x = Laws.flMove * (self.rotation/90)
+        local delta_z = (-delta_x / 55) * self.rotation /2
+        --print(delta_x,delta_z)
+        self:SetAbsOrigin(Vector(self:GetAbsOrigin().x+delta_x,0,self:GetAbsOrigin().z+delta_z))
+
+        v.unitsOnPlatform[self] = true
+        return true
       end
+
+      
+
+
+
+    
     end
   end
   return false
 end
 
 function CDOTA_BaseNPC:isUnderPlatform()
+  DebugPrint(2,"[SMASH] [PLATFORMS] isUnderPlatform")
   if not platform then return end
   local origin = self:GetAbsOrigin()
   local x = origin.x
   local z = origin.z
   local v = platform[1]
   -- Check if x coordinates match with platform
-  if not v:IsNull() then
+  if v and  not v:IsNull() then
     if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
       -- Check height
       if z >= v:GetAbsOrigin().z - Laws.flJumpSpeed and z<= v:GetAbsOrigin().z + v.height - Laws.flJumpSpeed then
@@ -151,8 +237,39 @@ function CDOTA_BaseNPC:isUnderPlatform()
   return false
 end
 
+function RotatePlatform(hPlatform,flRotation)
+  DebugPrint(1,"[SMASH] [PLATFORMS] RotatePlatform")
+  if hPlatform:IsNull() then return end
+  
+  if not hPlatform.originalRadius  then 
+    hPlatform.originalRadius = hPlatform.radius
+  end
+  flRotation = flRotation +  hPlatform:GetAngles().x
+  if flRotation >= 90 then
+    flRotation = -flRotation
+  end 
+  -- Update the radius
+  local delta_z = (hPlatform.originalRadius / 55) *flRotation
+  local radius = math.sqrt(math.pow(hPlatform.originalRadius,2) -  math.pow(delta_z,2))
+  -- Move the units on it along
+  --[[for k,v in pairs(hPlatform.unitsOnPlatform) do
+    if IsValidEntity(k) then
+      local distance_from_center = k:GetAbsOrigin().x - hPlatform:GetAbsOrigin().x
+      local delta_z = (-distance_from_center / 55) *flRotation
+      
+      local correcting_x = radius / hPlatform.radius
 
+      distance_from_center = distance_from_center * correcting_x
+      print(distance_from_center,delta_z)
+      k:SetAbsOrigin(Vector(hPlatform:GetAbsOrigin().x + distance_from_center,0,hPlatform:GetAbsOrigin().z+delta_z))
+    end
+  end]]
+  hPlatform.radius = radius
+  -- Rotate the platform
+  hPlatform:SetAngles(flRotation,0,0)
+end
 function sortPlatforms()
+  DebugPrint(2,"[SMASH] [PLATFORMS] sortPlatforms")
   if not platform then return end
   local sorted = {}
   local tempTable = {}
@@ -173,6 +290,7 @@ function sortPlatforms()
 end
 
 function CDOTA_BaseNPC:CheckForWalls()
+  DebugPrint(2,"[SMASH] [PLATFORMS] CheckForWalls")
   local origin = self:GetAbsOrigin()
   local x = origin.x
   local z = origin.z
@@ -198,6 +316,7 @@ function CDOTA_BaseNPC:CheckForWalls()
 end
 
 function DestroyPlatform(hPlatform,flDuration)
+  DebugPrint(1,"[SMASH] [PLATFORMS] DestroyPlatform")
   if not platform then return end
   local fadeTime = 5 -- 1 Divided by this
   local blinks = 5 -- Should be uneven
@@ -229,13 +348,16 @@ function DestroyPlatform(hPlatform,flDuration)
 
   if flDuration then
     Timers:CreateTimer(flDuration,function()
-      hPlatform:SetModel(model)
-      hPlatform.radius = radius
+      if not hPlatform:IsNull() then
+        hPlatform:SetModel(model)
+        hPlatform.radius = radius
+      end
     end)
   end
 end
 
 function FindNearestPlatform(vLocation)
+  DebugPrint(1,"[SMASH] [PLATFORMS] FindNearestPlatform")
   -- Use the location to spot nearby platforms
   for k,v in pairs(platform) do
     local abs = v:GetAbsOrigin()

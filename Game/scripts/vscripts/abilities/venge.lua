@@ -45,7 +45,7 @@ function vengefulspirit_special_top:OnSpellStart()
       bFlyingVision = false,
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+      draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
       --iPositionCP = 0,
       --iVelocityCP = 1,
       --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
@@ -72,16 +72,49 @@ function vengefulspirit_special_top:OnSpellStart()
           ability = caster:FindAbilityByName("vengefulspirit_special_top"),
         }
         ApplyDamage(damageTable)
+
+        caster:EmitSound("Hero_VengefulSpirit.NetherSwap")
+        local particle_a = ParticleManager:CreateParticle("particles/units/heroes/hero_vengeful/vengeful_nether_swap.vpcf", PATTACH_ABSORIGIN, caster)
+        ParticleManager:SetParticleControl(particle_a, 0, caster:GetAbsOrigin())
+        ParticleManager:SetParticleControl(particle_a, 1, unit:GetAbsOrigin())
+
+        local particle_b = ParticleManager:CreateParticle("particles/units/heroes/hero_vengeful/vengeful_nether_swap_target.vpcf", PATTACH_ABSORIGIN, caster)
+        ParticleManager:SetParticleControl(particle_b, 0, unit:GetAbsOrigin())
+        ParticleManager:SetParticleControl(particle_b, 1, caster:GetAbsOrigin())
+
+
         local targetLoc = unit:GetAbsOrigin()
         local casterLoc = caster:GetAbsOrigin()
         unit:SetAbsOrigin(casterLoc)
         caster:SetAbsOrigin(targetLoc)
         caster:RemoveModifierByName("modifier_smash_stun")
         unit.jumps = 0
+
+        Timers:CreateTimer(1,function()
+          ParticleManager:DestroyParticle(particle_a,false)
+          ParticleManager:ReleaseParticleIndex(particle_a)
+          ParticleManager:DestroyParticle(particle_b,false)
+          ParticleManager:ReleaseParticleIndex(particle_b)
+        end)
+
       end,
       OnFinish = function(self,unit)
         caster:SetAbsOrigin(self:GetPosition())
+        caster:EmitSound("Hero_VengefulSpirit.NetherSwap")
+        local particle_a = ParticleManager:CreateParticle("particles/units/heroes/hero_vengeful/vengeful_nether_swap.vpcf", PATTACH_ABSORIGIN, caster)
+        ParticleManager:SetParticleControl(particle_a, 0, caster:GetAbsOrigin())
+        ParticleManager:SetParticleControl(particle_a, 1, unit)
+
+        local particle_b = ParticleManager:CreateParticle("particles/units/heroes/hero_vengeful/vengeful_nether_swap_target.vpcf", PATTACH_ABSORIGIN, caster)
+        ParticleManager:SetParticleControl(particle_b, 0, unit)
+        ParticleManager:SetParticleControl(particle_b, 1, caster:GetAbsOrigin())
+        
+
         Timers:CreateTimer(caster:FindAbilityByName("vengefulspirit_special_top"):GetSpecialValueFor("self_stun_duration"),function()
+          ParticleManager:DestroyParticle(particle_a,false)
+          ParticleManager:ReleaseParticleIndex(particle_a)
+          ParticleManager:DestroyParticle(particle_b,false)
+          ParticleManager:ReleaseParticleIndex(particle_b)
           caster:RemoveModifierByName("modifier_smash_stun")
         end)
       end,
@@ -123,7 +156,7 @@ function vengefulspirit_special_side:OnSpellStart()
       bCutTrees = false,
       bTreeFullCollision = false,
       WallBehavior = PROJECTILES_NOTHING,
-      GroundBehavior = PROJECTILES_NOTHING,
+      GroundBehavior = PROJECTILES_BOUNCE,
       fGroundOffset = 0,
       nChangeMax = 1,
       bRecreateOnChange = true,
@@ -135,7 +168,7 @@ function vengefulspirit_special_side:OnSpellStart()
       bFlyingVision = false,
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+      draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
       --iPositionCP = 0,
       --iVelocityCP = 1,
       --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
@@ -162,24 +195,28 @@ function vengefulspirit_special_side:OnSpellStart()
           ability = ability,
         }
         ApplyDamage(damageTable)
+        caster:EmitSound("Hero_VengefulSpirit.MagicMissile")
         unit:AddNewModifier(caster,self,"modifier_smash_stun",{duration = ability:GetSpecialValueFor("stun_duration")})
       end,
     }
     Projectiles:CreateProjectile(projectile)
+    caster:EmitSound("Hero_VengefulSpirit.MagicMissileImpact")
 end
 
 
 
-vengefulspirit_special_mid = class({})
+vengefulspirit_special_bottom = class({})
 
-function vengefulspirit_special_mid:OnAbilityPhaseStart()
+function vengefulspirit_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end 
   return true
 end
-function vengefulspirit_special_mid:OnSpellStart()
+function vengefulspirit_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
+
+  caster:EmitSound("Hero_VengefulSpirit.WaveOfTerror")
 
     local projectile = {
       --EffectName = "particles/units/heroes/hero_dragon_knight/dragon_knight_dragon_tail_dragonform_proj_core.vpcf",
@@ -214,21 +251,6 @@ function vengefulspirit_special_mid:OnSpellStart()
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
       draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-      --iPositionCP = 0,
-      --iVelocityCP = 1,
-      --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
-      --ControlPointForwards = {[4]=hero:GetForwardVector() * -1},
-      --ControlPointOrientations = {[1]={hero:GetForwardVector() * -1, hero:GetForwardVector() * -1, hero:GetForwardVector() * -1}},
-      --[[ControlPointEntityAttaches = {[0]={
-        unit = hero,
-        pattach = PATTACH_ABSORIGIN_FOLLOW,
-        attachPoint = "attach_attack1", -- nil
-        origin = Vector(0,0,0)
-      }},]]
-      --fRehitDelay = .3,
-      --fChangeDelay = 1,
-      --fRadiusStep = 10,
-      --bUseFindUnitsInRadius = false,
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber()--[[ and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS]] end,
       OnUnitHit = function(self, unit) 
@@ -278,21 +300,6 @@ function vengefulspirit_special_mid:OnSpellStart()
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
       draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-      --iPositionCP = 0,
-      --iVelocityCP = 1,
-      --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
-      --ControlPointForwards = {[4]=hero:GetForwardVector() * -1},
-      --ControlPointOrientations = {[1]={hero:GetForwardVector() * -1, hero:GetForwardVector() * -1, hero:GetForwardVector() * -1}},
-      --[[ControlPointEntityAttaches = {[0]={
-        unit = hero,
-        pattach = PATTACH_ABSORIGIN_FOLLOW,
-        attachPoint = "attach_attack1", -- nil
-        origin = Vector(0,0,0)
-      }},]]
-      --fRehitDelay = .3,
-      --fChangeDelay = 1,
-      --fRadiusStep = 10,
-      --bUseFindUnitsInRadius = false,
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber()--[[ and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS]] end,
       OnUnitHit = function(self, unit) 
@@ -330,26 +337,5 @@ function modifier_wave_of_terror_armor_reduction:GetEffectAttachType()
   return PATTACH_ABSORIGIN
 end
 
-vengefulspirit_special_bottom = class({})
 
-function vengefulspirit_special_bottom:OnAbilityPhaseStart()
-  if not self:GetCaster():CanCast(self) then return false end
-  if not self:IsCooldownReady() then return false end 
-  return true
-end
-function vengefulspirit_special_bottom:OnSpellStart()
-  local caster = self:GetCaster()
-  local ability = self
-  local location = self:GetCaster():GetAbsOrigin() + self.mouseVector * 800
-  --print(self.mouseVector)
-  local particleName = "particles/units/heroes/hero_phoenix/phoenix_sunray.vpcf"
-  pfx = ParticleManager:CreateParticle( particleName, PATTACH_ABSORIGIN_FOLLOW, caster )
-  ParticleManager:SetParticleControlEnt( pfx, 0, caster, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetAbsOrigin(), true )
-  ParticleManager:SetParticleControl(pfx, 1, location+Vector(0,0,300))--
-  --SetParticleControlEnt( pfx, 9, caster, PATTACH_POINT_FOLLOW, "attach_origin", location, true )
-  Timers:CreateTimer(0.2,function()
-    ParticleManager:DestroyParticle(pfx,true)
-    ParticleManager:ReleaseParticleIndex(pfx)
-  end)
-end
 

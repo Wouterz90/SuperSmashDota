@@ -1,17 +1,16 @@
 "use strict";
-
+var debugging = 0
 var colorPlayer1 = "red"
 var colorPlayer2 = "blue"
 var colorPlayer3 = "green"
 var colorPlayer4 = "yellow"
-//-----------------------------------------------------------------
+
 // Check if the Format is 2v2 or free for all.
-//-----------------------------------------------------------------
 function BuildAllySelectionScreen()
 {
-    
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox").GetParent().visible  = false
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible  = false 
+    if(debugging >= 1) {$.Msg("Ally_Selection BuildAllySelectionScreen" )}
+    //$.GetContextPanel().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox").visible  = false
+    //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible  = false 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").visibility = "visible"
     // Create panels for each player, refuse selfpicking send an event about the choice only if 2 players chose each other they certainly get matched together
     var playerIDs = Game.GetAllPlayerIDs()
@@ -19,11 +18,11 @@ function BuildAllySelectionScreen()
     for (var i = 0; i < playerIDs.length; i++) 
     {
         var playerInfo = Game.GetPlayerInfo(i);
-        
         var stringName = "Player".concat((i+1).toString()).concat("_SteamName")
         var stringAvatar = "Player".concat((i+1).toString()).concat("_SteamAvatar")
+
         
-        var playerName = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse(stringName).FindChild("steamname");
+        var playerName = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse(stringName).FindChild("steamname");	
         var playerAvatarPanel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse(stringAvatar).FindChild("AvatarImageProfile");
         playerName.text =  playerInfo.player_name;
         playerAvatarPanel.steamid = playerInfo.player_steamid;
@@ -33,6 +32,7 @@ function BuildAllySelectionScreen()
 
 function OnRequestAllyPlayer1()
 {   
+	if(debugging >= 1) {$.Msg("Ally_Selection OnRequestAllyPlayer1" )}
     if (Players.GetLocalPlayer() != 0   )
     {
         GameEvents.SendCustomGameEventToServer("ally_selection", {"requested_ally": 0})
@@ -40,6 +40,7 @@ function OnRequestAllyPlayer1()
 }
 function OnRequestAllyPlayer2()
 {
+	if(debugging >= 1) {$.Msg("Ally_Selection OnRequestAllyPlayer2") }
     if (Players.GetLocalPlayer() != 1)
     {
         GameEvents.SendCustomGameEventToServer("ally_selection", {"requested_ally": 1})
@@ -47,6 +48,7 @@ function OnRequestAllyPlayer2()
 }
 function OnRequestAllyPlayer3()
 {
+	if(debugging >= 1) {$.Msg("Ally_Selection OnRequestAllyPlayer3") }
     if (Players.GetLocalPlayer() != 2)
     {
         GameEvents.SendCustomGameEventToServer("ally_selection", {"requested_ally": 2})
@@ -54,6 +56,7 @@ function OnRequestAllyPlayer3()
 }
 function OnRequestAllyPlayer4()
 {
+	if(debugging >= 1) {$.Msg("Ally_Selection OnRequestAllyPlayer4") }
     if (Players.GetLocalPlayer() != 3)
     {
         GameEvents.SendCustomGameEventToServer("ally_selection", {"requested_ally": 3})
@@ -62,6 +65,7 @@ function OnRequestAllyPlayer4()
 
 function ColorPlayerBox(ids)
 {   
+	if(debugging >= 1) {$.Msg("Ally_Selection ColorPlayerBox") }
     var color = ""
     if (ids.requested == 0) 
     {   
@@ -101,6 +105,7 @@ function ColorPlayerBox(ids)
     
 function ShowTeams()
 {
+	if(debugging >= 1) {$.Msg("Ally_Selection ShowTeams") }
     $.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Header").GetChild(0).text = "The teams are:"
     // Mark the players for team A red and team B blue
     // Player one is always on team A
@@ -128,9 +133,12 @@ function ShowTeams()
 
 function KillAllySelectionScreen()
 {
-    
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().style.visibility = "collapse"
-    $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().visible = false
+	if(debugging >= 1) {$.Msg("ally_selection KillAllySelectionScreen")}
+	if ($.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main"))
+	{
+		$.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().RemoveAndDeleteChildren()
+	}
+    //$.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().style.visibility = "collapse"	
 }
 
 (function()
@@ -139,4 +147,5 @@ function KillAllySelectionScreen()
     GameEvents.Subscribe( "confirm_allies", ColorPlayerBox);
     GameEvents.Subscribe( "show_teams", ShowTeams);
     GameEvents.Subscribe( "pick_heroes", KillAllySelectionScreen);
+	GameEvents.Subscribe( "kill_ally_selection_screen", KillAllySelectionScreen);
 })();

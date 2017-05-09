@@ -114,6 +114,7 @@ function puck_special_top:OnSpellStart()
     local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_puck/puck_illusory_orb_blink_out.vpcf", PATTACH_POINT, caster)
     ParticleManager:SetParticleControl(particle,0,caster:GetAbsOrigin())
 
+
     Timers:CreateTimer(self:GetCastPoint(),function()
       ParticleManager:DestroyParticle(particle,true)
       ParticleManager:ReleaseParticleIndex(particle)
@@ -154,17 +155,17 @@ function puck_special_bottom:OnChannelFinish(bInterrupted)
   self:GetCaster():InterruptChannel()
 end
 
-puck_special_mid = class({})
+puck_special_side = class({})
 
-function puck_special_mid:IsHiddenAbilityCastable()
+function puck_special_side:IsHiddenAbilityCastable()
   return true
 end
-function puck_special_mid:OnAbilityPhaseStart()
+function puck_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end 
   return true
 end
-function puck_special_mid:OnSpellStart()
+function puck_special_side:OnSpellStart()
   local caster = self:GetCaster()
 
   caster:EmitSound("sounds/weapons/hero/puck/waning_rift.vsnd")
@@ -194,7 +195,7 @@ function puck_special_mid:OnSpellStart()
   end
 end
 
-puck_special_side = class({})
+--[[puck_special_side = class({})
 
 function puck_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
@@ -247,7 +248,7 @@ function puck_special_side:OnSpellStart()
         pattach = PATTACH_ABSORIGIN_FOLLOW,
         attachPoint = "attach_attack1", -- nil
         origin = Vector(0,0,0)
-      }},]]
+      }},
       --fRehitDelay = .3,
       --fChangeDelay = 1,
       --fRadiusStep = 10,
@@ -271,4 +272,4 @@ function puck_special_side:OnSpellStart()
     }
     Projectiles:CreateProjectile(projectile)
 
-end
+end]]

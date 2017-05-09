@@ -12,38 +12,40 @@
     <Panel id="Hero_Selection_Main" class="Hero_Selection_Main" hittest="true">
       <Panel id="Hero_Selection_HeroBox" class="Hero_Selection_HeroBox" hittest="false">
         <Panel id="HeroPickContainerRow1" class="HeroPickContainerRow" hittest="false"> <!--94x71-->
-          <DOTAHeroImage id="HeroPickpuck" class="heroImage" heroname="npc_dota_hero_puck" heroimagestyle="portrait" onactivate="selectedHeroPuck()"/>
-          <DOTAHeroImage id="HeroPickrattletrap" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait" onactivate="selectedHeroClock()"/>
-          <DOTAHeroImage id="HeroPickzuus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait" onactivate="selectedHeroZuus()"/>
-          
+			<DOTAHeroImage id="HeroPickpuck" class="heroImage" heroname="npc_dota_hero_puck" heroimagestyle="portrait" onactivate="selectedHeroPuck()"/>
+			<DOTAHeroImage id="HeroPickrattletrap" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait" onactivate="selectedHeroClock()"/>
+			<DOTAHeroImage id="HeroPickzuus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait" onactivate="selectedHeroZuus()"/>
+			<DOTAHeroImage id="HeroPickearthshaker" class="heroImage" heroname="npc_dota_hero_earthshaker" heroimagestyle="portrait" onactivate="selectedHeroEarthshaker()"/>
+			<DOTAHeroImage id="HeroPickstorm_spirit" class="heroImage" heroname="npc_dota_hero_storm_spirit" heroimagestyle="portrait" onactivate="selectedHeroStorm()"/>
         </Panel>
         <Panel id="HeroPickContainerRow2" class="HeroPickContainerRow" hittest="false">
-          <DOTAHeroImage id="HeroPickearthshaker" class="heroImage" heroname="npc_dota_hero_earthshaker" heroimagestyle="portrait" onactivate="selectedHeroEarthshaker()"/>
-          <DOTAHeroImage id="HeroPickmirana" class="heroImage" heroname="npc_dota_hero_mirana" heroimagestyle="portrait" onactivate="selectedHeroMirana()"/>
-          <DOTAHeroImage id="HeroPicklina" class="heroImage" heroname="npc_dota_hero_lina" heroimagestyle="portrait" onactivate="selectedHeroLina()"/>
-          
+			<DOTAHeroImage id="HeroPickmirana" class="heroImage" heroname="npc_dota_hero_mirana" heroimagestyle="portrait" onactivate="selectedHeroMirana()"/>
+			<DOTAHeroImage id="HeroPicklina" class="heroImage" heroname="npc_dota_hero_lina" heroimagestyle="portrait" onactivate="selectedHeroLina()"/>
+			<DOTAHeroImage id="HeroPicktusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait" onactivate="selectedHeroTusk()"/>
+			<DOTAHeroImage id="HeroPicktinker" class="heroImage" heroname="npc_dota_hero_tinker" heroimagestyle="portrait" onactivate="selectedHeroTinker()"/>
         </Panel>
-        
         <Panel id="HeroPickContainerRow3" class="HeroPickContainerRow" hittest="false"> 
-          <DOTAHeroImage id="HeroPicktusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait" onactivate="selectedHeroTusk()"/>
-          <DOTAHeroImage id="HeroPicktinker" class="heroImage" heroname="npc_dota_hero_tinker" heroimagestyle="portrait" onactivate="selectedHeroTinker()"/>
-          <DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHeroRandom()"/>
-          
+			<DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHeroNyx()"/>
+			<DOTAHeroImage id="HeroPickaxe" class="heroImage" heroname="npc_dota_hero_axe" heroimagestyle="portrait" onactivate="selectedHeroAxe()"/>
+			<DOTAHeroImage id="HeroPickvengefulspirit" class="heroImage" heroname="npc_dota_hero_vengefulspirit" heroimagestyle="portrait" onactivate="selectedHeroVenge()"/>
+			<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHeroRandom()"/>
         </Panel>
-        <!--
-        <Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
-          <DOTAHeroImage id="HeroPickPuck" class="heroImage" heroname="npc_dota_hero_puck" heroimagestyle="portrait"/>
+		
+        <!--<Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
+          
           <DOTAHeroImage id="HeroPickClock" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait"/>
           <DOTAHeroImage id="HeroPickZeus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait"/>
           <DOTAHeroImage id="HeroPickTusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait"/>
         </Panel>-->
       </Panel>
+	  
+	  
       <Panel id="Hero_Selection_Abilities" class="Hero_Selection_Abilities" hittest="false">
         <DOTAHeroImage id="SelectedHero" class="SelectedHero" heroname="" heroimagestyle="portrait" onactivate="OnSelectedHeroClicked()"/>
         <Panel id="Hero_Selection_Abilities_Bar" class="Hero_Selection_Abilities_Bar" hittest="false">
           <DOTAAbilityImage id="special_top" class="abilityImage" abilityname="" onactivate="OnSpecialTopClicked()"/>
           <DOTAAbilityImage id="special_side" class="abilityImage" abilityname="" onactivate="OnSpecialSideClicked()"/>
-          <DOTAAbilityImage id="special_mid" class="abilityImage" abilityname="" onactivate="OnSpecialMidClicked()"/>
+          <!--<DOTAAbilityImage id="special_mid" class="abilityImage" abilityname="" onactivate="OnSpecialMidClicked()"/>-->
           <DOTAAbilityImage id="special_bottom" class="abilityImage" abilityname="" onactivate="OnSpecialBottomClicked()"/>
         </Panel>
         <Panel id="TooltipBox" class="TooltipBox" hittest="false">
@@ -135,11 +137,15 @@
           </Panel>
         </Panel>
       </Panel>
-
     </Panel>
+	
+	
     <Button id="LockHero" class="LockHeroButton" onactivate="LockHeroAndReady()">
         <Label text="#custom_game_team_select_lock_start" />
     </Button>
+	<Panel id="CountDownBarHS" class="CountDownBarHS">
+		<Label class ="pickTime" text ="Time to pick left"/>	
+	</Panel>
   </Panel>
 </root>
 

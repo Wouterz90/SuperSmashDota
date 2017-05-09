@@ -10,6 +10,9 @@ attackAnimationTop = {
   npc_dota_hero_tinker = ACT_DOTA_CAST_ABILITY_1, -- ??
   npc_dota_hero_rattletrap = ACT_DOTA_TELEPORT_END,
   npc_dota_hero_zuus = ACT_DOTA_TELEPORT_END,
+  npc_dota_hero_nyx_assassin = ACT_DOTA_TELEPORT_END,
+  npc_dota_hero_axe = ACT_DOTA_VICTORY,
+  npc_dota_hero_phoenix = ACT_DOTA_CAST_ABILITY_5,
 
 }
 
@@ -25,6 +28,10 @@ attackAnimationBottom = {
   npc_dota_hero_tinker = ACT_DOTA_CAST_ABILITY_1, -- ??
   npc_dota_hero_rattletrap = ACT_DOTA_CAST_ABILITY_2,
   npc_dota_hero_zuus = ACT_DOTA_CAST_ABILITY_1,  --??
+  npc_dota_hero_nyx_assassin = ACT_DOTA_CAST_ABILITY_5,
+  npc_dota_hero_axe = ACT_DOTA_ATTACK,
+  npc_dota_hero_phoenix = ACT_DOTA_SPAWN,
+
 }
 
 jumpAnimation = {
@@ -39,4 +46,8 @@ jumpAnimation = {
   npc_dota_hero_tinker = ACT_DOTA_VICTORY,
   npc_dota_hero_rattletrap = ACT_DOTA_SPAWN,
   npc_dota_hero_zuus = ACT_DOTA_TAUNT,
+  npc_dota_hero_nyx_assassin = ACT_DOTA_CAST_BURROW_END,
+  npc_dota_hero_axe = ACT_DOTA_TELEPORT_END,
+  npc_dota_hero_phoenix = ACT_DOTA_VICTORY,
+
 }

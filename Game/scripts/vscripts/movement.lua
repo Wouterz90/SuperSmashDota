@@ -21,9 +21,9 @@ function modifier_left:OnIntervalThink()
     return
   end
   if self:GetParent():isOnPlatform() or self:GetParent():HasModifier("modifier_jump") then
-    if self:GetParent().rotation and self:GetParent().rotation < 0  then
+    if self:GetParent().rotation and self:GetParent().rotation ~= 0  then
       --print(vec)
-      vec = Vector(x,vec[2],vec[3] - (self:GetParent().rotation))
+      vec = Vector(x,vec[2],vec[3] + (self:GetParent().rotation) * ((Laws.flMove * self:GetParent().movespeedFactor)/55))
       --print(vec)
       self:GetParent():SetAbsOrigin(vec)
     else
@@ -65,9 +65,9 @@ function modifier_right:OnIntervalThink()
     return
   end
   if self:GetParent():isOnPlatform() or self:GetParent():HasModifier("modifier_jump") then
-    if self:GetParent().rotation and self:GetParent().rotation > 0  then
+    if self:GetParent().rotation and self:GetParent().rotation ~= 0  then
       --print(vec)
-      vec = Vector(x,vec[2],vec[3] - (self:GetParent().rotation))
+      vec = Vector(x,vec[2],vec[3] - (self:GetParent().rotation) * ((Laws.flMove * self:GetParent().movespeedFactor)/55))
       --print(vec)
       self:GetParent():SetAbsOrigin(vec)
     else
@@ -100,7 +100,10 @@ function modifier_jump:OnCreated()
     if self:GetParent().jumps < 2 then
       self:GetParent().jumps = self:GetParent().jumps +1
       self:StartIntervalThink(1/32)
-      StartAnimation(self:GetCaster(), {duration=Laws.flJumpDuration, activity=jumpAnimation[self:GetParent():GetUnitName()], rate=1})
+      if self:GetParent():HasModifier("modifier_jump_rune_buff") then
+        self:GetParent():EmitSound("Hero_Zuus.Taunt.Jump")
+      end
+      
     end
   end
 end
@@ -109,17 +112,22 @@ end
 function modifier_jump:OnIntervalThink()
   -- handle lowest platform
   if self:GetParent():isUnderPlatform() and self:GetCaster():HasModifier("modifier_basic") then return end
-  --
+  --  
+  if not self.count then self.count = 0 end
+  self.count = self.count + 1
   local vec = self:GetParent():GetAbsOrigin()
-  local z = vec[3] + Laws.flJumpSpeed * self:GetParent().jumpfactor
+  local z = vec[3] + Laws.flJumpSpeed * self:GetParent().jumpfactor * math.pow(Laws.flJumpDeceleration, self.count)
   vec = Vector(vec[1],vec[2],z)
   self:GetParent():SetAbsOrigin(vec)
+  --[[if not self:GetParent():HasModifier("modifier_animation") then
+    StartAnimation(self:GetCaster(), {duration=Laws.flJumpDuration, activity=jumpAnimation[self:GetParent():GetUnitName()], rate=1})
+  end]]
 end
   
 
 function modifier_jump:OnDestroy()
   if IsServer() then
-   self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
+    self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
 end
 
@@ -144,11 +152,14 @@ function modifier_drop:OnIntervalThink()
   vec = Vector(vec[1],vec[2],z)
   local bCanDrop = true
   local my_platform
+  if not platform then return end
   for k,v in pairs(platform) do
-    if v.unitsOnPlatform[self:GetParent()] then
-      my_platform = v
-      bCanDrop = v.canDropThrough
-      break
+    if not v:IsNull() then
+      if v.unitsOnPlatform[self:GetParent()] then
+        my_platform = v
+        bCanDrop = v.canDropThrough
+        break
+      end
     end
   end
   for k,v in pairs(jumpModifiers) do
@@ -158,9 +169,9 @@ function modifier_drop:OnIntervalThink()
     end
   end
   if not self:GetParent():isOnPlatform() or self:GetParent().bUnitUsedDrop and bCanDrop then 
-    if not self:GetParent():HasModifier("modifier_animation") then
+    --[[if not self:GetParent():HasModifier("modifier_animation") then
       StartAnimation(self:GetCaster(), {duration=0.5, activity=ACT_DOTA_FLAIL, rate=1})
-    end
+    end]]
     self:GetParent():SetAbsOrigin(vec)
   else
     self:GetParent().jumps = 0
@@ -169,7 +180,9 @@ function modifier_drop:OnIntervalThink()
 end
 
 jumpModifiers = {
+  ["modifier_jump"] = true,
   ["modifier_mirana_leap_jump"] = true,
   ["modifier_earthshaker_jump"] = true,
-  ["modifier_jump"] = true,
+  ["modifier_storm_ball_lightning"] = true,
+  ["modifier_storm_side_grab"] = true,
 }

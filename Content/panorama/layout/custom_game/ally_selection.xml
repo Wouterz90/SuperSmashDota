@@ -32,9 +32,10 @@
         </Panel>
         <Panel id="Player2" class="AllySelectPanelPlayer2">
           <Panel id="Player2_SteamName" class="SteamName">
-             <Label text="2"/>
+             <Label id="steamname" text="2"/>
           </Panel>
           <Panel id="Player2_SteamAvatar" class="SteamAvatar">
+			<DOTAAvatarImage id="AvatarImageProfile"/>
           </Panel>
           <Button id="AllyPlayer2" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer2()">
             <Label text="Choose as ally" />
@@ -42,9 +43,10 @@
         </Panel>
         <Panel id="Player3" class="AllySelectPanelPlayer3">
           <Panel id="Player3_SteamName" class="SteamName">
-             <Label text="3"/>
+             <Label id="steamname" text="3"/>
           </Panel>
           <Panel id="Player3_SteamAvatar" class="SteamAvatar">
+			<DOTAAvatarImage id="AvatarImageProfile"/>
           </Panel>
           <Button id="AllyPlayer3" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer3()">
             <Label text="Choose as ally" />
@@ -52,9 +54,10 @@
         </Panel>
         <Panel id="Player4" class="AllySelectPanelPlayer4">
           <Panel id="Player4_SteamName" class="SteamName">
-             <Label text="4"/>
+             <Label id="steamname" text="4"/>
           </Panel>
           <Panel id="Player4_SteamAvatar" class="SteamAvatar">
+			<DOTAAvatarImage id="AvatarImageProfile"/>
           </Panel>
           <Button id="AllyPlayer4" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer4()">
             <Label text="Choose as ally" />

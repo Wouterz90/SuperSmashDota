@@ -1,0 +1,483 @@
+Old Spells
+
+"puck_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "wisp_tether_break"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/puck.lua"
+    "AbilityCastPoint"        "0.05"
+    "AbilityCooldown"       "0.45"
+    "precache"
+    {
+      "particle" "particles/puck_side/puck_side.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_puck.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "range"    "600"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "200"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "7"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "2"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "1200"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "0"
+      }
+    }
+  }
+
+  "tusk_special_mid"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "tusk_walrus_punch"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/tusk.lua"
+    "AbilityCastPoint"        "0.8"
+    "AnimationPlaybackRate"  "1"
+    "AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_4"
+    "AbilityCooldown"       "4"
+    "precache"
+    {
+      "particle" "  venge/venge_side.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_tusk.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "height"    "400"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "225"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "35"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "7"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "2"
+      }
+    }
+  }
+
+  "lina_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "lina_dragon_slave"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/lina.lua"
+    "AbilityCastPoint"        "0.5"
+    "AnimationPlaybackRate"  "1"
+    "AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_2"
+    "AbilityCooldown"       "4"
+    "precache"
+    {
+      //"particle" "particles/items_fx/cyclone.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"    "2"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "300"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "25"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "5"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "1"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "speed"    "200"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "range"    "400"
+      }
+      
+    }
+  }
+
+  "earthshaker_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "earthshaker_fissure"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/earthshaker.lua"
+    "AbilityCastPoint"        "0.4"
+    "AnimationPlaybackRate"  "1"
+    "AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_4"
+    "AbilityCooldown"       "6"
+    "precache"
+    {
+      "particle" "particles/items_fx/cyclone.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_earthshaker.vsndevts"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_tiny.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "range"    "800"
+      }
+      
+      "02"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"    "6"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "jump_height"    "250"
+      }
+    }
+  }
+
+  "mirana_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "mirana_invis"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/mirana.lua"
+    "AbilityCastPoint"        "0.1"
+    
+    "AbilityCooldown"       "8"
+    "precache"
+    {
+      "particle" "particles/items_fx/cyclone.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_mirana.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "0"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "0"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "jump_speed"    "40"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "invis_duration"    "2"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "speed_boost"    "40"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "buff_duration"    "3"
+      }
+    }
+  }
+  "tinker_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "tinker_march_of_the_machines"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/tinker.lua"
+    "AbilityCastPoint"        "0.8"
+    
+    "AbilityCooldown"       "12"
+    "precache"
+    {
+      "particle" "particles/items_fx/cyclone.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_tinker.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "8"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "500"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "300"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "damage_offset"    "2"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "machine_count"    "40"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"    "5"
+      }
+    }
+  }
+
+  "rattletrap_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "rattletrap_power_cogs"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/clockwerk.lua"
+    "AbilityCastPoint"        "0.3"
+    
+    "AbilityCooldown"       "6"
+    "precache"
+    {
+      "particle" "particles/clockwerk/rattletrap_hookshot.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_mirana.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"    "2.5"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "150"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "5"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "1"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "4000"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "cogs"          "6"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "explosion_radius"    "100"
+      }
+      "08"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "cog_duration"    "4"
+      }
+    }
+  }
+
+  "zuus_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "zuus_thundergods_wrath"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/zuus.lua"
+    "AbilityCastPoint"        "0.4"
+    "AbilityCooldown"       "9"
+    "precache"
+    {
+      "particle"  ""
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "25"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "5"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "2"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "250"
+      }
+    }
+  }
+
+  "nyx_assassin_special_top"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "nyx_assassin_vendetta"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/nyx.lua"
+    "AbilityCastPoint"        "0.2"
+    
+    "AbilityCooldown"       "4"
+    "precache"
+    {
+      "particle" "particles/items3_fx/lotus_orb_shield.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_nyx.vsndevts"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_monkey_king.vsndevts"
+
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"    "0.5"
+      }
+      "02"
+      {
+        "var_type"    "FIELD_INTEGER"
+        "movespeed"   "1400"
+      }
+      "03"
+      {
+        "var_type"  "FIELD_FLOAT"
+        "vendetta_duration" "4"
+      }
+      "04"
+      {
+        "var_type"  "FIELD_INTEGER"
+        "bonus_damage_pct" "50"
+      }
+      
+    }
+  }
+
+  "axe_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "axe_battle_hunger"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    "AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_4"
+    "ScriptFile"            "abilities/axe.lua"
+    "AbilityCastPoint"        "0.4"
+    "AbilityCooldown"       "6"
+    "precache"
+    {
+      "particle" "particles/axe/axe_battle_hunger.vpcf"
+      "particle"  "particles/units/heroes/hero_axe/axe_battle_hunger.vpcf"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_axe.vsndevts"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "600"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "200"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "20"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "range"       "0"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"       "0"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"       "4"
+      }
+    }
+  }

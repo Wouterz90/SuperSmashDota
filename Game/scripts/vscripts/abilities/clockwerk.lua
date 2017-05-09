@@ -1,6 +1,6 @@
-rattletrap_special_mid = class({})
+rattletrap_special_bottom = class({})
 -- Battery Assault(3s, per 0.5?)
-function rattletrap_special_mid:OnAbilityPhaseStart()
+function rattletrap_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
@@ -8,12 +8,12 @@ function rattletrap_special_mid:OnAbilityPhaseStart()
   return true
 end
 
-function rattletrap_special_mid:OnAbilityPhaseInterrupted()
+function rattletrap_special_bottom:OnAbilityPhaseInterrupted()
   local caster = self:GetCaster()
   EndAnimation(caster)
 end
 
-function rattletrap_special_mid:OnSpellStart()
+function rattletrap_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
   local explosion_radius = self:GetSpecialValueFor("explosion_radius")
@@ -63,7 +63,6 @@ function rattletrap_special_mid:OnSpellStart()
 
 end
 
--- Laser
 rattletrap_special_side = class({})
 function rattletrap_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
@@ -247,9 +246,9 @@ function rattletrap_special_top:OnProjectileHit(hTarget,vLocation)
 end
 
 
-rattletrap_special_bottom = class({})
+--rattletrap_special_bottom = class({})
 -- Cogs
-
+--[[
 function rattletrap_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
@@ -340,4 +339,4 @@ function modifier_rattletrap_cogs:OnDestroy()
   if IsServer() then
     UTIL_Remove(self:GetParent())
   end
-end
+end]]

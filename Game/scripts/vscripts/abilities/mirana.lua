@@ -1,6 +1,6 @@
-mirana_special_mid = class({})
+mirana_special_bottom = class({})
 
-function mirana_special_mid:OnAbilityPhaseStart()
+function mirana_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
@@ -8,12 +8,12 @@ function mirana_special_mid:OnAbilityPhaseStart()
   return true
 end
 
-function mirana_special_mid:OnAbilityPhaseInterrupted()
+function mirana_special_bottom:OnAbilityPhaseInterrupted()
   local caster = self:GetCaster()
   EndAnimation(caster)
 end
 
-function mirana_special_mid:OnSpellStart()
+function mirana_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
   ability = self
@@ -423,7 +423,7 @@ function modifier_mirana_leap_ms:OnDestroy()
   end
 end
 
-mirana_special_bottom = class({})
+--[[mirana_special_bottom = class({})
 
 function mirana_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
@@ -445,5 +445,5 @@ function mirana_special_bottom:OnSpellStart()
   caster:AddNewModifier(caster,self,"modifier_invisible",{duration = self:GetSpecialValueFor("invis_duration")})
     
   
-end
+end]]
 

@@ -194,7 +194,7 @@ function Attachments:ActivateAttachmentSetup()
     print("[Attachments.lua] Addon name must be specified.")
     return
   end]]
-
+  print("running")
   if not io then
     print("[Attachments.lua] Attachments Setup is only available in tools mode.")
     return
@@ -235,8 +235,8 @@ function Attachments:ActivateAttachmentSetup()
 end
 
 function Attachments:Attachment_DoSphere(args)
-  --DebugPrint('Attachment_DoSphere')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_DoSphere')
+  --DebugPrintTable(1,args)
 
   Attachments.doSphere = args.doSphere == 1
 
@@ -244,8 +244,8 @@ function Attachments:Attachment_DoSphere(args)
 end
 
 function Attachments:Attachment_DoAttach(args)
-  --DebugPrint('Attachment_DoAttach')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_DoAttach')
+  --DebugPrintTable(1,args)
 
   Attachments.doAttach = args.doAttach == 1
 
@@ -253,8 +253,8 @@ function Attachments:Attachment_DoAttach(args)
 end
 
 function Attachments:Attachment_Freeze(args)
-  --DebugPrint('Attachment_Freeze')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_Freeze')
+  --DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then
@@ -273,8 +273,8 @@ function Attachments:Attachment_Freeze(args)
 end
 
 function Attachments:Attachment_UpdateAttach(args)
-  DebugPrint('Attachment_UpdateAttach')
-  DebugPrintTable(args)
+  DebugPrint(1,'Attachment_UpdateAttach')
+  DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then
@@ -325,8 +325,8 @@ function Attachments:Attachment_UpdateAttach(args)
 end
 
 function Attachments:Attachment_SaveAttach(args)
-  --DebugPrint('Attachment_SaveAttach')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_SaveAttach')
+  --DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then
@@ -357,8 +357,8 @@ function Attachments:Attachment_SaveAttach(args)
 end
 
 function Attachments:Attachment_LoadAttach(args)
-  --DebugPrint('Attachment_LoadAttach')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_LoadAttach')
+  --DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then
@@ -395,8 +395,8 @@ function Attachments:Attachment_LoadAttach(args)
 end
 
 function Attachments:Attachment_HideAttach(args)
-  --DebugPrint('Attachment_HideAttach')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_HideAttach')
+  --DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then
@@ -421,8 +421,8 @@ function Attachments:Attachment_HideAttach(args)
 end
 
 function Attachments:Attachment_UpdateUnit(args)
-  --DebugPrint('Attachment_UpdateUnit')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_UpdateUnit')
+  --DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then
@@ -437,13 +437,13 @@ function Attachments:Attachment_UpdateUnit(args)
     end
   end
 
-  --DebugPrintTable(cosmetics)
+  --DebugPrintTable(1,cosmetics)
   CustomGameEventManager:Send_ServerToPlayer(PlayerResource:GetPlayer(args.PlayerID), "attachment_cosmetic_list", cosmetics )
 end
 
 function Attachments:Attachment_HideCosmetic(args)
-  --DebugPrint('Attachment_HideCosmetic')
-  --DebugPrintTable(args)
+  --DebugPrint(1,'Attachment_HideCosmetic')
+  --DebugPrintTable(1,args)
 
   local unit = EntIndexToHScript(args.index)
   if not unit then

@@ -1,6 +1,7 @@
-control = class({})
+control = control or class({})
 
 function control:KeyEvent(keys)
+  DebugPrint(2,"[SMASH] [CONTROLS] KeyEvent")
   local self = control
   --PrintTable(keys)
   local button = keys.button
@@ -13,14 +14,17 @@ function control:KeyEvent(keys)
   local mouseVector = self:FindMousePositionVector(keys.x,keys.y)
   local mouseVectorDistance = self:FindMousePositionVectorWithDistance(keys.x,keys.y)
 
-  if not hero or (string.find(button, "mouse") and action == "released") then
+  if not hero then
     return 
   end
-  if hero:HasModifier("modifier_smash_stun") then 
+  if hero:HasModifier("modifier_smash_stun") then
+    if action == "pressed" then
+      EmitSoundOnClient("General.Cancel",hero:GetPlayerOwner())
+    end
     return 
   end
   --
-
+  
   --print(hero:GetAbsOrigin().x)
   -- up
   if button == "up" and action == "pressed" then
@@ -73,52 +77,87 @@ function control:KeyEvent(keys)
   end
 
 
-  if button == "left_mouse" then
-    hero:Interrupt()
+  if button == "left_mouse" and action == "pressed" then
     local abName = "basic_attack_"..buttonDirection
-    hero:CastAbilityNoTarget(hero:FindAbilityByName(abName),-1)
+    local ab = hero:FindAbilityByName(abName)
+    if ab and not ab:IsInAbilityPhase() then
+      hero:Interrupt()
+      hero:CastAbilityNoTarget(ab,-1)
+      return
+    end
   end
 
   if button == "right_mouse" then
-    hero:Interrupt()
+
+    -- Activate shield if mid
+    if buttonDirection == "mid" then
+      local abName = "special_shield"
+      local ab = hero:FindAbilityByName(abName)
+      if action == "pressed" then
+        if not ab:IsInAbilityPhase() then
+          hero:Interrupt()
+          hero:CastAbilityNoTarget(ab,-1)
+          hero.isChargingAbility = ab
+          return
+        end
+      end
+    end
+
+    if action == "released" and hero.isChargingAbility then
+      
+      local newAbName = hero.isChargingAbility:GetAbilityName().."_release"
+      if string.find(newAbName, "special_shield") then
+        hero:Interrupt()
+        hero.isChargingAbility = nil
+        return
+      end
+      local newAb = hero:FindAbilityByName(newAbName)
+
+      if not newAb:IsInAbilityPhase() then
+        hero:Interrupt()
+        hero:CastAbilityNoTarget(newAb,-1)
+      end
+      hero.isChargingAbility = nil
+    end
+    
+    -- Rename left right to side and put the hero in the right direction
     if buttonDirection == "left" or buttonDirection == "right" then
       if buttonDirection == "right" then
         hero:SetForwardVector(Vector(1,0,0))
       else
         hero:SetForwardVector(Vector(-1,0,0))
       end
-      local heroName = hero:GetUnitName()
-      local abName = string.sub(heroName, 15).."_special_side"
-      hero:FindAbilityByName(abName).mouseVector = mouseVector
-      hero:FindAbilityByName(abName).mouseVectorDistance = mouseVectorDistance
-      hero:CastAbilityNoTarget(hero:FindAbilityByName(abName),-1)
-    end
-    if buttonDirection == "top" then
-      local heroName = hero:GetUnitName()
-      local abName = string.sub(heroName, 15).."_special_"..buttonDirection 
-      hero:FindAbilityByName(abName).mouseVector = mouseVector
-      hero:FindAbilityByName(abName).mouseVectorDistance = mouseVectorDistance
-      hero:CastAbilityNoTarget(hero:FindAbilityByName(abName),-1)
-    end
-    if buttonDirection == "mid" then
-      local heroName = hero:GetUnitName()
-      local abName = string.sub(heroName, 15).."_special_"..buttonDirection
-      hero:FindAbilityByName(abName).mouseVector = mouseVector
-      hero:FindAbilityByName(abName).mouseVectorDistance = mouseVectorDistance
-      hero:CastAbilityNoTarget(hero:FindAbilityByName(abName),-1)
+
+      buttonDirection = "side"
     end
     
-    if buttonDirection == "bottom" then
-      local heroName = hero:GetUnitName()
-      local abName = string.sub(heroName, 15).."_special_"..buttonDirection
+    local heroName = hero:GetUnitName()
+    local abName = string.sub(heroName, 15).."_special_"..buttonDirection
+    local ab = hero:FindAbilityByName(abName)
+
+    if action == "pressed" then 
+      if not ab:IsCooldownReady() then
+        EmitSoundOnClient("General.CastFail_AbilityInCooldown",PlayerResource:GetPlayer(PlayerID))
+        return
+      end
       hero:FindAbilityByName(abName).mouseVector = mouseVector
       hero:FindAbilityByName(abName).mouseVectorDistance = mouseVectorDistance
-      hero:CastAbilityNoTarget(hero:FindAbilityByName(abName),-1)
+      if not ab:IsInAbilityPhase() then
+        hero:Interrupt()
+        hero:CastAbilityNoTarget(ab,-1)
+      end
+      if chargeableAbilities[abName] then
+        hero.isChargingAbility = ab
+      return
+      end
     end
+
+    
   end
 end
 
 function control:FindMousePositionVector(x,y)
+  DebugPrint(2,"[SMASH] [CONTROLS] FindMousePositionVector")
   x = x*100
   y = y*100
   local a = (x-50)/50 
@@ -138,6 +177,7 @@ function control:FindMousePositionVector(x,y)
 end
 
 function control:FindMousePositionVectorWithDistance(x,y) -- This one does takes distance into account, clicking further will make the projectile go further!
+  DebugPrint(2,"[SMASH] [CONTROLS] FindMousePositionVectorWithDistance")
   x = x*100
   y = y*100
   local a = (x-50)/50 
@@ -146,6 +186,7 @@ function control:FindMousePositionVectorWithDistance(x,y) -- This one does takes
 end
 
 function control:FindMousePosition(x,y)
+  DebugPrint(2,"[SMASH] [CONTROLS] FindMousePosition")
   x = x*100
   y = y*100
   local top = {}

@@ -3,9 +3,13 @@ var colorPlayer1 = "red"
 var colorPlayer2 = "blue"
 var colorPlayer3 = "green"
 var colorPlayer4 = "yellow"
-
+var colorTeam1 = "red"
+var colorTeam2 = "blue"
+var debugging = 0
+var camera = 1
 function CameraSettings()
 { 
+	if(debugging >= 2) {$.Msg("camera CameraSettings") }
   // Do camera stuff
   GameUI.SetCameraYaw( 0 ); 
   GameUI.SetCameraPitchMin(10);
@@ -71,8 +75,9 @@ function CameraSettings()
     var player_1_life = (PlayerTables.GetTableValue(0, "lifes")).toString()
     
     Player1_Lifes.text = player_1_life.concat("x")
-    }  
-    if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+    }
+	Player1_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(0)-5))
+    /*if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
 	{
 	  Player1_Health.style.color = colorPlayer1
 	}
@@ -88,8 +93,9 @@ function CameraSettings()
 	{
 	  Player1_Health.style.color = colorPlayer4
 	}
+	*/
 	Player1_Health.style.opacity = 0.75
-
+	next.GetChild(0).FindChild("Player1_Bar").style.width = (PlayerTables.GetTableValue(0, "charges") * 1.5).toString().concat("px")
   }
   // Player 2
   if (PlayerTables.GetTableValue(1,"hero") > 0) 
@@ -109,8 +115,8 @@ function CameraSettings()
     var player_2_life = (PlayerTables.GetTableValue(1, "lifes")).toString()
     
     Player2_Lifes.text = player_2_life.concat("x")
-      
-    if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+    Player2_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(1)-5))  
+    /*if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
 		{
 		  Player2_Health.style.color = colorPlayer1
 		}
@@ -125,8 +131,9 @@ function CameraSettings()
 		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
 		{
 		  Player2_Health.style.color = colorPlayer4
-		}
+		}*/
 		Player2_Health.style.opacity = 0.75
+		next.GetChild(1).FindChild("Player2_Bar").style.width = (PlayerTables.GetTableValue(1, "charges") * 1.5).toString().concat("px")
 	}
 
   }
@@ -148,7 +155,8 @@ function CameraSettings()
 		var player_3_life = (PlayerTables.GetTableValue(2, "lifes")).toString()
 		
 		Player3_Lifes.text = player_3_life.concat("x")
-		if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+		Player3_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(2)-5))
+		/*if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
 		{
 		  Player3_Health.style.color = colorPlayer1
 		}
@@ -163,8 +171,9 @@ function CameraSettings()
 		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
 		{
 		  Player3_Health.style.color = colorPlayer4
-		}
+		}*/
 		Player3_Health.style.opacity = 0.75
+		next.GetChild(2).FindChild("Player3_Bar").style.width = (PlayerTables.GetTableValue(2, "charges") * 1.5).toString().concat("px")
     }  
   }
   // Player 4
@@ -185,7 +194,8 @@ function CameraSettings()
 		var player_4_life = (PlayerTables.GetTableValue(3, "lifes")).toString()
 		
 		Player4_Lifes.text = player_4_life.concat("x")
-		if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+		Player4_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(3)-5))
+		/*if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
 		{
 		  Player4_Health.style.color = colorPlayer1
 		}
@@ -200,19 +210,24 @@ function CameraSettings()
 		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
 		{
 		  Player4_Health.style.color = colorPlayer4
-		}
+		}*/
 		Player4_Health.style.opacity = 0.75
+		next.GetChild(3).FindChild("Player4_Bar").style.width = (PlayerTables.GetTableValue(3, "charges") * 1.5).toString().concat("px")
 	
     }  
   }
+
   
   // Repeat and repeat
-  $.Schedule(0.01, function(){CameraSettings();})
+	//if (camera == 1)
+	//{
+		$.Schedule(0.01, function(){CameraSettings();})
+	//}
 }
 
 
 function CancelCameraSettings(){
-  $.Msg("CancelCameraSettings")
+  if(debugging >= 1) {$.Msg("camera CancelCameraSettings") }
   // Place to control triangles
   var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("MainPanel")
   var topbox = next.GetChild(0)
@@ -231,14 +246,15 @@ function CancelCameraSettings(){
   GameUI.SetCameraLookAtPositionHeightOffset(700);
 
   // Cancel the updates
-  $.CancelScheduled(CameraSettings);
+  camera = 0
 }
 
 function CreatePlayerHeroAvatars()
 {
+	if(debugging >= 1) {$.Msg("camera CreatePlayerHeroAvatars") }
   $.Schedule(2, function()
-  
   {	
+	if(debugging >= 1) {$.Msg("camera CreatePlayerHeroAvatars2") }
 	// Create the avatars in the bottom for the players
     var playerIDs = Game.GetAllPlayerIDs()     
     for (var i = 1; i < playerIDs.length +1; i++) 
@@ -246,6 +262,7 @@ function CreatePlayerHeroAvatars()
       var string = "Player" + i + "_box"
       var panel =  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse(string)
       Player_Avatar = $.CreatePanel('DOTAHeroImage', panel, '');
+	  Player_Avatar.SetHasClass("Player_Avatar",true)
       var hero = Players.GetPlayerHeroEntityIndex(i-1)
       Player_Avatar.heroname = Entities.GetUnitName(hero);
       Player_Avatar.heroimagestyle = "portrait"
@@ -256,15 +273,106 @@ function CreatePlayerHeroAvatars()
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").abilityname = str.concat("_special_side")
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").abilityname = str.concat("_special_side")
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").abilityname = str.concat("_special_bottom")
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_topSilence").style.opacity = 0
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_leftSilence").style.opacity = 0
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_rightSilence").style.opacity = 0
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottomSilence").style.opacity = 0
 	
+	camera = 1
+
+
   })
 }
 
+function UpdateCooldowns(ability,panel)
+{
+	if(debugging >= 2) {$.Msg("camera UpdateCooldowns") }
+	var hero = Players.GetPlayerHeroEntityIndex(Players.GetLocalPlayer())
+	var heroName = Entities.GetUnitName(hero).substr(14)
+	var abilityName = Abilities.GetAbilityName(ability)
+	
+	if (Abilities.IsCooldownReady(ability))
+	{
+		panel.style.clip = "radial(50% 50%, 0deg, " + 100 * 	360 + "deg)"
+		panel.style.opacity = 1
+	}
+	else 
+	{
+		var cooldownLength = Abilities.GetCooldownLength( ability );
+		var cooldownRemaining = Abilities.GetCooldownTimeRemaining( ability );
+		var cooldownPercent = 1 -(cooldownRemaining / cooldownLength);
+		panel.style.opacity = 0.75
+		panel.style.clip = "radial(50% 50%, 0deg, " + cooldownPercent * 360 + "deg)";
+		$.Schedule(0.01,function(){UpdateCooldowns(ability,panel);})
+	}	
+		
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").abilityname 	
+}
+
+function ShowCooldown(table)
+{	
+	if(debugging >= 1) {$.Msg("camera ShowCooldown") }
+	if (table.sAbilityName.search("_special_top") !== -1)
+	{
+		//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").style.opacity = 0.25
+		//$.Schedule(table.nCooldown,function()
+		//{
+			//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").style.opacity = 1
+			UpdateCooldowns(table.ability,$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top"))
+		//})
+	}	
+	if (table.sAbilityName.search("_special_side") !== -1)
+	{
+		//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").style.opacity = 0.25
+		//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").style.opacity = 0.25
+		//$.Schedule(table.nCooldown,function()
+		//{
+			//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").style.opacity = 1
+			//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").style.opacity = 1
+			UpdateCooldowns(table.ability,$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left"))
+			UpdateCooldowns(table.ability,$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right"))
+		//})
+	}
+	if (table.sAbilityName.search("_special_bottom") !== -1)
+	{
+		//$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").style.opacity = 0.25
+		//$.Schedule(table.nCooldown,function()
+		//{
+		//	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").style.opacity = 1
+			UpdateCooldowns(table.ability,$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom"))
+		//})
+	}
+
+}
+
+
+function ShowSilence(table)
+{
+	if(debugging >= 2) {$.Msg("camera ShowSilence") }
+	if ((Game.GetGameTime()-table.flStartTime) <= table.flDuration)
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_topSilence").style.opacity = 1
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_leftSilence").style.opacity = 1
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_rightSilence").style.opacity = 1
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottomSilence").style.opacity = 1
+		$.Schedule(0.01,function(){ShowSilence(table);})
+	}
+	else 
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_topSilence").style.opacity = 0
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_leftSilence").style.opacity = 0
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_rightSilence").style.opacity = 0
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottomSilence").style.opacity = 0
+	}
+}
 
 (function() {
   GameEvents.Subscribe( "kill_pick_screen", CreatePlayerHeroAvatars)
   GameEvents.Subscribe( "fix_camera", CameraSettings)
-  GameEvents.Subscribe( "reset_camera", CameraSettings)
+  GameEvents.Subscribe( "reset_camera", CancelCameraSettings)
+  GameEvents.Subscribe( "show_cooldown", ShowCooldown)
+  GameEvents.Subscribe( "show_silence", ShowSilence)
+  
 })();
 
 

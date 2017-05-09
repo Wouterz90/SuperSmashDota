@@ -68,24 +68,31 @@ function tinker_special_side:OnSpellStart()
   local range = self:GetSpecialValueFor("range")
   local vector = self.mouseVector
   local ability = self
+  if ability.unit then
+    if not ability.unit:IsRealHero() then
+      UTIL_Remove(ability.unit)
+    end
+    ability.unit = nil
+  end
+  
 
   caster:EmitSound("Hero_Tinker.Laser")
 
   -- Fire a projectile to determine if a unit would be hit
   local projectile = {
     --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
-    EffectName = "particles/tinker/tinker_laser.vpcf",
+    EffectName = "",
     --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
     --EeffectName = "",
-    vSpawnOrigin = caster:GetAbsOrigin(),
+    vSpawnOrigin = caster:GetAbsOrigin() + caster:GetForwardVector() * 40 + Vector(0,0,0),
     --vSpawnOrigin = {unit=caster, attach="attach_attack1", offset=Vector(0,0,0)},
     fDistance = self:GetSpecialValueFor("range"),
     fStartRadius = 200,
     fEndRadius = 200,
     Source = caster,
-    fExpireTime = 0.5,--self:GetSpecialValueFor("duration"),
-    vVelocity = self.mouseVector * 8000 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_DESTROY ,
+    --fExpireTime = 0.5,--self:GetSpecialValueFor("duration"),
+    vVelocity = caster:GetForwardVector() * 8000 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
+    UnitBehavior = PROJECTILES_DESTROY,
     bMultipleHits = false,
     bIgnoreSource = true,
     TreeBehavior = PROJECTILES_NOTHING,
@@ -104,8 +111,8 @@ function tinker_special_side:OnSpellStart()
     bFlyingVision = false,
     fVisionTickTime = .1,
     fVisionLingerDuration = 1,
-    draw = false,
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
+    draw = IsInToolsMode(), -- false,
+    UnitTest = function(self, unit) print(unit:GetUnitName()) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
     OnUnitHit = function(self, unit) 
       local damageTable = {
         victim = unit,
@@ -115,16 +122,20 @@ function tinker_special_side:OnSpellStart()
         ability = ability,
       }
       ApplyDamage(damageTable)
+      unit:AddNewModifier(caster,ability,"modifier_smash_disarm",{duration = ability:GetSpecialValueFor("disarm_duration")})  
       caster:EmitSound("Hero_Tinker.LaserImpact")
+      ability.unit = unit
     end,
     OnFinish = function(self,unit)
-      if not unit.GetUnitName then
-        unit = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+ability.mouseVector*range,false,caster,caster:GetOwner(),caster:GetTeamNumber())
-        unit:SetAbsOrigin(caster:GetAbsOrigin()+ability.mouseVector*range)
-        unit:FindAbilityByName("dummy_unit"):SetLevel(1)  
+      if not ability.unit then
+        ability.unit = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+(caster:GetForwardVector()*range),false,caster,caster:GetOwner(),caster:GetTeamNumber())
+        ability.unit:SetAbsOrigin(unit+Vector(0,0,150))
+        ability.unit:FindAbilityByName("dummy_unit"):SetLevel(1)
       end
+
+      -- Do the visual stuff
       local projTable = {
-        Target = unit,
+        Target = ability.unit,
         Source = caster,
         Ability = ability,
         EffectName = "particles/units/heroes/hero_tinker/tinker_laser.vpcf",
@@ -140,7 +151,7 @@ function tinker_special_side:OnSpellStart()
 end
 
 -- March
-tinker_special_bottom = class({})
+--[[tinker_special_bottom = class({})
 function tinker_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
@@ -212,11 +223,11 @@ function tinker_special_bottom:OnSpellStart()
     
   end
 end
-
+]]
 -- Rockets -- Rockets are slowly homing and appear after some time
-tinker_special_mid = class({})
+tinker_special_bottom = class({})
 
-function tinker_special_mid:OnAbilityPhaseStart()
+function tinker_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
@@ -224,12 +235,12 @@ function tinker_special_mid:OnAbilityPhaseStart()
   return true
 end
 
-function tinker_special_mid:OnAbilityPhaseInterrupted()
+function tinker_special_bottom:OnAbilityPhaseInterrupted()
   local caster = self:GetCaster()
   EndAnimation(caster)
 end
 
-function tinker_special_mid:OnSpellStart()
+function tinker_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
   local ability = self
@@ -254,7 +265,7 @@ function tinker_special_mid:OnSpellStart()
       hAbility = self,
       flExpireTime = 4,
       bDestroyOnGroundHit = true,
-      flRadius = 10,
+      flRadius = 50,
       DestructionEffectName = "particles/units/heroes/hero_tinker/tinker_missile_dud.vpcf",
       HitEffectNme = "particles/units/heroes/hero_gyrocopter/gyro_guided_missile_explosion.vpcf",
       OnProjectileHitUnit = function(params, projectileID)
@@ -299,7 +310,7 @@ function tinker_special_mid:OnSpellStart()
       hAbility = self,
       flExpireTime = 4,
       bDestroyOnGroundHit = true,
-      flRadius = 10,
+      flRadius = 50,
       DestructionEffectName = "particles/units/heroes/hero_tinker/tinker_missile_dud.vpcf",
       HitEffectNme = "particles/units/heroes/hero_gyrocopter/gyro_guided_missile_explosion.vpcf",
       OnProjectileHitUnit = function(params, projectileID)
@@ -328,8 +339,6 @@ function tinker_special_mid:OnSpellStart()
             ParticleManager:ReleaseParticleIndex(particle)
           end)
       end,
-
-      
     }
     TrackingProjectiles:Projectile(table)
   end

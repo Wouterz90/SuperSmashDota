@@ -15,6 +15,9 @@ LinkLuaModifier("modifier_smash_disarm","modifiers.lua",LUA_MODIFIER_MOTION_NONE
 
 modifier_smash_silence = class({})
 
+function modifier_smash_silence:GetAttributes()
+  return MODIFIER_ATTRIBUTE_MULTIPLE
+end
 function modifier_smash_silence:GetEffectName()
   return "particles/generic_gameplay/generic_silenced.vpcf"
 end
@@ -23,7 +26,37 @@ function modifier_smash_silence:GetEffectAttachType()
   return PATTACH_OVERHEAD_FOLLOW
 end
 
+function modifier_smash_silence:OnCreated()
+  if IsServer() then
+    CustomGameEventManager:Send_ServerToPlayer(self:GetParent():GetPlayerOwner(),"show_silence",{flStartTime = GameRules:GetGameTime(), flDuration = self:GetRemainingTime()})
+  end
+end
+
+
+
+--[[function modifier_smash_silence:DeclareFunctions()
+  local funcs = {
+    MODIFIER_EVENT_ON_ABILITY_START,
+  }
+  return funcs
+end
+
+function modifier_smash_silence:OnAbilityStart(keys)
+  if IsClient() then return end
+  if keys.unit ~= self:GetParent() then return end
+
+  local abilityName = keys.ability:GetAbilityName()
+  if string.find(abilityName, "special") then
+    self:GetParent():Interrupt()
+  end
+end]]
+
+
 modifier_smash_stun = class({})
+
+function modifier_smash_stun:GetAttributes()
+  return MODIFIER_ATTRIBUTE_MULTIPLE
+end
 
 function modifier_smash_stun:GetEffectName()
   return "particles/generic_gameplay/generic_stunned.vpcf"
@@ -46,6 +79,10 @@ end
 
 modifier_smash_disarm = class({})
 
+function modifier_smash_disarm:GetAttributes()
+  return MODIFIER_ATTRIBUTE_MULTIPLE
+end
+
 function modifier_smash_disarm:GetEffectName()
   return "particles/generic_gameplay/generic_disarm.vpcf"
 end
@@ -53,6 +90,23 @@ end
 function modifier_smash_disarm:GetEffectAttachType()
   return PATTACH_OVERHEAD_FOLLOW
 end
+
+--[[function modifier_smash_disarm:DeclareFunctions()
+  local funcs = {
+    MODIFIER_EVENT_ON_ABILITY_START,
+  }
+  return funcs
+end
+
+function modifier_smash_disarm:OnAbilityStart(keys)
+  if IsClient() then return end
+  if keys.unit ~= self:GetParent() then return end
+
+  local abilityName = keys.ability:GetAbilityName()
+  if string.find(abilityName, "basic_attack") then
+    self:GetParent():Interrupt()
+  end
+end]]
 
 modifier_smash_root = class({})
 function modifier_smash_root:OnCreated()

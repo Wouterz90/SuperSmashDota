@@ -68,7 +68,6 @@ end]]
 function modifier_lina_cyclone:CheckState()
   local funcs = {
     [MODIFIER_STATE_INVULNERABLE] = true,
-    [MODIFIER_STATE_SILENCED] = true,
   }
   return funcs
 end
@@ -88,8 +87,8 @@ function lina_special_side:OnSpellStart()
 
   caster:EmitSound("Ability.LagunaBladeImpact")
   -- Create a dummy unit to show the laguna blade
-  local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+self.mouseVector*range,false,caster,caster:GetOwner(),caster:GetTeamNumber())
-  dummy:SetAbsOrigin(caster:GetAbsOrigin()+self.mouseVector*range)
+  local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+caster:GetForwardVector()*range,false,caster,caster:GetOwner(),caster:GetTeamNumber())
+  dummy:SetAbsOrigin(caster:GetAbsOrigin()+(Vector(0,0,150))+caster:GetForwardVector()*range)
   dummy:FindAbilityByName("dummy_unit"):SetLevel(1)
   -- Fire the laguna blade at the dummy
   local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_laguna_blade.vpcf",PATTACH_CUSTOMORIGIN,nil)
@@ -101,21 +100,20 @@ function lina_special_side:OnSpellStart()
     ParticleManager:DestroyParticle(particle,false)
     ParticleManager:ReleaseParticleIndex(particle)
   end)
-
   -- Do the actual projectile
   local projectile = {
     --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
     EffectName = "",
-    --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
+    --EffectName = "particles/axe/axe_battle_hunger.vpcf",
     --EeffectName = "",
-    vSpawnOrigin = caster:GetAbsOrigin(),
+    vSpawnOrigin = caster:GetAbsOrigin()+ caster:GetForwardVector() * 10 + Vector(0,0,150),
     --vSpawnOrigin = {unit=caster, attach="attach_attack1", offset=Vector(0,0,100)},
     fDistance = range,--self:GetSpecialValueFor("distance"),
     fStartRadius = 200,
     fEndRadius = 200,
     Source = caster,
-    fExpireTime = 0.25,--self:GetSpecialValueFor("duration"),
-    vVelocity = self.mouseVector * range*4 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
+    --fExpireTime = 0.25,--self:GetSpecialValueFor("duration"),
+    vVelocity =  caster:GetForwardVector() * range*4, --self.mouseVector * range*4 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
     UnitBehavior = PROJECTILES_NOTHING ,
     bMultipleHits = false,
     bIgnoreSource = true,
@@ -135,7 +133,7 @@ function lina_special_side:OnSpellStart()
     bFlyingVision = false,
     fVisionTickTime = .1,
     fVisionLingerDuration = 1,
-    draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+    draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
     --iPositionCP = 0,
     --iVelocityCP = 1,
     --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
@@ -164,21 +162,22 @@ function lina_special_side:OnSpellStart()
       ApplyDamage(damageTable)
     end,
     OnFinish = function(self,unit)
+    print( unit)
     end,
   }
   local proj = Projectiles:CreateProjectile(projectile)
 end
 
-lina_special_mid = class({})
+lina_special_bottom = class({})
 
-function lina_special_mid:OnAbilityPhaseStart()
+function lina_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_2, rate=1.5})
 
   return true
 end
-function lina_special_mid:OnSpellStart()
+function lina_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
   local cast_delay = self:GetSpecialValueFor("cast_delay")
@@ -238,7 +237,7 @@ function lina_special_mid:OnSpellStart()
     end)
   end)
 end
-
+--[[
 lina_special_bottom = class({})
 function lina_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
@@ -271,10 +270,10 @@ function lina_special_bottom:OnSpellStart()
       bCutTrees = false,
       bTreeFullCollision = false,
       WallBehavior = PROJECTILES_NOTHING,
-      GroundBehavior = PROJECTILES_FOLLOW,
+      GroundBehavior = PROJECTILES_BOUNCE,
       fGroundOffset = 200,
       nChangeMax = 1,
-      bRecreateOnChange = true,
+      bRecreateOnChange = false,
       bZCheck = true,
       bGroundLock = false,
       bProvidesVision = true,
@@ -284,21 +283,7 @@ function lina_special_bottom:OnSpellStart()
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
       draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-      --iPositionCP = 0,
-      --iVelocityCP = 1,
-      --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
-      --ControlPointForwards = {[4]=hero:GetForwardVector() * -1},
-      --ControlPointOrientations = {[1]={hero:GetForwardVector() * -1, hero:GetForwardVector() * -1, hero:GetForwardVector() * -1}},
-      --[[ControlPointEntityAttaches = {[0]={
-        unit = hero,
-        pattach = PATTACH_ABSORIGIN_FOLLOW,
-        attachPoint = "attach_attack1", -- nil
-        origin = Vector(0,0,0)
-      }},]]
-      --fRehitDelay = .3,
-      --fChangeDelay = 1,
-      --fRadiusStep = 10,
-      --bUseFindUnitsInRadius = false,
+      
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
       OnUnitHit = function(self, unit) 
@@ -317,4 +302,4 @@ function lina_special_bottom:OnSpellStart()
     local proj = Projectiles:CreateProjectile(projectile)
     
   
-end
+end]]

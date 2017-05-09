@@ -1,12 +1,42 @@
+-- Basic values
+Laws = {
+
+  
+  flJumpSpeed = 25,
+  flJumpDuration = 20/32,
+  flJumpDeceleration = 0.925,
+  flDropSpeed = 25,
+  flMove = 16,
+
+  flPushDeceleration = 0.5, -- 0.5 per second
+
+
+  flMinDamage = 4,
+  flMaxDamage = 8,
+  flAttackRange = 110,
+  flSideAttackFactor = 1.5,
+
+  flMaxHeight = 3000,
+  flMinHeight = -100,
+
+  flRuneDuration = 10,
+}
+Laws.flPushDeceleration = math.pow(Laws.flPushDeceleration,1/32) -- Converting the number to 1/32th
+
+
+
 -- This is the primary barebones gamemode script and should be used to assist in initializing your game mode
 BAREBONES_VERSION = "1.00"
 
 -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
--- You can also change the cvar 'barebones_spew' at any time to 1 or 0 for output/no output
-BAREBONES_DEBUG_SPEW = false
+-- You can also change the cvar 'barebones_spew' at any time.
+-- 0 is no debug calls, 1 is giving function names, 2 also includes timers and loops.
+LUA_DEBUG_SPEW = 0
+PANORAMA_DEBUG_SPEW = 0
+
 
 if GameMode == nil then
-    DebugPrint( '[BAREBONES] creating barebones game mode' )
+    DebugPrint(1, '[BAREBONES] creating barebones game mode' )
     _G.GameMode = class({})
 end
 -- STATS! 
@@ -42,6 +72,14 @@ require('internal/gamemode')
 require('internal/events')
 require('internal/util')
 
+
+-- File to handle setup, init ally pick screen
+require('game_setup/ally_selection')
+-- File everything about hero picks
+require('game_setup/hero_selection')
+-- Store the hero ratings based on the balance tool based on ability values(not game stats!)
+require('game_setup/heroratingvalues')
+require('tables/chargeable_abilities')
 -- settings.lua is where you can specify many different properties for your game mode and is one of the core barebones files.
 require('settings')
 -- events.lua is where you can specify the actions to be taken when any event occurs and is one of the core barebones files.
@@ -58,12 +96,9 @@ require('maps')
 require('platforms')
 -- File to handle to pushing back, requires damagefilter
 require('push')
--- File to handle setup
-require('game_setup/ally_selection')
--- File everything about hero picks
-require('game_setup/hero_selection')
--- Store the hero ratings based on the balance tool based on ability values(not game stats!)
-require('game_setup/heroratingvalues')
+-- Handle the creation and effects of items
+require('items')
+
 
 
 
@@ -90,7 +125,7 @@ end
   This function should generally only be used if the Precache() function in addon_game_mode.lua is not working.
 ]]
 function GameMode:PostLoadPrecache()
-  DebugPrint("[BAREBONES] Performing Post-Load precache")    
+  DebugPrint(1,"[BAREBONES] Performing Post-Load precache")    
   --PrecacheItemByNameAsync("item_example_item", function(...) end)
   --PrecacheItemByNameAsync("example_ability", function(...) end)
 
@@ -104,7 +139,7 @@ end
   It can be used to initialize state that isn't initializeable in InitGameMode() but needs to be done before everyone loads in.
 ]]
 function GameMode:OnFirstPlayerLoaded()
-  DebugPrint("[BAREBONES] First Player has loaded")
+  DebugPrint(1,"[BAREBONES] First Player has loaded")
 end
 
 --[[
@@ -112,17 +147,21 @@ end
   It can be used to initialize non-hero player state or adjust the hero selection (i.e. force random etc)
 ]]
 function GameMode:OnAllPlayersLoaded()
-  DebugPrint("[BAREBONES] All Players have loaded into the game")
+  DebugPrint(1,"[BAREBONES] All Players have loaded into the game")
   spawnPlatform()
-  
+  GameMode.Players = {}
+
 
   for i=0,3 do
-    if PlayerResource:GetPlayer(i) then
+    if PlayerResource:IsValidPlayerID(i) then
       local player = PlayerResource:GetPlayer(i)
       if player ~= nil then
         --player:MakeRandomHeroSelection()
         --PlayerResource:SetHasRepicked(i)
         PlayerTables:CreateTable(tostring(i).."heroes",{},true)
+        player.id = i
+        player.team = i+2
+        table.insert(GameMode.Players, player)
       end
     end
   end
@@ -140,6 +179,7 @@ end
   The hero parameter is the hero entity that just spawned in
 ]]
 function GameMode:OnHeroInGame(hero)
+  DebugPrint(1,"[SMASH] "..hero:GetUnitName().." has spawned")
   if hero:GetUnitName() == "npc_dota_hero_wisp" then
     hero:SetAttackCapability(DOTA_UNIT_CAP_NO_ATTACK)
     hero:AddNoDraw() 
@@ -157,29 +197,34 @@ function GameMode:OnHeroInGame(hero)
   
   --print("table created for "..hero:GetUnitName())
   if hero:IsRealHero() then
-    DebugPrint("[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
+    DebugPrint(1,"[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
     -- Lock the camera on our hero
     CustomGameEventManager:Send_ServerToPlayer(hero:GetPlayerOwner(),"fix_camera",{})
     --PlayerResource:SetCameraTarget(hero:GetPlayerID(),hero)
     --GameRules:GetGameModeEntity():SetCameraDistanceOverride(1600)
-    
-    -- Init hero values here
+
+
+    -- Init hero values here -- They can be adjusted personally somewhere after, eg. axe more force, less speed
     hero.jumps = 0
     hero.amplify = 1
     hero.movespeedFactor = 1
     hero.attackspeedFactor = 1
     hero.jumpfactor = 1
-    -- Place the hero
-    --hero:SetAbsOrigin(Vector(0,0,RandomInt(-500,500)))
-    --PlayerResource:ReplaceHeroWith(hero:GetPlayerOwnerID(),hero:GetUnitName(),0,0)
+    hero.attackDamageFactor = 1
+    hero.spellDamageFactor = 1
+
+    -- For future use, like starting with missing 300 health?ba
+    hero:SetHealth(hero:GetMaxHealth())
+
 
     -- Make sure we control the hero and it doesn't control itself
     hero:SetAttackCapability(DOTA_UNIT_CAP_NO_ATTACK)
     hero:SetMoveCapability(DOTA_UNIT_CAP_MOVE_NONE)
     hero:SetRespawnsDisabled(false)
-    hero:AddNewModifier(hero,nil,"modifier_jump",{duration = 1})
-    Timers:CreateTimer(1.5,function()
+    --hero:AddNewModifier(hero,nil,"modifier_jump",{duration = 1})
+    Timers:CreateTimer(1/30,function()
       if hero then
+        DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnHeroInGame")
         hero:AddNewModifier(hero,nil,"modifier_basic",{})
       end
     end)
@@ -189,8 +234,17 @@ function GameMode:OnHeroInGame(hero)
     hero:AddAbility("basic_attack_bottom")
     hero:AddAbility("basic_attack_left")
     hero:AddAbility("basic_attack_right")
+
+    hero:AddAbility("special_shield")
     
     PrecacheUnitByNameAsync(hero:GetUnitName(), function(...) end)
+    for i =0, 23 do 
+      local abil = hero:GetAbilityByIndex(i)
+      if abil and chargeableAbilities[abil:GetAbilityName()] then
+        hero:AddAbility(abil:GetAbilityName().."_release")
+      end
+    end
+
     for i =0, 23 do
       local abil = hero:GetAbilityByIndex(i)
       if abil then
@@ -198,17 +252,17 @@ function GameMode:OnHeroInGame(hero)
         abil:SetLevel(1)
       end
     end
-
   end
 end
 
 
 -- An NPC has spawned somewhere in game.  This includes heroes
 function GameMode:OnNPCSpawned(keys)
-  DebugPrint("[BAREBONES] NPC Spawned")
-  DebugPrintTable(keys)
+  DebugPrint(1,"[BAREBONES] NPC Spawned")
+  DebugPrintTable(1,keys)
   local npc = EntIndexToHScript(keys.entindex)
   Timers:CreateTimer(0.1,function()
+    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnNPCSpawned1")
     if not npc:IsNull() and npc:IsRealHero() then
       local hero = npc
       if hero:GetUnitName() == "npc_dota_hero_wisp" then
@@ -218,7 +272,8 @@ function GameMode:OnNPCSpawned(keys)
       else
         hero:RemoveNoDraw()
       end
-      
+
+
       hero:RemoveModifierByName("modifer_smash_stun")
       --print(hero:GetUnitName()..hero:GetPlayerOwnerID())
       if not hero.firstRespawn then
@@ -227,12 +282,14 @@ function GameMode:OnNPCSpawned(keys)
         end 
         PlayerTables:CreateTable(tostring(hero:GetPlayerOwnerID()),{lifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value},true)
         PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()),"hero",hero:entindex())
+        PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()),"charges",0)
         hero.firstRespawn = true  
       end
       hero:SetAbsOrigin(Vector(RandomInt(-platform[1].radius,platform[1].radius),0,600))
-      hero.jumps = 0 
       hero:AddNewModifier(hero,nil,"modifier_jump",{duration=1})
-      Timers:CreateTimer(1.5,function()
+      hero.jumps = 0 
+      Timers:CreateTimer(1/32,function()
+        DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnNPCSpawned2")
         hero:AddNewModifier(hero,nil,"modifier_basic",{})
       end)
     end
@@ -247,7 +304,7 @@ end
 ]]
 function GameMode:OnGameInProgress()
 
-  DebugPrint("[BAREBONES] The game has officially begun")
+  DebugPrint(1,"[BAREBONES] The game has officially begun")
   -- Allow the teams to have 2 players per team
   GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_GOODGUYS,2)
   GameRules:SetCustomGameTeamMaxPlayers(DOTA_TEAM_BADGUYS,2)
@@ -261,28 +318,49 @@ function GameMode:OnGameInProgress()
     PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
   }
 
+  Timers:CreateTimer(RandomInt(15,60),function()
+    if platform then
+      DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnGameInProgress")
+      items:CreateItem({categoryName = "runes",layAroundDuration=10})
+      return RandomInt(15,60)
+    end
+  end)
+
   statCollection:setFlags(GameMode.flags) 
   statCollection:sendStage2() 
+
   -- Set the format to ffa if there aren't 4 players
-  if PlayerResource:GetTeamPlayerCount() ~= 4 then
+  --[[if PlayerResource:GetTeamPlayerCount() ~= 4 and not IsInToolsMode() then
     CustomNetTables:SetTableValue("settings","Format",{value = "1"})
-  end
+  end]]
   if CustomNetTables:GetTableValue("settings","Format").value ~= "2" then -- not 2v2
     --Timers:CreateTimer(0.25,function()
       GameMode:HeroPickStarted()
     --  end)
+  else
+    
   end
   
 end
 function GameMode:Reset()
+  DebugPrint(1,"[SMASH] The game is resetting after a round")
   if not self.playersLeft then self.playersLeft = 0 end
+
+  for i=0,DOTA_MAX_TEAM_PLAYERS do
+    if PlayerResource:IsValidPlayerID(i) and PlayerResource:GetSelectedHeroEntity(i) then
+      PlayerResource:GetSelectedHeroEntity(i):RemoveModifierByName("modifier_basic")
+      PlayerResource:GetSelectedHeroEntity(i):RemoveModifierByName("modifier_drop")
+    end
+  end
+
+
 
   -- Remove all the platforms
   ClearPlatforms()
 
-  if PlayerResource:GetTeamPlayerCount() <= 1 and not IsInToolsMode() then
+  if GameMode:FindTheOnlyConnectedTeam() and not IsInToolsMode() then
     statCollection:submitRound(true)
-    DeclareWinningTeam(DOTA_TEAM_GOODGUYS)
+    DeclareWinningTeam(GameMode:FindTheOnlyConnectedTeam())
     return
   end
 
@@ -293,18 +371,22 @@ function GameMode:Reset()
     CustomNetTables:SetTableValue("settings","nAmountOfRounds",{value = "2"})
   end
   if tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) ~= -1 and resetcount >= tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) then 
+    DebugPrint(1,"[SMASH] The last round has been played")
     local score = 0
     local winner = DOTA_TEAM_GOODGUYS
-    for i=0,PlayerResource:GetTeamPlayerCount()-1 do
-      assists = PlayerResource:GetAssists(i)
-      if assists > score then
-        score = assists
-        winner = PlayerResource:GetTeam(i)
+    for i=0,3 do
+      if PlayerResource:IsValidPlayerID(i) then
+        assists = PlayerResource:GetAssists(i)
+        if assists > score then
+          score = assists
+          winner = PlayerResource:GetTeam(i)
+        end
       end
     end
+    CustomGameEventManager:Send_ServerToAllClients("reset_camera",{})
     statCollection:submitRound(true)
     DeclareWinningTeam(winner)
-    
+    return
   else
     statCollection:submitRound(false)
     spawnPlatform()
@@ -315,6 +397,14 @@ function GameMode:Reset()
   GameMode:MapPickStarted()
   
   ]]
+  -- Stun all alive heroes first
+  for i=0,PlayerResource:GetTeamPlayerCount()-1 do
+      if PlayerResource:IsValidPlayerID(i) then
+        if PlayerResource:GetSelectedHeroEntity(i) and PlayerResource:GetSelectedHeroEntity(i):IsAlive() then
+          PlayerResource:GetSelectedHeroEntity(i):AddNewModifier(PlayerResource:GetSelectedHeroEntity(i),nil,"modifier_smash_stun",{})
+        end
+      end
+    end
 
   -- Hero pick stuff
   GameMode.heroesPicked = nil
@@ -327,7 +417,7 @@ function GameMode:Reset()
 
 end
 function DeclareWinningTeam(winningTeam)
-
+  DebugPrint(1,"[SMASH] Winning team has been declared")
   GameRules:SetGameWinner(winningTeam)
 end
 
@@ -336,17 +426,19 @@ end
 -- It can be used to pre-initialize any values/tables that will be needed later
 function GameMode:InitGameMode()
   GameMode = self
-
+  DebugPrint(1,'[BAREBONES] Starting to load Barebones gamemode...')
   self:SetupGame()
 
   for k,v in pairs(Rules) do
     CustomNetTables:SetTableValue("settings", k, {value=v})
   end
-
+  -- Update the value for debugging
+  CustomNetTables:SetTableValue("settings","debug_spew",{value =PANORAMA_DEBUG_SPEW})
+  -- Send the hero ratings to the client. 
   HeroRatingsPlayerTable()
 
   
-  DebugPrint('[BAREBONES] Starting to load Barebones gamemode...')
+  
   GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(GameMode,"FilterExecuteOrder"),self)
   GameRules:GetGameModeEntity():SetDamageFilter(Dynamic_Wrap(push,"DamageFilter"),self)
   GameRules:GetGameModeEntity():SetModifierGainedFilter(Dynamic_Wrap(GameMode,"ModifierGainedFilter"),self)
@@ -364,7 +456,7 @@ function GameMode:InitGameMode()
   Convars:RegisterCommand( "reload_kv", Dynamic_Wrap(GameMode, 'Reload_KeyValues'), "A console command example", FCVAR_CHEAT )
 
 
-  DebugPrint('[BAREBONES] Done loading Barebones gamemode!\n\n')
+  DebugPrint(1,'[BAREBONES] Done loading Barebones gamemode!\n\n')
 end
 
 
@@ -389,40 +481,27 @@ end
 
 
 function GameMode:SetupGame()
-  
+  DebugPrint(1,"[SMASH] Setting up values and gamemode")
   -- Store values
   allowedHeroes = {
   -- Str
     "npc_dota_hero_tusk",
     "npc_dota_hero_earthshaker",
     "npc_dota_hero_rattletrap",
+    "npc_dota_hero_axe",
+    --"npc_dota_hero_phoenix", --Flies to high -.-
   -- Agi
     "npc_dota_hero_mirana",
+    "npc_dota_hero_nyx_assassin",
+    "npc_dota_hero_vengefulspirit",
   -- Int
     "npc_dota_hero_tinker",
     "npc_dota_hero_lina",
     "npc_dota_hero_puck",
     "npc_dota_hero_zuus",
+    "npc_dota_hero_storm_spirit"
   }
-  -- Basic values
-  Laws = {
-
-    
-    flJumpSpeed = 17.5,
-    flJumpDuration = 0.5,
-    flDropSpeed = 25,
-    flMove = 20,
-
-    flPushDeceleration = 0.5, -- 0.5 per second
-    flPushDeceleration = math.pow(0.5,1/32), -- Converting the number to 1/32th
-    flMinDamage = 4,
-    flMaxDamage = 8,
-    flAttackRange = 75,
-    flSideAttackFactor = 1.5,
-
-    flMaxHeight = 2500,
-    flMinHeight = -100,
-  }
+  
 
   GameMode.heroesPicked = {}
   GameMode.playersPicked = {}
@@ -448,6 +527,7 @@ function GameMode:ChangeSettings(keys)
 end
 
 function GameMode:OnHeroDeath(hero)
+  DebugPrint(1,"[SMASH] A hero died")
   -- Store the lifes to display on client
   PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes", PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes") -1)
   if hero.lastAttacker then
@@ -458,6 +538,7 @@ function GameMode:OnHeroDeath(hero)
   
   if PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()),"lifes") <= -1 then
     hero:SetRespawnsDisabled(true)
+    CustomGameEventManager:Send_ServerToPlayer(hero:GetPlayerOwner(),"reset_camera",{})
     deadplayers = deadplayers + 1
     if deadplayers >= PlayerResource:GetTeamPlayerCount() -1 then
       -- Resetting
@@ -471,6 +552,7 @@ function GameMode:OnHeroDeath(hero)
           PlayerResource:IncrementAssists(i,i)
         end
       end
+      DebugPrint(1,"[SMASH] Found the last player alive")
       GameMode:Reset()
     end
 
@@ -510,15 +592,20 @@ function GameMode:OnHeroDeath(hero)
 end
 
 function GameMode:OnDisconnect(keys)
-  DebugPrint('[BAREBONES] Player Disconnected ' .. tostring(keys.userid))
-  DebugPrintTable(keys)
+  DebugPrint(1,'[BAREBONES] Player Disconnected ' .. tostring(keys.userid))
+  DebugPrintTable(1,keys)
 
   local name = keys.name
   local networkid = keys.networkid
   local reason = keys.reason
   local userid = keys.PlayerID
 
+  if GameRules:State_Get() == DOTA_GAMERULES_STATE_POST_GAME or GameRules:State_Get() == DOTA_GAMERULES_STATE_DISCONNECT then
+    DebugPrint(1,'[SMASH] Player Disconnected after the game')
+    return
+  end
   Timers:CreateTimer(1,function()
+    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnDisconnect")
     local hero = PlayerResource:GetSelectedHeroEntity(userid)
     if not hero:IsAlive() then
       hero:RespawnHero(false,false,false)
@@ -557,31 +644,35 @@ end
 end
 ]]
 -- Brutally stolen from CIA
-function FindTheOnlyConnectedTeam()
+function GameMode:FindTheOnlyConnectedTeam()
+  DebugPrint(1,'[SMASH] Finding the only connected team')
   local teams = {}
   local teamCount = 0
   local playerCount = 0
+  for _, player in pairs( GameMode.Players) do
+    print(type(player))
+    if type(player) == "table" then
 
-  for i=0,3 do
-    local con = PlayerResource:GetConnectionState(i)
+      local pid = player["id"]
+      local con = PlayerResource:GetConnectionState(pid)
 
-    if con and con ~= DOTA_CONNECTION_STATE_ABANDONED and con ~= DOTA_CONNECTION_STATE_DISCONNECTED then
-        teams[player.team] = true
+      if con ~= DOTA_CONNECTION_STATE_ABANDONED and con ~= DOTA_CONNECTION_STATE_DISCONNECTED then
+          teams[player.team] = true
+      end
+      playerCount = playerCount + 1
     end
-
-    playerCount = playerCount + 1
   end
 
   local connectedTeamCount = 0
   local connectedTeam = nil
 
   for team, _ in pairs(teams) do
-    connectedTeamCount = connectedTeamCount + 1
-    connectedTeam = team
+      connectedTeamCount = connectedTeamCount + 1
+      connectedTeam = team
   end
 
   if playerCount > 1 and connectedTeamCount == 1 then
-    return connectedTeam
+      return connectedTeam
   end
 end
 
@@ -598,10 +689,17 @@ function GameMode:ModifierGainedFilter(keys)
   local target = EntIndexToHScript(modifierTargetIndex)
   local modifierName = keys["name_const"]
 
-  if target:HasModifier(modifierName) then
+  -- Checking if the new modifier last longer than the old one. -- Replaced by allowing multiple modifiers
+  --[[if target:HasModifier(modifierName) then
     if target:FindModifierByName(modifierName):GetRemainingTime() > modifierDuration then
       keys["duration"] = target:FindModifierByName(modifierName):GetRemainingTime()
     end
+  end]]
+
+  if target.bShieldActivated and caster:GetTeamNumber() ~= target:GetTeamNumber() then
+    return false
   end
+   
+
   return true
 end

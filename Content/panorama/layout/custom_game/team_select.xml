@@ -61,25 +61,25 @@
                     </Panel>
                 </Panel>
             </Panel>
-            <!--
+            
             <Panel id="RadioButtons">
                 <Label class="OptionLabel" text="Gamemode:" />
                 <Panel class="RadioSection">
-                    <RadioButton group="Format" onactivate="SelectRadioGameMode('1')" id="tier1" text="Free for all" checked="true"/>
+                    <RadioButton group="Format" onactivate="SelectRadioGameMode('1')" id="FFA" text="Free for all" checked="true"/>
                 </Panel>
                  <Panel class="RadioSection">
-                    <RadioButton group="Format" onactivate="SelectRadioGameMode('2')" id="tier2" text="2 v 2" />
+                    <RadioButton group="Format" onactivate="SelectRadioGameMode('2')" id="2v2" text="2 v 2" />
                 </Panel>
             </Panel>  
-			-->	
+				
             
             <Panel id="RadioButtons">
                 <Label class="OptionLabel" text="Hero selection:" />
                 <Panel class="RadioSection">
-                    <RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('1')" id="tier1" text="Normal" checked="true"/>
+                    <RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('1')" id="Pick" text="Pick" checked="true"/>
                 </Panel>
                  <Panel class="RadioSection">
-                    <RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('2')" id="tier2" text="Random" />
+                    <RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('2')" id="Random" text="Random" />
                 </Panel>
             </Panel> 
 			

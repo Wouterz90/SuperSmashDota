@@ -96,18 +96,18 @@
 
 .Hero_Selection_Abilities_Bar
 {
-  margin-left:10px;
+  margin-left:30px;
   margin-top: 10px;
-  margin-right:10px;
+  margin-right:30px;
   margin-bottom:5px;
   flow-children: right;
 }
 
 .abilityImage
 {
-  margin-left:10px;
+  margin-left:25px;
   margin-top: 10px;
-  margin-right:10px;
+  margin-right:25px;
   margin-bottom:5px;
   border-radius: 25px;
   opacity: 0.7;
@@ -115,9 +115,9 @@
 }
 .abilityImage:Hover
 {
-  margin-left:10px;
+  margin-left:25px;
   margin-top: 10px;
-  margin-right:10px;
+  margin-right:25px;
   margin-bottom:5px;
   border-radius: 25px;
   box-shadow: #ffffff80 4px 4px 4px -6px;
@@ -279,19 +279,38 @@
   color: white;
 }
 
-.SteamAvatar  
+.SteamAvatarHS  
 {
-  margin-left: 10%;
+  width: 100px;
+  height: 100px;
+  z-index: 2;
+}
+
+.SteamAvatarOverlay  
+{
+  margin-left: 20%;
   margin-top: 30%;
   horizontal-align:left;
   width: 100px;
   height: 100px;
-  
-  
+  z-index: 2;
+  opacity: 0.5;
+  border-radius: 100%;
 }
-.SteamAvatar #AvatarImageProfile
+.CountDownBarHS
 {
-  width: 100px;
-  height: 100px;
+	height: 25px;
+	width: 400px;
+	opacity: 1;
+	border-radius:10px;
+	box-shadow: fill black -4px -4px 8px 9px;
+	background-color: gradient( linear, 0% 30%, 60% 90%, from( red ), to( darkred ) );
+	margin-top:95%;
+	margin-left:25%;
+	z-index:4;
 }
 
+.pickTime
+{
+	margin-left:2%;
+}

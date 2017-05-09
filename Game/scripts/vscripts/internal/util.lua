@@ -1,22 +1,22 @@
-function DebugPrint(...)
-  local spew = Convars:GetInt('barebones_spew') or -1
-  if spew == -1 and BAREBONES_DEBUG_SPEW then
-    spew = 1
+function DebugPrint(nDebugValue,debugString)
+  local spew = Convars:GetInt('barebones_spew') or 0
+  if spew == 0 and LUA_DEBUG_SPEW then
+    spew = LUA_DEBUG_SPEW
   end
-
-  if spew == 1 then
-    print(...)
+  
+  if spew >= nDebugValue then
+    print(debugString)
   end
 end
 
-function DebugPrintTable(...)
-  local spew = Convars:GetInt('barebones_spew') or -1
-  if spew == -1 and BAREBONES_DEBUG_SPEW then
-    spew = 1
+function DebugPrintTable(nDebugValue,debugTable)
+  local spew = Convars:GetInt('barebones_spew') or 0
+  if spew == 0 and LUA_DEBUG_SPEW then
+    spew = LUA_DEBUG_SPEW
   end
 
-  if spew == 1 then
-    PrintTable(...)
+  if spew >= nDebugValue then
+    PrintTable(nDebugValue)
   end
 end
 
@@ -110,6 +110,7 @@ function HideWearables( unit )
     local model = unit:FirstMoveChild()
     while model ~= nil do
         if model:GetClassname() == "dota_item_wearable" then
+            print(model:GetModelName())
             model:AddEffects(EF_NODRAW) -- Set model hidden
             table.insert(unit.hiddenWearables, model)
         end
@@ -162,12 +163,56 @@ function spairs(t, order)
     end
 end
 
-function CDOTA_BaseNPC:CanCast(hAbility) -- A check for abilities
+function CDOTA_BaseNPC:CanCast(hAbility) -- A check for abilities, ran when the caster starts till it's cast point time is over
+  DebugPrint(1,"[SMASH] [UTIL] CanCast")
   --if self:HasModifier("modifier_smash_stun") then return false end
-  if string.find(hAbility:GetAbilityName(),"special") and self:HasModifier("modifier_smash_silence") then return false end
-  if string.find(hAbility:GetAbilityName(),"basic") and self:HasModifier("modifier_smash_disarm") then return false end
+  if string.find(hAbility:GetAbilityName(),"special") and self:HasModifier("modifier_smash_silence") then
+    EmitSoundOnClient("General.Cancel",self:GetPlayerOwner())
+    return false 
+  end
+  if string.find(hAbility:GetAbilityName(),"basic") and self:HasModifier("modifier_smash_disarm") then
+    EmitSoundOnClient("General.Cancel",self:GetPlayerOwner())
+    return false 
+  end
+  local time = GameRules:GetGameTime()
+  Timers:CreateTimer(1/32,function()
+    DebugPrint(2,"[SMASH] [TIMER] [UTIL] CanCast",hAbility:GetAbilityName())
+    if not IsValidEntity(self) or not IsValidEntity(hAbility) then
+      
+      return nil  
+    end
+    -- If the caster interupted the ability manually stop running the timer.
+    if not hAbility:IsInAbilityPhase() then 
+      
+      return nil 
+    end
+
+    -- Interupt and stop the timer if it would become illegal while casting
+    if (string.find(hAbility:GetAbilityName(),"special") or self:IsChanneling()) and self:HasModifier("modifier_smash_silence") then
+      self:Interrupt()
+      
+      return nil 
+    end
+    if string.find(hAbility:GetAbilityName(),"basic") and self:HasModifier("modifier_smash_disarm") then
+      self:Interrupt()
+      
+      return nil 
+    end
+
+    -- Stop running this after cast point period has expired.
+    if (GameRules:GetGameTime() - time) >= hAbility:GetCastPoint() then
+      
+      return nil
+    else
+      
+      return 1/32
+    end
+    
+    return nil
+  end)
   return true
 end
+
 
 
 function FilterUnitsBasedOnHeight(tableUnits,vOrigin,flRadius)

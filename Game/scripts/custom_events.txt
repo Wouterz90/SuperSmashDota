@@ -42,6 +42,9 @@
     "player_ID" "short"
     "requested_ally" "short"
   }
+  "kill_ally_selection_screen"
+  {
+  }
   "pick_heroes"
   {
     "player_ID" "short"
@@ -49,7 +52,7 @@
   "submit_pick"
   {
     "player_ID" "short"
-    "heroname" = "string"
+    "heroname" "string"
   }
   "hero_pick_accepted"
   {
@@ -58,7 +61,19 @@
   }
   "kill_pick_screen"
   {
-    "played_ID" "short"
+    "player_ID" "short"
+  }
+  "show_cooldown"
+  {
+    "player_ID" "short"
+    "sAbilityName" "string"
+    "nCooldown" "short"
+  }
+  "show_silence"
+  {
+    "player_ID" "short"
+    "flStartTime" "short"
+    "flDuration" "short"
   }
 
 }
