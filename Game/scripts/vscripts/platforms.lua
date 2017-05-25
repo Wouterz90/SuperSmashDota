@@ -44,7 +44,7 @@ function spawnPlatform()
     
   }
   if PlayerResource:GetTeamPlayerCount() == 1 then
-    mapname =  mapnames3[RandomInt(1,#mapnames3)]
+    mapname =  "MapSliders"--mapnames3[RandomInt(1,#mapnames3)]
   elseif PlayerResource:GetTeamPlayerCount() == 2 then
     mapname = mapnames2[RandomInt(1,#mapnames2)]
   elseif PlayerResource:GetTeamPlayerCount() == 3 then
@@ -144,7 +144,7 @@ function RotatePlatformAroundPoint(hPlatform,vBaseLocation,flRadius,flSpeed,bClo
 
     -- Get the position of the platform and add the new rotation to it
     --local pos = hPlatform:GetAbsOrigin() - vBaseLocation
-    local angle = --[[math.atan2(pos.z, pos.x) +]] 2*math.pi*(count/360)
+    local angle = --[[math.atan2(pos.z, pos.x) +]] math.pi*(2*count/360)
 
     local newPos = vBaseLocation + flRadius * Vector(math.cos(angle), 0, math.sin(angle))
     hPlatform:SetAbsOrigin(newPos)
@@ -184,13 +184,7 @@ function CDOTA_BaseNPC:isOnPlatform()
       -- If rotation is over (X) then slide backward?
       -- Adjust movement to the platform
       self.rotation = v:GetAngles().x
-      --[[
-      if self:GetForwardVector().x >= 0 then
-        self:SetAngles(self.rotation,0,0)
-      else
-        --print(self.rotation)
-        self:SetFor
-      end]]
+
       local distance_from_center = x - v:GetAbsOrigin().x
       local delta_z = (-distance_from_center / 55) * self.rotation
 
@@ -198,21 +192,14 @@ function CDOTA_BaseNPC:isOnPlatform()
       if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) + delta_z and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5) + delta_z then
 
         -- Slide the unit down
-        -- 0 means nothing, 45 means half general movespeed so 90 is general movespeed.
-        local delta_x = Laws.flMove * (self.rotation/90)
-        local delta_z = (-delta_x / 55) * self.rotation /2
+        local delta_x = Laws.flMove * (self.rotation/180)
+        local delta_z = (-delta_x / 55) * self.rotation /1
         --print(delta_x,delta_z)
         self:SetAbsOrigin(Vector(self:GetAbsOrigin().x+delta_x,0,self:GetAbsOrigin().z+delta_z))
 
         v.unitsOnPlatform[self] = true
         return true
       end
-
-      
-
-
-
-    
     end
   end
   return false
@@ -239,35 +226,44 @@ end
 
 function RotatePlatform(hPlatform,flRotation)
   DebugPrint(1,"[SMASH] [PLATFORMS] RotatePlatform")
-  if hPlatform:IsNull() then return end
+  if not hPlatform or hPlatform:IsNull() then return end
   
   if not hPlatform.originalRadius  then 
     hPlatform.originalRadius = hPlatform.radius
   end
+  
   flRotation = flRotation +  hPlatform:GetAngles().x
-  if flRotation >= 90 then
+  if math.abs(flRotation) >= 90 then
     flRotation = -flRotation
-  end 
+  end
+
+  if math.abs(flRotation) ~= 0 then
+    hPlatform.bIsWall = true
+  else
+    hPlatform.bIsWall = false
+  end
+
   -- Update the radius
   local delta_z = (hPlatform.originalRadius / 55) *flRotation
   local radius = math.sqrt(math.pow(hPlatform.originalRadius,2) -  math.pow(delta_z,2))
   -- Move the units on it along
-  --[[for k,v in pairs(hPlatform.unitsOnPlatform) do
+  for k,v in pairs(hPlatform.unitsOnPlatform) do
     if IsValidEntity(k) then
       local distance_from_center = k:GetAbsOrigin().x - hPlatform:GetAbsOrigin().x
       local delta_z = (-distance_from_center / 55) *flRotation
-      
+      delta_z = delta_z + hPlatform.height
+
       local correcting_x = radius / hPlatform.radius
 
       distance_from_center = distance_from_center * correcting_x
-      print(distance_from_center,delta_z)
       k:SetAbsOrigin(Vector(hPlatform:GetAbsOrigin().x + distance_from_center,0,hPlatform:GetAbsOrigin().z+delta_z))
     end
-  end]]
+  end
   hPlatform.radius = radius
   -- Rotate the platform
   hPlatform:SetAngles(flRotation,0,0)
 end
+
 function sortPlatforms()
   DebugPrint(2,"[SMASH] [PLATFORMS] sortPlatforms")
   if not platform then return end
@@ -296,20 +292,26 @@ function CDOTA_BaseNPC:CheckForWalls()
   local z = origin.z
 
 
-  if not wall then return end
+  if not platform then return end
   if self.lastLocation then 
-  
-    for k,v in pairs(wall) do
+  --[[
+    for k,v in pairs(platform) do
       --if v.owner and v.owner:GetTeamNumber() ~= self:GetTeamNumber() then return end
       -- Check if height matches first, then check position
       if not v:IsNull() then
-        if z >= v:GetAbsOrigin().z - v.height and z<= v:GetAbsOrigin().z  + (v.height) -40 then
-          if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
-            self:SetAbsOrigin(Vector(self.lastLocation.x,0,self:GetAbsOrigin().z))
+        if v.bIsWall then
+          if z >= v:GetAbsOrigin().z - v.height and z<= v:GetAbsOrigin().z  + (v.height) -40 then
+            if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
+              self:SetAbsOrigin(Vector(self.lastLocation.x,0,self:GetAbsOrigin().z))
+            end
           end
         end
       end
+    end]]
+    if GridNav:IsWall(origin) then
+      --self:SetAbsOrigin(Vector(self.lastLocation.x,0,self:GetAbsOrigin().z))
     end
+
   end
   self.lastLocation = self:GetAbsOrigin()
   
@@ -367,4 +369,73 @@ function FindNearestPlatform(vLocation)
       end
     end
   end
+end
+
+function GridNav:IsWall(pos)
+  for k,v in pairs(platform) do
+    
+    if not v:IsNull() and v.bIsWall then
+
+      -- If there is no rotation keep in quick and simple.
+      if v:GetAngles().x == 0 then
+        if pos.z >= v:GetAbsOrigin().z - v.height and pos.z <= v:GetAbsOrigin().z  + (v.height) -80 then
+          if pos.x >= v:GetAbsOrigin().x - v.radius and pos.x <= v:GetAbsOrigin().x + v.radius then 
+            return true
+          end
+        end
+        
+      end
+        
+      -- Radius is adjusted in the rotate platform part
+      
+      if v.originalRadius then
+        local delta_z = (v.originalRadius / 55) * v:GetAngles().x
+        local height = v.height + (delta_z *2)
+
+        if pos.z >= v:GetAbsOrigin().z - height and pos.z <= v:GetAbsOrigin().z  + (height) -80 then
+          if pos.x >= v:GetAbsOrigin().x - v.radius and pos.x <= v:GetAbsOrigin().x + v.radius then 
+            -- Now calculate if unit hits a wall based on distance from center
+            local distance_from_center = pos.x - v:GetAbsOrigin().x
+            local delta_z = (distance_from_center / 55) * v:GetAngles().x
+            if pos.z >= v:GetAbsOrigin().z - v.height + delta_z - 0 and pos.z <= v:GetAbsOrigin().z  + v.height + delta_z -80  then
+              return true
+            end
+          end
+        end
+
+      end
+    end
+  end
+  return false
+end
+
+-- Edited, overwriting this function
+function GetGroundPosition(pos,unit)
+ DebugPrint(2,"[SMASH] [PLATFORMS] GetGroundPosition")
+  local x = pos.x
+  local z = pos.z
+  local this = {}
+
+  if not platform then return end
+
+  sortPlatforms()
+  
+
+  for i=#platform,1,-1 do
+    -- Check if the unit has the same x coordinates as the platform
+    if x >= platform[i]:GetAbsOrigin().x - platform[i].radius and x <= platform[i]:GetAbsOrigin().x + platform[i].radius then
+
+      -- If rotation is over (X) then slide backward?
+      -- Adjust movement to the platform
+
+      local distance_from_center = x - platform[i]:GetAbsOrigin().x
+      local delta_z = (-distance_from_center / 55) * platform[i]:GetAngles().x
+
+      -- Check if the height matches as well
+      if z >= platform[i]:GetAbsOrigin().z + platform[i].height - (Laws.flDropSpeed) + delta_z and z<= platform[i]:GetAbsOrigin().z + platform[i].height + (Laws.flDropSpeed * 0.5) + delta_z then
+        return Vector(pos.x,0,platform[i]:GetAbsOrigin().z + platform[i].height)
+      end
+    end
+  end
+  return Vector(pos.x,0,128)
 end

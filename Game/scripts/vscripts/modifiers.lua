@@ -68,12 +68,18 @@ end
 
 function modifier_smash_stun:OnCreated()
   if IsServer() then
-    self:GetParent():SetRenderColor(0,0,0)
+    Timers:CreateTimer(0,function()
+      if not self.dontColor then
+        self:GetParent():SetRenderColor(0,0,0)
+      end
+    end)
   end
 end
 function modifier_smash_stun:OnDestroy()
   if IsServer() then
-    self:GetParent():SetRenderColor(255,255,255)
+    if not self.dontColor then
+      self:GetParent():SetRenderColor(255,255,255)
+    end
   end
 end
 
@@ -117,20 +123,20 @@ function modifier_smash_root:OnCreated()
   end
 end
 
-function modifier_smash_root:GetEffectName()
-  return "particles/econ/items/lone_druid/lone_druid_cauldron/lone_druid_bear_entangle_body_cauldron.vpcf"
-end
+--function modifier_smash_root:GetEffectName()
+  --return "particles/econ/items/lone_druid/lone_druid_cauldron/lone_druid_bear_entangle_body_cauldron.vpcf"
+--end
 
-function modifier_smash_root:GetEffectAttachType()
-  return PATTACH_OVERHEAD_FOLLOW
-end
+--function modifier_smash_root:GetEffectAttachType()
+ -- return PATTACH_OVERHEAD_FOLLOW
+--end
 
 modifier_basic = class({})
 
 function modifier_basic:DeclareFunctions()
   local funcs = {
     MODIFIER_EVENT_ON_DEATH,
-    --MODIFIER_PROPERTY_VISUAL_Z_DELTA,
+    MODIFIER_PROPERTY_VISUAL_Z_DELTA,
   }
   return funcs
 end
@@ -141,22 +147,15 @@ end
 function modifier_basic:RemoveOnDeath()
   return true
 end
--- This may look better, it makes it very hard to aim projectiles at each other
---[[function modifier_basic:GetVisualZDelta()
-  if self:GetParent():GetUnitName() == "npc_dota_hero_puck" then
-    if self:GetParent().zDelta then
-      return self:GetParent().zDelta
-    else
-      return 0
-    end
+
+function modifier_basic:GetVisualZDelta()
+  if IsClient() then return end
+  if self:GetParent():GetUnitName() == "npc_dota_hero_phoenix" then
+    return self:GetParent().zDelta-50
   else
-    if self:GetParent().zDelta then
-      return self:GetParent().zDelta
-    else
-      return 0
-    end
+    return self:GetParent().zDelta
   end
-end]]
+end
 function modifier_basic:OnDeath(keys)
   if self:GetParent() == keys.unit and IsServer() then
     GameMode:OnHeroDeath(self:GetParent())
@@ -171,10 +170,13 @@ end
 
 function modifier_basic:OnIntervalThink()
   
-  --[[if not GridNav:IsTraversable(self:GetParent():GetAbsOrigin()) or GridNav:IsBlocked(self:GetParent():GetAbsOrigin()) then
-    print(GridNav:IsTraversable(self:GetParent():GetAbsOrigin()))
-    PauseGame(true)
-  end]]
+  -- Store last position to predict next position for clientside height location
+  -- I don't think this will work because I need to know what ticks are only clientside, without delay that seems unlikely.
+  --[[if self.prevPos then
+    local delta_z = self.prevPos.z - self:GetParent():GetAbsOrigin().z
+    PlayerTables:SetTableValue(tostring(self:GetParent():GetPlayerOwnerID()),"delta_z",delta_z)
+  end
+  self.prevPos = unit:GetAbsOrigin()]]
 
 
   -- Always return to y = 0!

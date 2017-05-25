@@ -1,6 +1,6 @@
 // Based on Noya's 1v5
 "use strict";
-var debugging = 1
+var debugging = 0
 //--------------------------------------------------------------------------------------------------
 // CUSTOM HOST PANEL
 //--------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ temppanel.FindChild("UnassignedPlayerPanel").style.opacity = 1;
 
 //Game.SetTeamSelectionLocked( true )
 
-var max_level = 8;
+var max_level = 10;
 var min_level = 0;
 function ValueChange(name, amount)
 {

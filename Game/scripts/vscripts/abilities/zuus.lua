@@ -61,14 +61,18 @@ function zuus_special_top:OnSpellStart()
           -- Damage
           local damageTable = {
             victim = v,
-            attacker = cloud,
+            attacker = caster,
             damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
             damage_type = DAMAGE_TYPE_MAGICAL,
             ability = ability,
           }
+          local oldloc = caster:GetAbsOrigin()
+          caster:SetAbsOrigin(cloud:GetAbsOrigin())
           ApplyDamage(damageTable)
+          caster:SetAbsOrigin(oldloc)
         end
       end
+      
       UTIL_Remove(cloud)
     end
   end)  

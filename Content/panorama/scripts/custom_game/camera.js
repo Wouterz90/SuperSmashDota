@@ -7,24 +7,103 @@ var colorTeam1 = "red"
 var colorTeam2 = "blue"
 var debugging = 0
 var camera = 1
-function CameraSettings()
+//CameraSettings() // To instantly edit
+
+function CameraSettings()	
 { 
 	if(debugging >= 2) {$.Msg("camera CameraSettings") }
   // Do camera stuff
   GameUI.SetCameraYaw( 0 ); 
-  GameUI.SetCameraPitchMin(10);
-  GameUI.SetCameraPitchMax(10);
-  GameUI.SetCameraDistance( 1000 );
-  //GameUI.SetCameraLookAtPositionHeightOffset(Entities.GetAbsOrigin(Players.GetPlayerHeroEntityIndex(Players.GetLocalPlayer()))[2]);
+  GameUI.SetCameraPitchMin(1);
+  GameUI.SetCameraPitchMax(1);
+  /*var width = Game.GetScreenWidth()
+  var height = Game.GetScreenHeight()
+  
+  var minDistance = 1100
+  var maxDistance = 2250
+  
+  var positions = {}
+  var positionsX = {}
+  var positionsZ = {}
+  
+  positionsX[1] = -1600 
+  positionsX[2] = 1600
+
+  // Get positions
+  for (var i = 0; i <= 3; i++) 
+  {
+	var hero = PlayerTables.GetTableValue(i.toString(),"hero");
+	if (hero && PlayerTables.GetTableValue(i.toString(), "lifes") >= 0) 
+	{
+		//GameUI.SetCameraTarget(hero)
+		positions[i] = Entities.GetAbsOrigin(hero)
+		positionsX[i] = Number(Entities.GetAbsOrigin(hero)[0])
+		positionsZ[i] = Number(Entities.GetAbsOrigin(hero)[2])
+	}	
+  }
+  
+  
+	// Get the needed width
+  var horizontalDifference = GetMinMaxValue(positionsX)
+  var verticalDifference = GetMinMaxValue(positionsZ)
+  
+  // Width needed to display the units
+  var desiredDistanceWidth = 1/(horizontalDifference/(632.975*))
+  if (desiredDistanceWidth < minDistance)
+  {
+	desiredDistanceWidth = minDistance
+  }
+  if (desiredDistanceWidth > maxDistance)
+  {
+	desiredDistanceWidth = maxDistance
+  }
+
+  var desiredDistanceHeight = 1/(verticalDifference/(632975))
+  if (desiredDistanceHeight < minDistance)
+  {
+	desiredDistanceHeight = minDistance
+  }
+  if (desiredDistanceHeight > maxDistance)
+  {
+	desiredDistanceHeight = maxDistance
+  }
+  $.Msg(Math.max(desiredDistanceHeight))
+  
+  //GameUI.SetCameraDistance(Math.max(desiredDistanceWidth,desiredDistanceHeight))
+  //$.Msg(Math.max(desiredDistanceWidth,desiredDistanceHeight))
+  /*var x = 0, total = 0, y = 0
+  for( x in positionsZ) 
+  {
+	total = total + positionsZ[x]
+	y = x
+  }
+	
+  var hero = PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"hero")
+  if (hero)
+  {
+	GameUI.SetCameraLookAtPositionHeightOffset(Entities.GetAbsOrigin(hero)[2]+100)
+  }
+  else
+  {
+	GameUI.SetCameraLookAtPositionHeightOffset(1200)
+  }
+  
+   
+  */
+  
+  GameUI.SetCameraDistance( 1100 );
   var hero = PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"hero");
-  //$.Msg(hero)
-  //$.Msg(PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes"))
   if (hero && PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes") >= 0) 
   { 
     GameUI.SetCameraTarget(hero);
     if (Entities.GetAbsOrigin(hero)) 
 	{ 
-      GameUI.SetCameraLookAtPositionHeightOffset(Entities.GetAbsOrigin(hero)[2]-100);
+		var height = Entities.GetAbsOrigin(hero)[2]
+		if (height > 3000 - 300)
+		{
+			height = 2700
+		}
+      GameUI.SetCameraLookAtPositionHeightOffset(height-100);
     }
   }
   else 
@@ -32,6 +111,7 @@ function CameraSettings()
     GameUI.SetCameraTarget(-1)
     GameUI.SetCameraLookAtPositionHeightOffset(700);
   }
+
 
   
   
@@ -184,7 +264,7 @@ function CameraSettings()
 	{
       var player_4_hp = Entities.GetMaxHealth(hero) - Entities.GetHealth(hero)
     } 
-	else 
+	else  
 	{
       var player_4_hp = 0
     }
@@ -366,6 +446,17 @@ function ShowSilence(table)
 	}
 }
 
+function GetMinMaxValue(input)
+{
+	var min = Infinity, max = -Infinity, x;
+	for( x in input) 
+	{
+		if( input[x] < min) min = input[x];
+		if( input[x] > max) max = input[x];
+	}
+	
+	return Math.abs(min-max)
+}
 (function() {
   GameEvents.Subscribe( "kill_pick_screen", CreatePlayerHeroAvatars)
   GameEvents.Subscribe( "fix_camera", CameraSettings)

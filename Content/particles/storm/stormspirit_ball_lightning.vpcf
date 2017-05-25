@@ -10,7 +10,8 @@
 			_class = "C_OP_RenderSprites"
 			m_nSequenceCombineMode = "SEQUENCE_COMBINE_MODE_USE_SEQUENCE_0"
 			m_bAdditive = true
-			m_hTexture = resource:"materials/particle/particle_flares/particle_flare_006.vtex"
+			m_hTexture = resource:"materials/dev/fow_drifts_00.vtex"
+			m_bDisableOperator = true
 		},
 	]
 	m_Operators = 
@@ -58,6 +59,7 @@
 		},
 		{
 			_class = "C_INIT_CreateWithinSphere"
+			m_nControlPointNumber = 2
 		},
 		{
 			_class = "C_INIT_RandomRotation"

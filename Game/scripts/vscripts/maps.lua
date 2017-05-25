@@ -17,7 +17,7 @@ function MapSmall()
 
   --platform[1].obstructionObjects = CreateSimpleObstruction(platform[1].radius, platform[1].height,platform[1]:GetAbsOrigin())
 
-  wall[1] = platform[1]
+  platform[1].bIsWall = true
   
   platform[2] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform512_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   platform[2]:SetAbsOrigin(Vector(-1024,0,900))
@@ -32,7 +32,15 @@ function MapSmall()
   --platform[2]:SetAngles(platform[2].rotation,0,0)
   platform[2].unitsOnPlatform = {}
   MovePlatform(platform[2],10,"right",6)
-
+  --[[Timers:CreateTimer(1,function()
+    if platform and not platform[2]:IsNull() then
+      RotatePlatform(platform[2],0.15)
+      return 1/32
+    else
+      return -1
+    end
+  end)
+]]
   --wall[2] = platform[2]
   
   platform[3] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
@@ -46,6 +54,14 @@ function MapSmall()
   
   platform[3].unitsOnPlatform = {}
   MovePlatform(platform[3],6,"up",3)
+  --[[Timers:CreateTimer(1,function()
+    if platform and not platform[3]:IsNull() then
+      RotatePlatform(platform[3],-0.15)
+      return 1/32
+    else
+      return -1
+    end
+  end)]]
   --wall[3] = platform[3]
 end
 
@@ -66,7 +82,7 @@ function MapMedium()
 
   --platform[1].obstructionObjects = CreateSimpleObstruction(platform[1].radius, platform[1].height,platform[1]:GetAbsOrigin())
 
-  wall[1] = platform[1]
+  platform[1].bIsWall = true
   
   platform[2] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   platform[2]:SetAbsOrigin(Vector(1000,0,1300))
@@ -116,31 +132,35 @@ function MapSmallWalls()
   platform[1].height = 256
   platform[1].unitsOnPlatform = {}
   platform[1].canDropThrough = false
-  wall[1] = platform[1]
+  platform[1].bIsWall = true
+  platform[1].mapRadius = 1024
 
-  platform[2] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/wall64_128_256.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[2]:SetAbsOrigin(Vector(-platform[1].radius+32,0,platform[1].height+256))
-  platform[2].radius = 32 * 1.5
-  platform[2].height = 128
+  platform[2] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[2]:SetAbsOrigin(Vector(-platform[1].radius,0,platform[1].height+256+116))
+  platform[2].radius = 128
+  platform[2].height = 32
   platform[2].unitsOnPlatform = {}
   platform[2].canDropThrough = false
-  wall[2] = platform[2]
+  platform[2].bIsWall = true
+  RotatePlatform(platform[2],40)
 
-  platform[3] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/wall64_128_256.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[3]:SetAbsOrigin(Vector(platform[1].radius-32,0,platform[1].height+256))
-  platform[3].radius = 32 * 1.5
-  platform[3].height = 128
+  platform[3] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[3]:SetAbsOrigin(Vector(platform[1].radius,0,platform[1].height+256+116))
+  platform[3].radius = 128
+  platform[3].height = 32
   platform[3].unitsOnPlatform = {}
   platform[3].canDropThrough = false
-  wall[3] = platform[3]
-
+  platform[3].bIsWall = true
+  RotatePlatform(platform[3],-40)
+--[[
   platform[4] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/wall64_128_256.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   platform[4]:SetAbsOrigin(Vector(-platform[1].radius+32,0,platform[1].height+384))
   platform[4].radius = 32 * 1.5
   platform[4].height = 128
   platform[4].unitsOnPlatform = {}
   platform[4].canDropThrough = false
-  wall[4] = platform[4]
+  platform[4].bIsWall = true
+  
 
   platform[5] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/wall64_128_256.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   platform[5]:SetAbsOrigin(Vector(platform[1].radius-32,0,platform[1].height+384))
@@ -148,7 +168,9 @@ function MapSmallWalls()
   platform[5].height = 128
   platform[5].unitsOnPlatform = {}
   platform[5].canDropThrough = false
-  wall[5] = platform[5]
+  platform[5].bIsWall = true]]
+
+
 end
 
 function MapSmallDestructable()
@@ -187,7 +209,7 @@ function MapFerrisWheel()
   platform[1].radius = 512
   platform[1].height = 32
   platform[1].unitsOnPlatform = {}
-  platform[1].canDropThrough = true
+  platform[1].canDropThrough = false
   platform[1].isDestructable = false
   platform[1].mapRadius = 512
 

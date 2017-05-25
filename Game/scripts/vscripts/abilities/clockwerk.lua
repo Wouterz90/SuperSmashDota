@@ -208,42 +208,22 @@ function rattletrap_special_top:OnSpellStart()
       ApplyDamage(damageTable)
     end,
     OnFinish = function(self,unit)
-
-        target = CreateUnitByName("npc_dummy_unit",unit,false,caster,caster:GetOwner(),caster:GetTeamNumber())
-        target:SetAbsOrigin(unit)
-        target:FindAbilityByName("dummy_unit"):SetLevel(1)  
-      local projTable = {
-        Target = target,
-        Source = caster,
-        Ability = ability,
-        EffectName = "particles/clockwerk/rattletrap_hookshot.vpcf",
-        bDodgeable = false,
-        bProvidesVision = true,
-        iMoveSpeed = 2000 ,--ability:GetSpecialValueFor("projectile_speed"), 
-        vSpawnOrigin = caster:GetAbsOrigin()
-      }
-      ProjectileManager:CreateTrackingProjectile(projTable)
+        ability.particle = ParticleManager:CreateParticle("particles/units/heroes/hero_rattletrap/rattletrap_hookshot_b.vpcf", PATTACH_CUSTOMORIGIN_FOLLOW, caster)
+        ParticleManager:SetParticleControlEnt(ability.particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_attack1", caster:GetAbsOrigin(), true)
+        ParticleManager:SetParticleControl(ability.particle, 3, unit)
+        Timers:CreateTimer(0.1,function()
+          if ability.particle then
+            ParticleManager:DestroyParticle(ability.particle,false)
+            ParticleManager:ReleaseParticleIndex(ability.particle)
+          end
+        end)
+        caster:SetAbsOrigin(unit)
     end,
   }
   local proj = Projectiles:CreateProjectile(projectile)
   
 end
 
-function rattletrap_special_top:OnProjectileHit(hTarget,vLocation)
-  local caster = self:GetCaster()
-  local ability = self
-
-  local damageTable = {
-    victim = hTarget,
-    attacker = caster,
-    damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-    damage_type = DAMAGE_TYPE_MAGICAL,
-    ability = ability,
-  }
-  ApplyDamage(damageTable)
-
-  caster:SetAbsOrigin(vLocation)
-end
 
 
 --rattletrap_special_bottom = class({})

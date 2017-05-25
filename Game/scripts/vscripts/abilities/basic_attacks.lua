@@ -2,6 +2,11 @@ require('abilities/basic_attack_animations')
 -- Still do to, basic attacks for up and down
 
 basic_attack_mid = class({})
+
+function basic_attack_mid:GetCastPoint()
+  return self:GetSpecialValueFor("cast_point") * self:GetCaster().attackspeedFactor
+end
+
 function basic_attack_mid:OnAbilityPhaseStart()
   local caster = self:GetCaster()
   if not self:GetCaster():CanCast(self) then return false end

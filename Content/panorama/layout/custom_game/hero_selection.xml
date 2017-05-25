@@ -23,16 +23,18 @@
 			<DOTAHeroImage id="HeroPicklina" class="heroImage" heroname="npc_dota_hero_lina" heroimagestyle="portrait" onactivate="selectedHeroLina()"/>
 			<DOTAHeroImage id="HeroPicktusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait" onactivate="selectedHeroTusk()"/>
 			<DOTAHeroImage id="HeroPicktinker" class="heroImage" heroname="npc_dota_hero_tinker" heroimagestyle="portrait" onactivate="selectedHeroTinker()"/>
+			<DOTAHeroImage id="HeroPickmagnataur" class="heroImage" heroname="npc_dota_hero_magnataur" heroimagestyle="portrait" onactivate="selectedHeroMagnus()"/>
         </Panel>
         <Panel id="HeroPickContainerRow3" class="HeroPickContainerRow" hittest="false"> 
 			<DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHeroNyx()"/>
 			<DOTAHeroImage id="HeroPickaxe" class="heroImage" heroname="npc_dota_hero_axe" heroimagestyle="portrait" onactivate="selectedHeroAxe()"/>
 			<DOTAHeroImage id="HeroPickvengefulspirit" class="heroImage" heroname="npc_dota_hero_vengefulspirit" heroimagestyle="portrait" onactivate="selectedHeroVenge()"/>
+			<DOTAHeroImage id="HeroPickphoenix" class="heroImage" heroname="npc_dota_hero_phoenix" heroimagestyle="portrait" onactivate="selectedHeroPhoenix()"/>
 			<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHeroRandom()"/>
         </Panel>
 		
         <!--<Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
-          
+          <DOTAHeroImage id="HeroPickbatrider" class="heroImage" heroname="npc_dota_hero_batrider" heroimagestyle="portrait" onactivate="selectedHeroBat()"/>
           <DOTAHeroImage id="HeroPickClock" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait"/>
           <DOTAHeroImage id="HeroPickZeus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait"/>
           <DOTAHeroImage id="HeroPickTusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait"/>

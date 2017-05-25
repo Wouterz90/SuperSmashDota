@@ -104,10 +104,18 @@ end
 function ReplaceHero(pID,heroname)
   DebugPrint(1,"[SMASH] [HERO SELECTION] ReplaceHero")
   local oldhero = PlayerResource:GetSelectedHeroEntity(pID)
-  PlayerResource:ReplaceHeroWith(pID,heroname,0,0)
-  if oldhero and IsValidEntity(oldhero) then
-    UTIL_Remove(oldhero)
-  end
+  local hero = PlayerResource:ReplaceHeroWith(pID,heroname,0,0)
+  
+    if not hero then
+      hero = PlayerResource:ReplaceHeroWith(pID,heroname,0,0)
+      return false
+    else
+      if oldhero and IsValidEntity(oldhero) then
+        UTIL_Remove(oldhero)
+      end
+      return hero
+    end
+  
 end
 
 function SubmitHeroPick(pID,heroname,bForcedRandom)
@@ -122,12 +130,23 @@ function SubmitHeroPick(pID,heroname,bForcedRandom)
 
   GameMode.playersPicked[pID] = true
   fullHeroname = "npc_dota_hero_"..heroname
-  ReplaceHero(pID,fullHeroname)
-  -- Stun heroes so they dont do stuff while we cant see it
-  if not bForcedRandom then
-    PlayerResource:GetSelectedHeroEntity(pID):AddNewModifier(PlayerResource:GetSelectedHeroEntity(pID),nil,"modifier_smash_stun",{})
-  end
-  GameMode.heroesPicked[fullHeroname] = true
-  PlayerTables:SetTableValue(tostring(pID.."heroes"),PlayerResource:GetSelectedHeroEntity(pID):GetUnitName(),true)
+  -- Somehow replace hero doesn't always return something anymore
+  Timers:CreateTimer(1/30,function()
+    local check = ReplaceHero(pID,fullHeroname)
+    if check then
+      if not bForcedRandom then
+        -- Stun heroes so they dont do stuff while we cant see it
+        PlayerResource:GetSelectedHeroEntity(pID):AddNewModifier(PlayerResource:GetSelectedHeroEntity(pID),nil,"modifier_smash_stun",{})
+      end
+      GameMode.heroesPicked[fullHeroname] = true
+      PlayerTables:SetTableValue(tostring(pID.."heroes"),PlayerResource:GetSelectedHeroEntity(pID):GetUnitName(),true)
+      return false
+    else
+      return 1/30
+    end
+  end)
+  
+  
+  
   
 end

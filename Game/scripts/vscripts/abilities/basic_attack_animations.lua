@@ -13,6 +13,8 @@ attackAnimationTop = {
   npc_dota_hero_nyx_assassin = ACT_DOTA_TELEPORT_END,
   npc_dota_hero_axe = ACT_DOTA_VICTORY,
   npc_dota_hero_phoenix = ACT_DOTA_CAST_ABILITY_5,
+  npc_dota_hero_storm_spirit = ACT_DOTA_ATTACK,
+  npc_dota_hero_magnataur = ACT_DOTA_ATTACK,
 
 }
 
@@ -31,6 +33,8 @@ attackAnimationBottom = {
   npc_dota_hero_nyx_assassin = ACT_DOTA_CAST_ABILITY_5,
   npc_dota_hero_axe = ACT_DOTA_ATTACK,
   npc_dota_hero_phoenix = ACT_DOTA_SPAWN,
+  npc_dota_hero_storm_spirit = ACT_DOTA_ATTACK,
+  npc_dota_hero_magnataur = ACT_DOTA_ATTACK,
 
 }
 

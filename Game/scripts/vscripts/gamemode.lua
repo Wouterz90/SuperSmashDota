@@ -80,6 +80,7 @@ require('game_setup/hero_selection')
 -- Store the hero ratings based on the balance tool based on ability values(not game stats!)
 require('game_setup/heroratingvalues')
 require('tables/chargeable_abilities')
+require('tables/gravity_removing_modifiers')
 -- settings.lua is where you can specify many different properties for your game mode and is one of the core barebones files.
 require('settings')
 -- events.lua is where you can specify the actions to be taken when any event occurs and is one of the core barebones files.
@@ -212,6 +213,7 @@ function GameMode:OnHeroInGame(hero)
     hero.jumpfactor = 1
     hero.attackDamageFactor = 1
     hero.spellDamageFactor = 1
+    hero.zDelta = 0
 
     -- For future use, like starting with missing 300 health?ba
     hero:SetHealth(hero:GetMaxHealth())
@@ -318,21 +320,24 @@ function GameMode:OnGameInProgress()
     PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
   }
 
-  Timers:CreateTimer(RandomInt(15,60),function()
+  Timers:CreateTimer(RandomInt(20,40),function()
     if platform then
       DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnGameInProgress")
       items:CreateItem({categoryName = "runes",layAroundDuration=10})
-      return RandomInt(15,60)
+      return RandomInt(20,40)
     end
   end)
 
   statCollection:setFlags(GameMode.flags) 
-  statCollection:sendStage2() 
+  statCollection:sendStage2()
 
+  if PlayerResource:GetTeamPlayerCount() == 1 then
+    SINGLE_PLAYER_GAME = true
+  end
   -- Set the format to ffa if there aren't 4 players
-  --[[if PlayerResource:GetTeamPlayerCount() ~= 4 and not IsInToolsMode() then
+  if PlayerResource:GetTeamPlayerCount() ~= 4 and not IsInToolsMode() then
     CustomNetTables:SetTableValue("settings","Format",{value = "1"})
-  end]]
+  end
   if CustomNetTables:GetTableValue("settings","Format").value ~= "2" then -- not 2v2
     --Timers:CreateTimer(0.25,function()
       GameMode:HeroPickStarted()
@@ -358,7 +363,7 @@ function GameMode:Reset()
   -- Remove all the platforms
   ClearPlatforms()
 
-  if GameMode:FindTheOnlyConnectedTeam() and not IsInToolsMode() then
+  if GameMode:FindTheOnlyConnectedTeam() and not IsInToolsMode() and not SINGLE_PLAYER_GAME then
     statCollection:submitRound(true)
     DeclareWinningTeam(GameMode:FindTheOnlyConnectedTeam())
     return
@@ -483,13 +488,16 @@ end
 function GameMode:SetupGame()
   DebugPrint(1,"[SMASH] Setting up values and gamemode")
   -- Store values
+
+  -- Heroes for randoming
   allowedHeroes = {
   -- Str
     "npc_dota_hero_tusk",
     "npc_dota_hero_earthshaker",
     "npc_dota_hero_rattletrap",
     "npc_dota_hero_axe",
-    --"npc_dota_hero_phoenix", --Flies to high -.-
+    "npc_dota_hero_magnataur",
+    "npc_dota_hero_phoenix",
   -- Agi
     "npc_dota_hero_mirana",
     "npc_dota_hero_nyx_assassin",
@@ -499,7 +507,7 @@ function GameMode:SetupGame()
     "npc_dota_hero_lina",
     "npc_dota_hero_puck",
     "npc_dota_hero_zuus",
-    "npc_dota_hero_storm_spirit"
+    "npc_dota_hero_storm_spirit",
   }
   
 
@@ -527,6 +535,7 @@ function GameMode:ChangeSettings(keys)
 end
 
 function GameMode:OnHeroDeath(hero)
+  if not hero:IsRealHero() then return end
   DebugPrint(1,"[SMASH] A hero died")
   -- Store the lifes to display on client
   PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes", PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes") -1)
@@ -643,37 +652,40 @@ end
   end
 end
 ]]
--- Brutally stolen from CIA
 function GameMode:FindTheOnlyConnectedTeam()
   DebugPrint(1,'[SMASH] Finding the only connected team')
+
   local teams = {}
-  local teamCount = 0
-  local playerCount = 0
-  for _, player in pairs( GameMode.Players) do
-    print(type(player))
-    if type(player) == "table" then
+  local winning
+  local teamsLeft = 0
+  for i=0,10 do
+    teams[i] = 0
+  end
 
-      local pid = player["id"]
-      local con = PlayerResource:GetConnectionState(pid)
-
-      if con ~= DOTA_CONNECTION_STATE_ABANDONED and con ~= DOTA_CONNECTION_STATE_DISCONNECTED then
-          teams[player.team] = true
+  for i=0,3 do
+    if PlayerResource:IsValidPlayerID(i) then 
+      if PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_ABANDONED or PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_DISCONNECTED then
+        teams[PlayerResource:GetTeam(i)] = teams[PlayerResource:GetTeam(i)] + 1
       end
-      playerCount = playerCount + 1
     end
   end
 
-  local connectedTeamCount = 0
-  local connectedTeam = nil
-
-  for team, _ in pairs(teams) do
-      connectedTeamCount = connectedTeamCount + 1
-      connectedTeam = team
+  for i=0,10 do
+    if teams[i] > 0 then
+      teamsLeft = teamsLeft + 1
+      winning = i
+    end
   end
 
-  if playerCount > 1 and connectedTeamCount == 1 then
-      return connectedTeam
+  if teamsLeft == 0 then
+    return teams[1]
+  elseif
+    teamsLeft == 1 then
+    return winning
+  else 
+    return 
   end
+  return
 end
 
 function GameMode:ModifierGainedFilter(keys)

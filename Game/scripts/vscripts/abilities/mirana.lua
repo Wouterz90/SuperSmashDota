@@ -69,7 +69,7 @@ function mirana_special_bottom:OnSpellStart()
       bFlyingVision = false,
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+      draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
       
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
@@ -131,7 +131,7 @@ function mirana_special_bottom:OnSpellStart()
         bFlyingVision = false,
         fVisionTickTime = .1,
         fVisionLingerDuration = 1,
-        draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+        draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
         
 
         UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
@@ -314,7 +314,7 @@ function mirana_special_side:OnSpellStart()
       bFlyingVision = false,
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+      draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
       --iPositionCP = 0,
       --iVelocityCP = 1,
       --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},

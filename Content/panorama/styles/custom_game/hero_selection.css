@@ -151,7 +151,7 @@
 }
 .HeroRatingBox
 {
-  height: fit-children;
+  height: 300px;
   width: 100%;
   vertical-align: bottom;
   flow-children:right;
@@ -165,7 +165,7 @@
   
   background-color: #0d1c22ff;
   width: 100%;
-  height: fit-children;
+  height: 300px;
   border-radius: 25px;
   opacity: 0.3;
   flow-children:right;
@@ -174,7 +174,7 @@
 .HeroRatingBoxLabels
 {
   width: 35%;
-  height: fit-children;
+  height: 280px;
   flow-children:down;
 }
 .RatingTextBox
@@ -184,7 +184,7 @@
   margin-right:20px;
   margin-bottom:2px;
   width:100%;
-  height: fit-children;
+  height: 35px;
   horizontal-align:left;
   border-radius: 25px;
   background-color: black;
@@ -216,7 +216,7 @@
   margin-right:20px;
   margin-bottom:2px;
   width:100%;
-  height: 34px;
+  height: 35px;
   horizontal-align:left;
   border-radius: 25px;
   background-color: black;
@@ -225,8 +225,10 @@
 }
 .RatingPoints
 {
-  height:66%;
+  height:25px;
   width:29.4%;
+  margin-top: 5px;
+  margin-bottom: 5px;
   margin-left: 3%;
   margin-right: 0.1%;
   vertical-align: center;

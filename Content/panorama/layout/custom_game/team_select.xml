@@ -16,9 +16,10 @@
             <Label text="#Controls_movement"  />
             <Label text="#Controls_Attacking" />
 			<Panel id="" class="Example_Image">
-                <Image class="ExampleImage" src="file://{images}/custom_game/loading_screen/example_controls.jpg" />
+                <Image class="ExampleImage" src="file://{images}/custom_game/computer-450898_960_720.png" />
+				<Image class="ExampleImage" src="file://{images}/custom_game/loading_screen/example_controls.jpg"/>
             </Panel>
-            <Label text="#Controls_Spells" />
+            <!--<Label text="#Controls_Spells"/> -->
             <Label text="#Goal_game" />
             <Label text="#Changelog"/>
         </Panel>
@@ -28,9 +29,8 @@
             
             <!-- <Panel class="EntryPanel">
                 <Label class="OptionLabel" text="Starting Gold" />
-                <TextEntry id="starting_gold" maxchars="5" text="3125" 
-                    ontabbackward="SetStartingGold()" ontabforward="SetStartingGold()" oninputsubmit="SetStartingGold()"/>
-            </Panel>-->
+                <TextEntry id="starting_gold" maxchars="5" text="3125" 	ontabbackward="SetStartingGold()" ontabforward="SetStartingGold()" oninputsubmit="SetStartingGold()"/>
+            </Panel> -->
 
             <Panel class="EntryPanel">
                 <Label class="OptionLabel" text="Number of rounds:" />
@@ -82,8 +82,8 @@
                     <RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('2')" id="Random" text="Random" />
                 </Panel>
             </Panel> 
-			
-            <!--
+			<!--
+            
             <Panel id="ToggleSettings">
                 <Label class="OptionLabel" text="Duplicate options"/>
                 <Panel id="duplicate_rounds ">
@@ -93,9 +93,9 @@
                     <ToggleButton id="duplicate_player" text="Allow players to play the same hero again" onactivate="Toggle('duplicate_player')"/>
                 </Panel>
             </Panel>
-            -->
             
-            <!--<Panel id="RadioButtons">
+            
+            <Panel id="RadioButtons">
                 <Label class="OptionLabel" text="Map selection:" />
                 <Panel class="RadioSection">
                     <RadioButton group="WinConditionRadio" onactivate="SelectRadioMapSelection('1')" id="tier1" text="Random" checked="true"/>

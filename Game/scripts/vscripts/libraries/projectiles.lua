@@ -602,33 +602,9 @@ function Projectiles:CreateProjectile(projectile)
   return projectile
 end
 
--- Edited, overwriting this function
-function GetGroundPosition(pos,unit)
-  -- Check if the bottom of a platform has been hit or if the top of a platform is near
-  for i=#platform,1,-1 do
-    if not platform[i]:IsNull() then
-      if pos.x > platform[i]:GetAbsOrigin().x - platform[i].radius and pos.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
-        -- If above the platform return that height
-        if pos.z < platform[i]:GetAbsOrigin().z + platform[i].height and pos.z + 100 > platform[i]:GetAbsOrigin().z + platform[i].height  then
-          return Vector(pos.x,0,platform[i]:GetAbsOrigin().z + platform[i].height)
-        end
-      end
-    end
-  end
-  return Vector(pos.x,0,128)
-end
 
-function GridNav:IsWall(pos)
-  for k,v in pairs(wall) do
-    if not v:IsNull() then
-      -- Check if height matches first, then check position
-      if pos.z >= v:GetAbsOrigin().z - v.height and pos.z <= v:GetAbsOrigin().z  + (v.height) -80 then
-        if pos.x >= v:GetAbsOrigin().x - v.radius and pos.x <= v:GetAbsOrigin().x + v.radius then
-          return true
-        end
-      end
-    end
-  end
-  return false
-end
+
+
+
+
 if not Projectiles.timers then Projectiles:start() end

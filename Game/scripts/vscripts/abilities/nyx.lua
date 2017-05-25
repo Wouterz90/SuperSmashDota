@@ -26,7 +26,7 @@ function nyx_assassin_special_bottom:OnSpellStart()
   local vector = self.mouseVector
   local projectile_speed = 600 --self:GetSpecialValueFor("projectile_speed")
   local ability = self
-  local duration = 2--self:GetSpecialValueFor("duration")
+  local duration = self:GetSpecialValueFor("duration")
 
   if not caster:isOnPlatform() then
     ability:EndCooldown()

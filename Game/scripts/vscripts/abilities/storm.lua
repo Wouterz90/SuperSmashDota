@@ -45,8 +45,10 @@ function modifier_storm_ball_lightning:GetEffectName()
 end
 
 function modifier_storm_ball_lightning:GetEffectAttachType()
-  return PATTACH_OVERHEAD_FOLLOW
+  return PATTACH_ABSORIGIN_FOLLOW
 end
+
+
 
 function modifier_storm_ball_lightning:OnCreated()
   if IsServer() then
@@ -54,6 +56,11 @@ function modifier_storm_ball_lightning:OnCreated()
     local caster = self:GetCaster()
     self:StartIntervalThink(1/30)
     self.targets = {}
+
+    --[[local particle = ParticleManager:CreateParticle("particles/storm/stormspirit_ball_lightning.vpcf",PATTACH_ABSORIGIN_FOLLOW,caster)
+    ParticleManager:SetParticleControlEnt(particle, 1, caster, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetAbsOrigin(), true)
+    --ParticleManager:SetParticleControl(particle,2,Vector(0,0,300))
+    self:AddParticle(particle,false,false,-1,false,false)]]
   end
 end
 
@@ -84,7 +91,7 @@ function modifier_storm_ball_lightning:OnIntervalThink()
   modifier:DecrementStackCount()
   modifier:DecrementStackCount()
   modifier:DecrementStackCount()
-  if RollPercentage(50) then
+  if RollPercentage(33) then
     modifier:DecrementStackCount()
   end
   
@@ -269,7 +276,7 @@ function storm_spirit_special_side:OnSpellStart()
   local ability = self
 
   local projectile = {
-    --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
+    --EffectName = "particles/magnus/magnataur_shockwave.vpcf",
     EffectName = "particles/storm/stormspirit_base_attack.vpcf",
     --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
     --EeffectName = "",
@@ -287,7 +294,7 @@ function storm_spirit_special_side:OnSpellStart()
     TreeBehavior = PROJECTILES_NOTHING,
     bCutTrees = false,
     bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_NOTHING,
+    WallBehavior = PROJECTILES_BOUNCE,
     GroundBehavior = PROJECTILES_NOTHING,
     fGroundOffset = 0,
     nChangeMax = 1,

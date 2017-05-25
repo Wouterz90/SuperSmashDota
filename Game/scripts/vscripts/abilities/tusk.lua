@@ -1,3 +1,10 @@
+LinkLuaModifier("modifier_tusk_walrus_kick","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_tusk_sigil_dummy","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_tusk_sigil_aura","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_tusk_sigil_slow","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_tusk_snowball","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_tusk_snowball_dummy","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+
 tusk_special_side = class({})
 
 function tusk_special_side:OnAbilityPhaseStart()
@@ -49,7 +56,6 @@ function tusk_special_side:OnSpellStart()
   self:SetAbsOrigin(self:GetAbsOrigin()+Vector(0,0,100))
 end
 
-LinkLuaModifier("modifier_tusk_walrus_kick","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
 modifier_tusk_walrus_kick = class({})
 
 function modifier_tusk_walrus_kick:GetEffectName()
@@ -152,7 +158,8 @@ function tusk_special_top:OnSpellStart()
   self.sigil:AddNewModifier(caster,self,"modifier_tusk_sigil_aura",{duration = self:GetSpecialValueFor("slow_duration")}) 
 end
 
-LinkLuaModifier("modifier_tusk_sigil_aura","abilities/tusk.lua",LUA_MODIFIER_MOTION_VERTICAL)
+modifier_tusk_sigil_dummy = class({})
+
 modifier_tusk_sigil_aura = class({})
 
 function modifier_tusk_sigil_aura:OnCreated()
@@ -179,6 +186,8 @@ function modifier_tusk_sigil_aura:OnDestroy()
   if IsServer() then
     UTIL_Remove(self:GetAbility().sigil)
     self:GetAbility().sigil = nil
+
+    self:GetCaster():FindModifierByName("modifier_tusk_sigil_dummy")
   end
 end
 function modifier_tusk_sigil_aura:GetEffectName()
@@ -213,7 +222,7 @@ function modifier_tusk_sigil_aura:CheckState()
   return funcs
 end
 
-LinkLuaModifier("modifier_tusk_sigil_slow","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+
 modifier_tusk_sigil_slow= class({})
 
 function modifier_tusk_sigil_slow:DeclareFunctions()
@@ -265,7 +274,7 @@ function tusk_special_bottom:OnChannelFinish(bInterrupted)
   self:GetCaster():RemoveModifierByName("modifier_tusk_snowball")
 end
 
-LinkLuaModifier("modifier_tusk_snowball","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+
 modifier_tusk_snowball = class({})
 
 function modifier_tusk_snowball:OnCreated()
@@ -357,7 +366,7 @@ function modifier_tusk_snowball:OnIntervalThink()
   end
 end
 
-LinkLuaModifier("modifier_tusk_snowball_dummy","abilities/tusk.lua",LUA_MODIFIER_MOTION_NONE)
+
 modifier_tusk_snowball_dummy = class({})
 
 function modifier_tusk_snowball_dummy:DeclareFunctions()

@@ -90,11 +90,21 @@ function modifier_push:OnIntervalThink()
   -- Prevent the unit from going through a platform, it bounces back
   if unit:isOnPlatform() and unit.pushDirection.z < 0 then
     unit.pushDirection = Vector(unit.pushDirection.x,0,unit.pushDirection.z * -0.75)
+    self.particle = ParticleManager:CreateParticle("particles/dev/library/base_dust_hit.vpcf",PATTACH_POINT,unit)
+    Timers:CreateTimer(1,function()
+      ParticleManager:DestroyParticle(self.particle,false)
+      ParticleManager:ReleaseParticleIndex(self.particle)
+    end)
   end
 
   -- Prevent the unit from going through a wall
   if GridNav:IsWall(unit:GetAbsOrigin() + unit.pushDirection * distance) then
     unit.pushDirection = Vector(unit.pushDirection.x * -0.75,0,unit.pushDirection.z)
+    self.particle = ParticleManager:CreateParticle("particles/dev/library/base_dust_hit.vpcf",PATTACH_POINT,unit)
+    Timers:CreateTimer(1,function()
+      ParticleManager:DestroyParticle(self.particle,false)
+      ParticleManager:ReleaseParticleIndex(self.particle)
+    end)
   end
 
   unit:SetAbsOrigin(unit:GetAbsOrigin() + unit.pushDirection * distance)

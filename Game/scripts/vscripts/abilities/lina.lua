@@ -85,28 +85,15 @@ function lina_special_side:OnSpellStart()
   local range = ability:GetSpecialValueFor("range")
   local radius = ability:GetSpecialValueFor("radius")
 
-  caster:EmitSound("Ability.LagunaBladeImpact")
-  -- Create a dummy unit to show the laguna blade
-  local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+caster:GetForwardVector()*range,false,caster,caster:GetOwner(),caster:GetTeamNumber())
-  dummy:SetAbsOrigin(caster:GetAbsOrigin()+(Vector(0,0,150))+caster:GetForwardVector()*range)
-  dummy:FindAbilityByName("dummy_unit"):SetLevel(1)
-  -- Fire the laguna blade at the dummy
-  local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_laguna_blade.vpcf",PATTACH_CUSTOMORIGIN,nil)
-  ParticleManager:SetParticleControlEnt( particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetOrigin(), true )
-  ParticleManager:SetParticleControlEnt( particle, 1, dummy, PATTACH_POINT_FOLLOW, nil, dummy:GetOrigin(), true )
-  -- Clean it
-  Timers:CreateTimer(1,function()
-    UTIL_Remove(dummy)
-    ParticleManager:DestroyParticle(particle,false)
-    ParticleManager:ReleaseParticleIndex(particle)
-  end)
+  --caster:EmitSound("Ability.LagunaBladeImpact")
+  
   -- Do the actual projectile
   local projectile = {
     --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
     EffectName = "",
     --EffectName = "particles/axe/axe_battle_hunger.vpcf",
     --EeffectName = "",
-    vSpawnOrigin = caster:GetAbsOrigin()+ caster:GetForwardVector() * 10 + Vector(0,0,150),
+    vSpawnOrigin = caster:GetAbsOrigin()+Vector(0,0,50),
     --vSpawnOrigin = {unit=caster, attach="attach_attack1", offset=Vector(0,0,100)},
     fDistance = range,--self:GetSpecialValueFor("distance"),
     fStartRadius = 200,
@@ -133,7 +120,7 @@ function lina_special_side:OnSpellStart()
     bFlyingVision = false,
     fVisionTickTime = .1,
     fVisionLingerDuration = 1,
-    draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
+    draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
     --iPositionCP = 0,
     --iVelocityCP = 1,
     --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
@@ -160,12 +147,27 @@ function lina_special_side:OnSpellStart()
         ability = ability,
       }
       ApplyDamage(damageTable)
+      caster:EmitSound("Ability.LagunaBladeImpact")
     end,
     OnFinish = function(self,unit)
-    print( unit)
     end,
   }
   local proj = Projectiles:CreateProjectile(projectile)
+
+  -- Create a dummy unit to show the laguna blade
+  local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+caster:GetForwardVector()*range,false,caster,caster:GetOwner(),caster:GetTeamNumber())
+  dummy:SetAbsOrigin(caster:GetAbsOrigin()+(Vector(0,0,50))+caster:GetForwardVector()*range)
+  dummy:FindAbilityByName("dummy_unit"):SetLevel(1)
+  -- Fire the laguna blade at the dummy
+  local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_laguna_blade.vpcf",PATTACH_CUSTOMORIGIN,nil)
+  ParticleManager:SetParticleControlEnt( particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetOrigin(), true )
+  ParticleManager:SetParticleControlEnt( particle, 1, dummy, PATTACH_POINT_FOLLOW, nil, dummy:GetOrigin(), true )
+  -- Clean it
+  Timers:CreateTimer(1,function()
+    UTIL_Remove(dummy)
+    ParticleManager:DestroyParticle(particle,false)
+    ParticleManager:ReleaseParticleIndex(particle)
+  end)
 end
 
 lina_special_bottom = class({})

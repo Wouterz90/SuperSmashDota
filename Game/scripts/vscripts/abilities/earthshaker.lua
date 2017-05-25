@@ -177,9 +177,6 @@ function earthshaker_special_top:OnSpellStart()
   caster:RemoveModifierByName("modifier_jump")
   caster:AddNewModifier(caster,self,"modifier_earthshaker_jump",{duration = ability:GetSpecialValueFor("duration")})
   -- Start this to check if the target is on a platform
-  Timers:CreateTimer(0.75,function()
-    caster:AddNewModifier(caster,self,"modifier_eartshaker_slam",{})
-  end)
 end
 
 LinkLuaModifier("modifier_earthshaker_jump","abilities/earthshaker.lua",LUA_MODIFIER_MOTION_NONE)
@@ -204,8 +201,8 @@ end
 function modifier_earthshaker_jump:OnDestroy()
   if IsServer() then
     -- Make sure the animation stays the same and not his drop animation
-    StartAnimation(self:GetParent(), {duration=1, activity=ACT_DOTA_CAST_ABILITY_2, rate=4 })
-    FreezeAnimation(self:GetParent(),3)
+    self:GetParent():AddNewModifier(self:GetParent(),self:GetAbility(),"modifier_eartshaker_slam",{})
+   
     self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
 end
@@ -215,6 +212,8 @@ modifier_eartshaker_slam = class({})
 
 function modifier_eartshaker_slam:OnCreated()
   if IsServer() then
+    StartAnimation(self:GetParent(), {duration=1, activity=ACT_DOTA_CAST_ABILITY_2, rate=4 })
+    FreezeAnimation(self:GetParent(),3)
     self:StartIntervalThink(1/32)
   end
 end

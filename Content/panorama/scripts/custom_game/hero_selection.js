@@ -16,62 +16,72 @@ function BuildHeroSelectionScreen()
     panel.GetParent().GetParent().visible = true
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Hero_Selection_HeroBox").GetParent().visible  = true 
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible  = true 
-
+	
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).GetChild(0))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("puck")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("rattletrap")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("zuus")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tusk")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("earthshaker")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("mirana")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("lina")).RemoveAndDeleteChildren()
 	}
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("tinker")).RemoveAndDeleteChildren()
 	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("nyx_assassin")).RemoveAndDeleteChildren()
 	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("axe")).RemoveAndDeleteChildren()
 	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).style.opacity = 1
-	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).FindChild("Avatar"))
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).FindChild("AvatarOverlay"))
 	{
-		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).FindChild("Avatar").RemoveAndDeleteChildren()
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("storm_spirit")).RemoveAndDeleteChildren()
 	}
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("magnataur")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("magnataur")).FindChild("AvatarOverlay"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("magnataur")).RemoveAndDeleteChildren()
+	}
+	/*$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("batrider")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("batrider")).FindChild("AvatarOverlay"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("batrider")).RemoveAndDeleteChildren()
+	}*/
 	 
 	var table = PlayerTables.GetAllTableValues(Players.GetLocalPlayer().toString().concat("heroes"))
 	for (var k in table)
@@ -84,7 +94,7 @@ function BuildHeroSelectionScreen()
 		
 	}
 	someonePicked = false
-	LoadBarWidth = 350
+	LoadBarWidth = 400
 	var panel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("CountDownBarHS")
 	panel.style.opacity = 1
 	panel.style.width = (LoadBarWidth).toString().concat("px")
@@ -195,6 +205,16 @@ function selectedHeroStorm()
     var heroName = "storm_spirit"
     SetSelectedHero(heroName)
 }
+function selectedHeroMagnus()
+{
+    var heroName = "magnataur"
+    SetSelectedHero(heroName)
+}
+function selectedHeroPhoenix()
+{
+    var heroName = "phoenix"
+    SetSelectedHero(heroName)
+}
 function selectedHeroRandom()
 {   
     var heroName = ""
@@ -260,11 +280,11 @@ function HeroPickAccepted(keys)
     // Put player avatar above the hero
     $.Msg(keys)
     var pan = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat(keys.heroname))
-    var steamIDpanel = $.CreatePanel("DOTAAvatarImage", pan, "" )
-	steamIDpanel.steamid = Game.GetPlayerInfo(keys.pid).player_steamid
+    //var steamIDpanel = $.CreatePanel("DOTAAvatarImage", pan, "" )
+	//steamIDpanel.steamid = Game.GetPlayerInfo(keys.pid).player_steamid
 	//steamIDpanel.style.opacity = 0.5
-	steamIDpanel.AddClass("SteamAvatarHS")
-	steamIDpanel.hittest = true
+	//steamIDpanel.AddClass("SteamAvatarHS")
+	//steamIDpanel.hittest = true
 
 	
 	var idpaneloverlay = $.CreatePanel("Panel", pan, "AvatarOverlay" )
@@ -283,22 +303,27 @@ function HeroPickAccepted(keys)
     }
 	if (someonePicked == false)
 	{
-		SlideProgressBar()
+		var endTime = Game.GetGameTime() + 10
+		SlideProgressBar(endTime)
 		someonePicked = true
-		LoadBarWidth = 350
+		LoadBarWidth = 400
 		var panel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("CountDownBarHS")
 		panel.style.width = (LoadBarWidth).toString().concat("px")
 	}
 }	
 
-function SlideProgressBar()
+function SlideProgressBar(endTime)
 {
+	if(debugging >= 2) {$.Msg("hero_selection SlideProgressBar ",endTime) }
 	var panel = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("CountDownBarHS")
-	LoadBarWidth = LoadBarWidth - 4
+
+	LoadBarWidth = (endTime - Game.GetGameTime()) * 40
+	
+	
 	panel.style.width = (LoadBarWidth).toString().concat("px")	
 	if (LoadBarWidth > 10)
 	{	
-		$.Schedule(0.1,function(){SlideProgressBar();})
+		$.Schedule(0.02,function(){SlideProgressBar(endTime);})
 	}
 	else
 	{

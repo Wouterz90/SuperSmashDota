@@ -26,7 +26,7 @@
   horizontal-align: left;
   vertical-align: top;
   background-color: black;
-  opacity: 0.75;
+  opacity: 0.95;
   border-radius: 25px;
   flow-children: down;
 }
@@ -47,7 +47,13 @@
   background-color: black;
   opacity: 1;
   border-radius: 5px;
-  flow-children: down;
+  flow-children: right;
+}
+.ExampleImage
+{
+  margin-left: 5%;
+  margin-top: 2%;
+  margin-right:0%;
 }
 .player_has_host_privileges #Settings
 {

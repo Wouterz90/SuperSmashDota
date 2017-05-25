@@ -8,7 +8,8 @@ end
 
 function puck_special_top:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
-  if not self:IsCooldownReady() then return false end 
+  if not self:IsCooldownReady() then return false end
+   
   return true
 end
 
@@ -17,7 +18,8 @@ function puck_special_top:OnSpellStart()
   local ability = self
   local radius = self:GetSpecialValueFor("radius")
   
-  if not self.orb then
+  if not ability.orb then
+
     caster:EmitSound("Hero_Puck.Illusory_Orb")
     if caster.jumps > 2 then return end
     caster.jumps = 3
@@ -83,14 +85,15 @@ function puck_special_top:OnSpellStart()
       end,
       OnFinish = function(self,unit)
       caster:StopSound("Hero_Puck.Illusory_Orb")
-        caster:FindAbilityByName("puck_special_top").orb = nil
-        caster:FindAbilityByName("puck_special_top"):StartCooldown(caster:FindAbilityByName("puck_special_top"):GetSpecialValueFor("cooldown"))
+        ability.orb = nil
+        ability:StartCooldown(caster:FindAbilityByName("puck_special_top"):GetSpecialValueFor("cooldown"))
+        CustomGameEventManager:Send_ServerToPlayer(ability:GetCaster():GetPlayerOwner(),"show_cooldown",{sAbilityName = ability:GetAbilityName(),ability = ability:entindex(), nCooldown = ability:GetCooldown(1)})
         if caster:isOnPlatform() then
           caster.jumps = 0
         end
       end,
     }
-    self.orb = Projectiles:CreateProjectile(projectile)
+    ability.orb = Projectiles:CreateProjectile(projectile)
   else
     caster:StopSound("Hero_Puck.Illusory_Orb")
     caster:EmitSound("Hero_Puck.EtherealJaunt")
@@ -119,8 +122,8 @@ function puck_special_top:OnSpellStart()
       ParticleManager:DestroyParticle(particle,true)
       ParticleManager:ReleaseParticleIndex(particle)
     end)
-    self.orb:Destroy()
-    self.orb = nil
+    ability.orb:Destroy()
+    ability.orb = nil
     self:StartCooldown(self:GetSpecialValueFor("cooldown"))
   end
 end

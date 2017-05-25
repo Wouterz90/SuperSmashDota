@@ -7,6 +7,7 @@ items.categories = {
     --"attack_rune", -- DD
     --"spell_rune", -- Arcane
 
+    "invis_rune", -- Invis
     "speed_rune", -- Haste
     "jump_rune", -- Bounty
     "regen_rune", --regen
@@ -18,15 +19,16 @@ RUNE_BONUS_COOLDOWN_REDUCTION = 0.2
 RUNE_BONUS_SPEED_FACTOR = 0.33
 RUNE_BONUS_JUMP_FACTOR = 0.75
 RUNE_BONUS_REGEN_SEC = 25
+RUNE_BONUS_TRANSPARENCY = 60
 
-function items:CreateItem(table)
+function items:CreateItem(params)
   -- table.bFallsDown
   -- table.categoryName
   -- table.layAroundDuration
   DebugPrint(1,"[SMASH] [ITEMS] CreateItem")
   if not platform then return end
-
-  if not table.categoryName then
+  if not items.itemStorage then items.itemStorage = {} end
+  if not params.categoryName then
     return -- Maybe later change this to chose a random category first
   end
   local mapRadius
@@ -40,8 +42,8 @@ function items:CreateItem(table)
 
   self.item = CreateUnitByName("npc_dummy_unit",vItemSpawnLoc,false,nil,nil,DOTA_TEAM_NEUTRALS)
   self.item:SetAbsOrigin(vItemSpawnLoc)
-  local a = #self.categories[table.categoryName] 
-  local name = self.categories[table.categoryName][RandomInt(1,a)]
+  local a = #self.categories[params.categoryName] 
+  local name = self.categories[params.categoryName][RandomInt(1,a)]
   local modifierName = "modifier_"..name
   self.item:AddNewModifier(self.item,nil,modifierName,{})
   self.item:AddNewModifier(self.item,nil,"modifier_basic",{})
@@ -49,18 +51,18 @@ function items:CreateItem(table)
   ab:SetLevel(1)
 
   table.insert(items.itemStorage, self.item)
-  --[[if table.layAroundDuration then
+  if params.layAroundDuration then
     
-    Timers:CreateTimer(table.layAroundDuration,function()
-      print(GameRules:GetGameTime(),table.layAroundDuration)
+    Timers:CreateTimer(params.layAroundDuration,function()
+      DebugPrint(1,"[SMASH] [ITEMS] Remove Item after time")
       if self.item and IsValidEntity(self.item) then
         UTIL_Remove(self.item)
       else
         self.item = nil
       end
-      return -1
+      return
     end)
-  end]]
+  end
 end
 
 -- DD
@@ -362,3 +364,51 @@ function modifier_regen_rune_buff:GetEffectAttachType()
 end
 
 
+--invis
+modifier_invis_rune = class({})
+LinkLuaModifier("modifier_invis_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
+
+function modifier_invis_rune:DeclareFunctions()
+  local funcs = {
+    MODIFIER_PROPERTY_MODEL_CHANGE,
+  }
+  return funcs
+end
+
+function modifier_invis_rune:OnCreated()
+  if IsServer() then
+    self:StartIntervalThink(1/32)
+  end
+end
+
+function modifier_invis_rune:OnIntervalThink()
+  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
+  if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
+    units[1]:RemoveModifierByName(self:GetName().."_buff")
+    units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
+    units[1]:EmitSound("General.RunePickUp")
+    UTIL_Remove(self:GetParent())
+  end
+end
+
+function modifier_invis_rune:GetModifierModelChange()
+  return "models/props_gameplay/rune_invisibility01.vmdl"
+end
+
+modifier_invis_rune_buff = class({})
+LinkLuaModifier("modifier_invis_rune_buff","items.lua",LUA_MODIFIER_MOTION_NONE)
+
+function modifier_invis_rune_buff:DeclareFunctions()
+  local funcs = {
+    MODIFIER_PROPERTY_INVISIBILITY_LEVEL,
+  }
+  return funcs
+end
+
+function modifier_invis_rune_buff:GetModifierInvisibilityLevel()
+  if IsServer() then
+    self:SetStackCount(RUNE_BONUS_TRANSPARENCY)
+  end
+  return self:GetStackCount()
+end

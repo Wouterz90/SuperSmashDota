@@ -178,11 +178,3 @@ function modifier_drop:OnIntervalThink()
     self:Destroy()
   end
 end
-
-jumpModifiers = {
-  ["modifier_jump"] = true,
-  ["modifier_mirana_leap_jump"] = true,
-  ["modifier_earthshaker_jump"] = true,
-  ["modifier_storm_ball_lightning"] = true,
-  ["modifier_storm_side_grab"] = true,
-}
