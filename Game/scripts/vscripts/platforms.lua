@@ -25,26 +25,25 @@ function spawnPlatform()
   mapnames2 = {
     [1] = "MapSmall",
     [2] = "MapSmallDestructable",
-    [3] = "MapFerrisWheel",
-    [4] = "MapSliders",
+    [3] = "MapSliders",
+    --[4] = "MapFerrisWheel",
   }
   mapnames3 = {
     [1] = "MapSmall",
     [2] = "MapSmallDestructable",
     [3] = "MapMedium",
     [4] = "MapLargeDestructable",
-    [5] = "MapFerrisWheel",
-    [6] = "MapSliders",
+    [5] = "MapSliders",
+    
   }
   mapnames4 = {
     [1] = "MapMedium",
     [2] = "MapLargeDestructable",
-    [3] = "MapFerrisWheel",
-    [4] = "MapSliders",
-    
+    [3] = "MapSliders",
+    --[4] = "MapFerrisWheel",
   }
   if PlayerResource:GetTeamPlayerCount() == 1 then
-    mapname =  "MapSliders"--mapnames3[RandomInt(1,#mapnames3)]
+    mapname =  "MapSmallDestructable"--mapnames3[RandomInt(1,#mapnames3)]
   elseif PlayerResource:GetTeamPlayerCount() == 2 then
     mapname = mapnames2[RandomInt(1,#mapnames2)]
   elseif PlayerResource:GetTeamPlayerCount() == 3 then
@@ -53,13 +52,14 @@ function spawnPlatform()
     mapname = mapnames4[RandomInt(1,#mapnames4)]
   end
   --print(mapname)
-
+  CustomNetTables:SetTableValue("settings","map",{value = mapname})
   _G[mapname]()
 
 end
 
 function ClearPlatforms()
   DebugPrint(1,"[SMASH] [PLATFORMS] ClearPlatform")
+  bNoSort = nil
   for k,v in pairs(platform) do
     UTIL_Remove(v)
   end
@@ -270,7 +270,7 @@ function sortPlatforms()
   local sorted = {}
   local tempTable = {}
   for k,v in pairs(platform) do
-    if not v:IsNull() then
+    if not v:IsNull() and not bNoSort then
       table.insert(sorted, k, v:GetAbsOrigin().z) 
     end 
   end
@@ -372,13 +372,14 @@ function FindNearestPlatform(vLocation)
 end
 
 function GridNav:IsWall(pos)
+  if not platform then return end
   for k,v in pairs(platform) do
     
     if not v:IsNull() and v.bIsWall then
 
       -- If there is no rotation keep in quick and simple.
       if v:GetAngles().x == 0 then
-        if pos.z >= v:GetAbsOrigin().z - v.height and pos.z <= v:GetAbsOrigin().z  + (v.height) -80 then
+        if pos.z >= v:GetAbsOrigin().z - v.height and pos.z <= v:GetAbsOrigin().z  + (v.height) -32 then
           if pos.x >= v:GetAbsOrigin().x - v.radius and pos.x <= v:GetAbsOrigin().x + v.radius then 
             return true
           end

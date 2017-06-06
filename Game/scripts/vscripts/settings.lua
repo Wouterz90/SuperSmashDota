@@ -7,7 +7,7 @@ ALLOW_SAME_HERO_SELECTION = true        -- Should we let people select the same 
 
 HERO_SELECTION_TIME = 0             -- How long should we let people select their hero?
 PRE_GAME_TIME = 0.5                   -- How long after people select their heroes should the horn blow and the game start?
-POST_GAME_TIME = 10                   -- How long should we let people look at the scoreboard before closing the server automatically?
+POST_GAME_TIME = 15                   -- How long should we let people look at the scoreboard before closing the server automatically?
 TREE_REGROW_TIME = 60.0                 -- How long should it take individual trees to respawn after being cut down/destroyed?
 ALLY_SELECTION_TIME = 10
 ALLY_DISPLAY_TIME = 3

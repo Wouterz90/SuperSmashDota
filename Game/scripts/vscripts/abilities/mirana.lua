@@ -69,7 +69,7 @@ function mirana_special_bottom:OnSpellStart()
       bFlyingVision = false,
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
-      draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
+      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
       
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
@@ -131,7 +131,7 @@ function mirana_special_bottom:OnSpellStart()
         bFlyingVision = false,
         fVisionTickTime = .1,
         fVisionLingerDuration = 1,
-        draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
+        draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
         
 
         UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
@@ -301,7 +301,7 @@ function mirana_special_side:OnSpellStart()
       TreeBehavior = PROJECTILES_NOTHING,
       bCutTrees = false,
       bTreeFullCollision = false,
-      WallBehavior = PROJECTILES_DESTROY,
+      WallBehavior = PROJECTILES_NOTHING,
       GroundBehavior = PROJECTILES_NOTHING,
       fGroundOffset = 0,
       nChangeMax = 1,
@@ -314,22 +314,8 @@ function mirana_special_side:OnSpellStart()
       bFlyingVision = false,
       fVisionTickTime = .1,
       fVisionLingerDuration = 1,
-      draw = IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
-      --iPositionCP = 0,
-      --iVelocityCP = 1,
-      --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
-      --ControlPointForwards = {[4]=hero:GetForwardVector() * -1},
-      --ControlPointOrientations = {[1]={hero:GetForwardVector() * -1, hero:GetForwardVector() * -1, hero:GetForwardVector() * -1}},
-      --[[ControlPointEntityAttaches = {[0]={
-        unit = hero,
-        pattach = PATTACH_ABSORIGIN_FOLLOW,
-        attachPoint = "attach_attack1", -- nil
-        origin = Vector(0,0,0)
-      }},]]
-      --fRehitDelay = .3,
-      --fChangeDelay = 1,
-      --fRadiusStep = 10,
-      --bUseFindUnitsInRadius = false,
+      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
+      
 
       UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
       OnUnitHit = function(self, unit) 

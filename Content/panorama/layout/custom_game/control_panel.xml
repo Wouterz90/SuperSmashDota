@@ -4,8 +4,12 @@
     <include src="file://{resources}/styles/control_panel.css" />
     <include src="file://{resources}/styles/health_lives_display.css" />
   </styles>
+  <scripts>
+     <include src="file://{resources}/scripts/custom_game/hero_selection.js" />
+  </scripts>
   
   <Panel class="MainPanel" hittest="false">
+	<Image id="Exit_Image" src="file://{images}/custom_game/close.png" onactivate="DOTAHUDShowDashboard()" onmouseactivate="PlayerPressedDashboard()" />
 	<DOTAAbilityImage id="Mainspecial_top" class="TopIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_left" class="RightIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_right" class="LeftIcon" abilityname=""/>

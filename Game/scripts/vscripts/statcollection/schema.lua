@@ -13,8 +13,6 @@ function customSchema:init()
         version = SMASHVERSION,
         HeroSelection = CustomNetTables:GetTableValue("settings","HeroSelection").value,
         Format = CustomNetTables:GetTableValue("settings","Format").value,
-        StartingLifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value,
-        PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
     }
     ]]
     
@@ -62,6 +60,8 @@ function BuildGameArray()
     local game = {}
 
     -- Add game values here as game.someValue = GetSomeGameValue()
+    game.Lifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value
+    game.map = CustomNetTables:GetTableValue("settings","map").values
 
     return game
 end

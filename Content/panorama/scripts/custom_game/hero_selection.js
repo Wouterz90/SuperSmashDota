@@ -1,5 +1,5 @@
 "use strict";
-var debugging = 0
+var debugging = 1
 var colorPlayer1 = "red"
 var colorPlayer2 = "blue"
 var colorPlayer3 = "green"
@@ -82,6 +82,11 @@ function BuildHeroSelectionScreen()
 	{
 		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("batrider")).RemoveAndDeleteChildren()
 	}*/
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("pudge")).style.opacity = 1
+	if ($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("pudge")).FindChild("AvatarOverlay"))
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat("pudge")).RemoveAndDeleteChildren()
+	}
 	 
 	var table = PlayerTables.GetAllTableValues(Players.GetLocalPlayer().toString().concat("heroes"))
 	for (var k in table)
@@ -215,6 +220,17 @@ function selectedHeroPhoenix()
     var heroName = "phoenix"
     SetSelectedHero(heroName)
 }
+
+function selectedHeroShadowFiend()
+{
+    var heroName = "nevermore"
+    SetSelectedHero(heroName)
+}
+function selectedHeroPudge()
+{
+    var heroName = "pudge"
+    SetSelectedHero(heroName)
+}
 function selectedHeroRandom()
 {   
     var heroName = ""
@@ -278,7 +294,6 @@ function HeroPickAccepted(keys)
 	
 	if(debugging >= 1) {$.Msg("hero_selection HeroPickAccepted") }
     // Put player avatar above the hero
-    $.Msg(keys)
     var pan = $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HeroPick".concat(keys.heroname))
     //var steamIDpanel = $.CreatePanel("DOTAAvatarImage", pan, "" )
 	//steamIDpanel.steamid = Game.GetPlayerInfo(keys.pid).player_steamid
@@ -339,8 +354,35 @@ function KillPickScreen()
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("LockHero").visible = false 
     //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().visible = false
     //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").visible = false
+	GameEvents.SendCustomGameEventToServer("get_lifes", {nStartingLifes: parseInt($.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("nStartingLifes").text)})
+	// Send all players lifes to server, so it can use the average as lifes
+}
+function ValueChange(name, amount)
+{
+	if(debugging >= 1) {$.Msg("Hero Select ValueChange" )}
+	var min_level = 0
+	var max_level = 10
+    var panel = $("#"+name);
+    if (panel !== null)
+	{
+        var current_level = parseInt(panel.text)
+        var new_level = current_level + parseInt(amount)
+        if (new_level <= max_level && new_level >= min_level)
+            panel.text = new_level
+        else
+            if (new_level < min_level)
+                panel.text = min_level
+			else
+                panel.text = max_level
+    }
 }
 
+function PlayerPressedDashboard()
+{
+	if(debugging >= 1) {$.Msg("HeroSelect PlayerPressedDashboard" )}
+	GameEvents.SendCustomGameEventToServer("player_leaves", {})
+	$.GetContextPanel().GetParent().RemoveAndDeleteChildren()
+}
 (function()
 {  
     

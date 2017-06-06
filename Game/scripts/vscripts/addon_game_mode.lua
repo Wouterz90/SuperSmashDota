@@ -1,6 +1,6 @@
 -- This is the entry-point to your game mode and should be used primarily to precache models/particles/sounds/etc
 
-SMASHVERSION = 0.7
+SMASHVERSION = 1.0
 require('internal/util')
 require('gamemode')
 
@@ -23,6 +23,7 @@ function Precache( context )
   PrecacheResource("particle", "particles/econ/generic/generic_aoe_explosion_sphere_1/generic_aoe_explosion_sphere_1.vpcf", context)
   PrecacheResource("particle","particles/units/heroes/hero_dark_seer/dark_seer_surge.vpcf",context)
   PrecacheResource("particle","particles/dev/library/base_dust_hit.vpcf",context)
+  PrecacheResource("particle","particles/basic/basic_attack_glow.vpcf",context)
   PrecacheResource("particle_folder", "particles/test_particle", context)
 
 

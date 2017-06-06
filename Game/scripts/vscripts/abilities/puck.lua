@@ -146,6 +146,9 @@ end
 function puck_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   caster:EmitSound("Hero_Puck.Phase_Shift")
+  caster:RemoveModifierByName("modifier_left")
+  caster:RemoveModifierByName("modifier_right")
+  caster:RemoveModifierByName("modifier_jump")
   caster:AddNewModifier(caster,self,"modifier_puck_phase_shift",{duration = self:GetChannelTime()})
   caster:AddNewModifier(caster,self,"modifier_smash_root",{duration = self:GetChannelTime()})
 end

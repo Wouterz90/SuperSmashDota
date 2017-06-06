@@ -41,6 +41,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
 
   "npc_dota_hero_venge_smash"
@@ -77,6 +78,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_tusk_smash"
   {
@@ -113,6 +115,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_lina_smash"
   {
@@ -151,6 +154,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
 
   "npc_dota_hero_earthshaker_smash"
@@ -188,6 +192,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
 
   "npc_dota_hero_mirana_smash"
@@ -225,6 +230,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_tinker_smash"
   {
@@ -261,6 +267,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_rattletrap_smash"
   {
@@ -297,6 +304,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_zuus_smash"
   {
@@ -333,6 +341,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_nyx_smash"
   {
@@ -369,6 +378,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_axe_smash"
   {
@@ -405,6 +415,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_storm_smash"
   {
@@ -441,6 +452,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_batrider"
   {
@@ -477,6 +489,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_magnataur"
   {
@@ -513,6 +526,7 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
   "npc_dota_hero_phoenix_smash"
   {
@@ -548,5 +562,109 @@
     "AttributeBaseAgility"      "0"
     "AttributeAgilityGain"      "0"
     "MagicalResistance"         "0"
+    "RingRadius"        "0"
+  }
+  "npc_dota_hero_nevermore_smash"
+  {
+    "override_hero"     "npc_dota_hero_nevermore"
+    "SoundSet"          "0" 
+    "Ability1"        "nevermore_special_top" 
+    "Ability2"        "nevermore_special_side" 
+    "Ability3"        "nevermore_special_bottom" 
+    "Ability4"        ""
+    "Ability5"        ""
+    "Ability6"        ""
+    "Ability7"        ""
+    "Ability8"        ""
+    "Ability9"        ""
+    "Ability10"       ""
+    "Ability11"       ""
+    "Ability12"       ""
+    "Ability13"       ""
+    "Ability14"       ""
+    "Ability15"       ""
+    "Ability16"       ""
+
+    "StatusHealth"              "1000"                
+    "StatusHealthRegen"         "0"
+    "VisionDaytimeRange"        "1800"                  
+    "VisionNighttimeRange"      "1800"                  
+    "AttributeBaseStrength"     "0"
+    "AttributeStrengthGain"     "0"
+    "AttributeBaseIntelligence" "0"
+    "AttributeIntelligenceGain" "0"
+    "AttributeBaseAgility"      "0"
+    "AttributeAgilityGain"      "0"
+    "MagicalResistance"         "0"
+    "RingRadius"        "0"
+  }
+  "npc_dota_hero_batrider_smash"
+  {
+    "override_hero"     "npc_dota_hero_batrider"
+    "SoundSet"          "0" 
+    "Ability1"        "batrider_special_top" 
+    "Ability2"        "batrider_special_side" 
+    "Ability3"        "batrider_special_bottom" 
+    "Ability4"        ""
+    "Ability5"        ""
+    "Ability6"        ""
+    "Ability7"        ""
+    "Ability8"        ""
+    "Ability9"        ""
+    "Ability10"       ""
+    "Ability11"       ""
+    "Ability12"       ""
+    "Ability13"       ""
+    "Ability14"       ""
+    "Ability15"       ""
+    "Ability16"       ""
+
+    "StatusHealth"              "1000"                
+    "StatusHealthRegen"         "0"
+    "VisionDaytimeRange"        "1800"                  
+    "VisionNighttimeRange"      "1800"                  
+    "AttributeBaseStrength"     "0"
+    "AttributeStrengthGain"     "0"
+    "AttributeBaseIntelligence" "0"
+    "AttributeIntelligenceGain" "0"
+    "AttributeBaseAgility"      "0"
+    "AttributeAgilityGain"      "0"
+    "MagicalResistance"         "0"
+    "RingRadius"        "0"
+  }
+
+  "npc_dota_hero_pudge_smash"
+  {
+    "override_hero"     "npc_dota_hero_pudge"
+    "SoundSet"          "0" 
+    "Ability1"        "pudge_special_top" 
+    "Ability2"        "pudge_special_side" 
+    "Ability3"        "pudge_special_bottom" 
+    "Ability4"        ""
+    "Ability5"        ""
+    "Ability6"        ""
+    "Ability7"        ""
+    "Ability8"        ""
+    "Ability9"        ""
+    "Ability10"       ""
+    "Ability11"       ""
+    "Ability12"       ""
+    "Ability13"       ""
+    "Ability14"       ""
+    "Ability15"       ""
+    "Ability16"       ""
+
+    "StatusHealth"              "1000"                
+    "StatusHealthRegen"         "0"
+    "VisionDaytimeRange"        "1800"                  
+    "VisionNighttimeRange"      "1800"                  
+    "AttributeBaseStrength"     "0"
+    "AttributeStrengthGain"     "0"
+    "AttributeBaseIntelligence" "0"
+    "AttributeIntelligenceGain" "0"
+    "AttributeBaseAgility"      "0"
+    "AttributeAgilityGain"      "0"
+    "MagicalResistance"         "0"
+    "RingRadius"        "0"
   }
 }

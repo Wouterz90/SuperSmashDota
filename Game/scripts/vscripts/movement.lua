@@ -15,6 +15,7 @@ end
 
 function modifier_left:OnIntervalThink()
   local vec = self:GetParent():GetAbsOrigin()
+  local oldVec = self:GetParent():GetAbsOrigin()
   local x = vec[1] - (Laws.flMove * self:GetParent().movespeedFactor) 
   if self:GetParent():HasModifier("modifier_smash_stun") then
     self:Destroy()
@@ -25,13 +26,18 @@ function modifier_left:OnIntervalThink()
       --print(vec)
       vec = Vector(x,vec[2],vec[3] + (self:GetParent().rotation) * ((Laws.flMove * self:GetParent().movespeedFactor)/55))
       --print(vec)
-      self:GetParent():SetAbsOrigin(vec)
+      --self:GetParent():SetAbsOrigin(vec)
     else
        vec = Vector(x,vec[2],vec[3])
-      self:GetParent():SetAbsOrigin(vec)
+      --self:GetParent():SetAbsOrigin(vec)
     end
   else
     vec = Vector(x,vec[2],vec[3] - (Laws.flDropSpeed*0.5))
+    --self:GetParent():SetAbsOrigin(vec)
+  end
+  if GridNav:IsWall(vec) then
+    self:GetParent():SetAbsOrigin(Vector(oldVec.x,0,vec.z))
+  else
     self:GetParent():SetAbsOrigin(vec)
   end
   if not self:GetParent():HasModifier("modifier_animation") then
@@ -59,6 +65,7 @@ end
 
 function modifier_right:OnIntervalThink()
   local vec = self:GetParent():GetAbsOrigin()
+  local oldVec = self:GetParent():GetAbsOrigin()
   local x = vec[1] + (Laws.flMove * self:GetParent().movespeedFactor)
   if self:GetParent():HasModifier("modifier_smash_stun") then
     self:Destroy()
@@ -69,13 +76,18 @@ function modifier_right:OnIntervalThink()
       --print(vec)
       vec = Vector(x,vec[2],vec[3] - (self:GetParent().rotation) * ((Laws.flMove * self:GetParent().movespeedFactor)/55))
       --print(vec)
-      self:GetParent():SetAbsOrigin(vec)
+      --self:GetParent():SetAbsOrigin(vec)
     else
        vec = Vector(x,vec[2],vec[3])
-      self:GetParent():SetAbsOrigin(vec)
+      --self:GetParent():SetAbsOrigin(vec)
     end
   else
     vec = Vector(x,vec[2],vec[3] - (Laws.flDropSpeed*0.5))
+    --self:GetParent():SetAbsOrigin(vec)
+  end
+  if GridNav:IsWall(vec) then
+    self:GetParent():SetAbsOrigin(Vector(oldVec.x,0,vec.z))
+  else
     self:GetParent():SetAbsOrigin(vec)
   end
   if not self:GetParent():HasModifier("modifier_animation") then

@@ -3,7 +3,7 @@ control = control or class({})
 function control:KeyEvent(keys)
   DebugPrint(2,"[SMASH] [CONTROLS] KeyEvent")
   local self = control
-  --PrintTable(keys)
+  
   local button = keys.button
   local action = keys.action
   local PlayerID = keys.PlayerID
@@ -14,9 +14,10 @@ function control:KeyEvent(keys)
   local mouseVector = self:FindMousePositionVector(keys.x,keys.y)
   local mouseVectorDistance = self:FindMousePositionVectorWithDistance(keys.x,keys.y)
 
-  if not hero then
+  if not hero or action == "doublepressed" then
     return 
   end
+  --PrintTable(keys)
   if hero:HasModifier("modifier_smash_stun") then
     if action == "pressed" then
       EmitSoundOnClient("General.Cancel",hero:GetPlayerOwner())
@@ -77,13 +78,25 @@ function control:KeyEvent(keys)
   end
 
 
-  if button == "left_mouse" and action == "pressed" then
+  if button == "left_mouse" then
     local abName = "basic_attack_"..buttonDirection
+    local abname_release  = "basic_attack_"..buttonDirection.."_release"
     local ab = hero:FindAbilityByName(abName)
-    if ab and not ab:IsInAbilityPhase() then
-      hero:Interrupt()
-      hero:CastAbilityNoTarget(ab,-1)
-      return
+    local ab_release = hero:FindAbilityByName(abname_release)
+    
+    if action == "released" then 
+      if hero.isChargingAbility then
+        hero.isChargingAbility = nil
+        hero:RemoveModifierByName("modifier_basic_attack_charge")
+      end
+    elseif action == "pressed" then
+      if not ab_release or (ab and not ab:IsInAbilityPhase() and not ab_release:IsInAbilityPhase()) then
+        hero:Interrupt()
+        hero:CastAbilityNoTarget(ab,-1)
+        if buttonDirection ~= "mid" then
+          hero.isChargingAbility = ab
+        end
+      end
     end
   end
 
@@ -133,6 +146,7 @@ function control:KeyEvent(keys)
     
     local heroName = hero:GetUnitName()
     local abName = string.sub(heroName, 15).."_special_"..buttonDirection
+
     local ab = hero:FindAbilityByName(abName)
 
     if action == "pressed" then 
@@ -183,6 +197,7 @@ function control:FindMousePositionVectorWithDistance(x,y) -- This one does takes
   local a = (x-50)/50 
   local b = -1* (y-50)/50
   return Vector(a,0,b)
+  -- Returns a number between (-1 and 0)
 end
 
 function control:FindMousePosition(x,y)

@@ -1,5 +1,77 @@
 -- Do not use platform[1] if the platform isn't the lowest one (Like FerrisWheel)
 
+function MapTruck()
+
+  -- Transport
+  -- R = 490
+
+  -- In the front there is a platform from -490 to 410
+  -- The window goes from -410, -7 to -364,100
+  -- Next platform -364 to -250 @ 100
+  -- Final platform at 171 till 490
+
+
+  local baseVector = Vector(0,0,160)
+  --Numbers are meaningless, will be arranged on from highest to lowest
+  platform[1] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/transport_viechle.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[1]:SetAbsOrigin(Vector(0,0,160))
+  platform[1]:SetForwardVector(Vector(0,1,0))
+  platform[1]:SetModelScale(45)
+  platform[1].radius = 200
+  platform[1].height = 0
+  platform[1].unitsOnPlatform = {}
+  platform[1].canDropThrough = false
+  platform[1].mapRadius = 330
+  --MovePlatform(platform[1],50,"right",6)
+
+  platform[1].bIsWall = false
+
+  platform[2] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/development/invisiblebox.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[2]:SetAbsOrigin(baseVector+Vector(-125,0,0))
+  platform[2].radius = 370
+  platform[2].height = 170
+  platform[2].unitsOnPlatform = {}
+  platform[2].canDropThrough = false
+  platform[2].mapRadius = 330
+  platform[2].bIsWall = true
+  --MovePlatform(platform[2],50,"right",6)
+
+  platform[3] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/development/invisiblebox.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[3]:SetAbsOrigin(baseVector+Vector(290,0,0))
+  platform[3].radius = 57
+  platform[3].height = 100
+  platform[3].unitsOnPlatform = {}
+  platform[3].canDropThrough = false
+  platform[3].mapRadius = 330
+  platform[3].bIsWall = true
+  --MovePlatform(platform[3],50,"right",6)
+
+  platform[4] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[4]:SetAbsOrigin(baseVector+Vector(380,0,-30))
+  platform[4].radius = 90
+  platform[4].height = 100
+  platform[4].unitsOnPlatform = {}
+  platform[4].canDropThrough = false
+  platform[4].mapRadius = 330
+  platform[4].bIsWall = true
+  RotatePlatform(platform[4],50)
+  --MovePlatform(platform[4],50,"right",6)
+
+  platform[5] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/development/invisiblebox.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[5]:SetAbsOrigin(baseVector+Vector(450,0,-110))
+  platform[5].radius = 40
+  platform[5].height = 100
+  platform[5].unitsOnPlatform = {}
+  platform[5].canDropThrough = false
+  platform[5].mapRadius = 330
+  platform[5].bIsWall = true
+  --MovePlatform(platform[5],50,"right",6)
+
+end
+
+
+
+
 function MapSmall()
 --[[local background = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/big_background.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   background:SetAbsOrigin(Vector(0,256,0))
@@ -14,7 +86,7 @@ function MapSmall()
   platform[1].unitsOnPlatform = {}
   platform[1].canDropThrough = false
   platform[1].mapRadius = 1024
-
+  --bNoSort = true
   --platform[1].obstructionObjects = CreateSimpleObstruction(platform[1].radius, platform[1].height,platform[1]:GetAbsOrigin())
 
   platform[1].bIsWall = true
@@ -323,7 +395,7 @@ function MapSliders()
   platform[1].radius = 512
   platform[1].height = 32
   platform[1].unitsOnPlatform = {}
-  platform[1].canDropThrough = true
+  platform[1].canDropThrough = false
   platform[1].isDestructable = false
   platform[1].mapRadius = 1024 + 512 - 64
   MovePlatform(platform[1],8,"right",8)
@@ -338,7 +410,7 @@ function MapSliders()
     platform[2].radius = 512
     platform[2].height = 32
     platform[2].unitsOnPlatform = {}
-    platform[2].canDropThrough = true
+    platform[2].canDropThrough = false
     platform[2].isDestructable = false
     platform[2].mapRadius = 1024 + 512 - 64
     MovePlatform(platform[2],8,"left",8)
@@ -393,4 +465,5 @@ function MapSliders()
     MovePlatform(platform[5],8,"left",8)
   --end)
 end
+
 

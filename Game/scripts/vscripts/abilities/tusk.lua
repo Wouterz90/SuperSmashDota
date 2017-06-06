@@ -334,7 +334,12 @@ function modifier_tusk_snowball:OnIntervalThink()
     local speed = self.speed * self.speedFactor
 
     -- Move the hero and the rotating snowball along
-    caster:SetAbsOrigin(caster:GetAbsOrigin()+direction*speed)
+    local vec = caster:GetAbsOrigin()+direction*speed
+    if GridNav:IsWall(vec) then
+      self:GetParent():SetAbsOrigin(Vector(caster:GetAbsOrigin().x,0,vec.z))
+    else
+      self:GetParent():SetAbsOrigin(vec)
+    end
     self:GetAbility().dummy:SetAbsOrigin(caster:GetAbsOrigin())
 
      -- Determine which way the snowball should rotate

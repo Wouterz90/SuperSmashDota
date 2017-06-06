@@ -117,9 +117,10 @@ end]]
 modifier_smash_root = class({})
 function modifier_smash_root:OnCreated()
   if IsServer() then
+    --[[
     self:GetParent():RemoveModifierByName("modifier_left")
     self:GetParent():RemoveModifierByName("modifier_right")
-    self:GetParent():RemoveModifierByName("modifier_jump")
+    self:GetParent():RemoveModifierByName("modifier_jump")]]
   end
 end
 
@@ -169,7 +170,6 @@ function modifier_basic:OnCreated()
 end
 
 function modifier_basic:OnIntervalThink()
-  
   -- Store last position to predict next position for clientside height location
   -- I don't think this will work because I need to know what ticks are only clientside, without delay that seems unlikely.
   --[[if self.prevPos then

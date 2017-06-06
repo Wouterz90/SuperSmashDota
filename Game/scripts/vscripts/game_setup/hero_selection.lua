@@ -30,7 +30,7 @@ function GameMode:ConfirmHeroPick(keys)
     Timers:CreateTimer(time,function()
       DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] ConfirmHeroPick")
       for i=0, PlayerResource:GetTeamPlayerCount()-1 do
-        if not GameMode.playersPicked[i] and PlayerResource:GetPlayer(i) then
+        if not GameMode.playersPicked[i] and PlayerResource:IsValidTeamPlayerID(i) then
           GetRandomHero(i,true)
         end
       end
@@ -75,24 +75,29 @@ end
 function RandomForAll()
   DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] RandomForAll")
   for i=0,PlayerResource:GetTeamPlayerCount()-1 do
-    GetRandomHero(i,true)
-  end
-  CustomGameEventManager:Send_ServerToAllClients("kill_pick_screen",{})
-  for i=0,3 do
-    local hero = PlayerResource:GetSelectedHeroEntity(i)
-    if hero then
-      hero:RemoveModifierByName("modifier_smash_stun")
+    if PlayerResource:IsValidTeamPlayerID(i) then
+      GetRandomHero(i,true)
     end
   end
+  Timers:CreateTimer(10,function()
+    CustomGameEventManager:Send_ServerToAllClients("kill_pick_screen",{})
+  end)
+  --for i=0,3 do
+  --  local hero = PlayerResource:GetSelectedHeroEntity(i)
+  -- if hero then
+  --    hero:RemoveModifierByName("modifier_smash_stun")
+  --  end
+  --end
 end
 
 function GameMode:HeroPickStarted()
   DebugPrint(1,"[SMASH] [Hero_Selection] The hero selection phase started")
   -- Check if all random is active
   if  CustomNetTables:GetTableValue("settings","HeroSelection").value == "2" then
-    RandomForAll()
-    Timers:CreateTimer(2,function()
+    Timers:CreateTimer(1,function()
       CustomGameEventManager:Send_ServerToAllClients("kill_ally_selection_screen",{})
+      CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
+      RandomForAll()
     end)
   else
     CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
@@ -142,6 +147,7 @@ function SubmitHeroPick(pID,heroname,bForcedRandom)
       PlayerTables:SetTableValue(tostring(pID.."heroes"),PlayerResource:GetSelectedHeroEntity(pID):GetUnitName(),true)
       return false
     else
+      print("ReplaceHeroWith Failed...")
       return 1/30
     end
   end)

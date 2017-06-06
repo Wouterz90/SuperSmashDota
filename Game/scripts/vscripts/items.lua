@@ -4,9 +4,9 @@ items.itemStorage = {}
 -- Items are units that simply check collision?
 items.categories = {
   runes = {
-    --"attack_rune", -- DD
-    --"spell_rune", -- Arcane
-
+    
+    --"spell_cd_rune", -- Arcane
+    "basic_attack_rune", -- DD
     "invis_rune", -- Invis
     "speed_rune", -- Haste
     "jump_rune", -- Bounty
@@ -18,7 +18,7 @@ RUNE_BONUS_ATTACKDAMAGE_FACTOR = 0.5
 RUNE_BONUS_COOLDOWN_REDUCTION = 0.2
 RUNE_BONUS_SPEED_FACTOR = 0.33
 RUNE_BONUS_JUMP_FACTOR = 0.75
-RUNE_BONUS_REGEN_SEC = 25
+RUNE_BONUS_REGEN_SEC = 15
 RUNE_BONUS_TRANSPARENCY = 60
 
 function items:CreateItem(params)
@@ -45,6 +45,7 @@ function items:CreateItem(params)
   local a = #self.categories[params.categoryName] 
   local name = self.categories[params.categoryName][RandomInt(1,a)]
   local modifierName = "modifier_"..name
+
   self.item:AddNewModifier(self.item,nil,modifierName,{})
   self.item:AddNewModifier(self.item,nil,"modifier_basic",{})
   local ab = self.item:AddAbility("dummy_unit")
@@ -66,23 +67,23 @@ function items:CreateItem(params)
 end
 
 -- DD
-modifier_attack_rune = class({})
-LinkLuaModifier("modifier_attack_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
+modifier_basic_attack_rune = class({})
+LinkLuaModifier("modifier_basic_attack_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
 
-function modifier_attack_rune:OnCreated()
+function modifier_basic_attack_rune:OnCreated()
   if IsServer() then
     self:StartIntervalThink(1/32)
   end
 end
 
-function modifier_attack_rune:DeclareFunctions()
+function modifier_basic_attack_rune:DeclareFunctions()
   local funcs = {
     MODIFIER_PROPERTY_MODEL_CHANGE,
   }
   return funcs
 end
 
-function modifier_attack_rune:OnIntervalThink()
+function modifier_basic_attack_rune:OnIntervalThink()
   local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
@@ -93,55 +94,56 @@ units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration =
   end
 end
 
-function modifier_attack_rune:GetModifierModelChange()
+function modifier_basic_attack_rune:GetModifierModelChange()
   return "models/props_gameplay/rune_doubledamage01.vmdl"
+  --return "models/props_gameplay/rune_arcane.vmdl"
 end
 
-modifier_attack_rune_buff = class({})
-LinkLuaModifier("modifier_attack_rune_buff","items.lua",LUA_MODIFIER_MOTION_NONE)
+modifier_basic_attack_rune_buff = class({})
+LinkLuaModifier("modifier_basic_attack_rune_buff","items.lua",LUA_MODIFIER_MOTION_NONE)
 
-function modifier_attack_rune_buff:OnCreated()
+function modifier_basic_attack_rune_buff:OnCreated()
   if IsServer() then
     self:GetParent().attackDamageFactor = self:GetParent().attackDamageFactor + RUNE_BONUS_ATTACKDAMAGE_FACTOR
   end
 end
 
-function modifier_attack_rune_buff:OnRefresh()
+function modifier_basic_attack_rune_buff:OnRefresh()
   self:OnCreated()
 end
-function modifier_attack_rune_buff:OnDestroy()
+function modifier_basic_attack_rune_buff:OnDestroy()
   if IsServer() then
    self:GetParent().attackDamageFactor = self:GetParent().attackDamageFactor - RUNE_BONUS_ATTACKDAMAGE_FACTOR
   end
 end
 
-function modifier_attack_rune_buff:GetEffectName()
-  return "particles/basic_effects/runes/doubledamage/rune_doubledamage_owner.vpcf"
+function modifier_basic_attack_rune_buff:GetEffectName()
+  return "particles/generic_gameplay/rune_doubledamage.vpcf"
 end
 
-function modifier_attack_rune:GetEffectAttachType()
+function modifier_basic_attack_rune_buff:GetEffectAttachType()
   return PATTACH_ABSORIGIN_FOLLOW
 end
 
 
 -- Arcana
-modifier_spell_rune = class({})
-LinkLuaModifier("modifier_spell_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
+modifier_spell_cd_rune = class({})
+LinkLuaModifier("modifier_spell_cd_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
 
-function modifier_spell_rune:OnCreated()
+function modifier_spell_cd_rune:OnCreated()
   if IsServer() then
     self:StartIntervalThink(1/32)
   end
 end
 
-function modifier_spell_rune:DeclareFunctions()
+function modifier_spell_cd_rune:DeclareFunctions()
   local funcs = {
     MODIFIER_PROPERTY_MODEL_CHANGE,
   }
   return funcs
 end
 
-function modifier_spell_rune:OnIntervalThink()
+function modifier_spell_cd_rune:OnIntervalThink()
   local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
@@ -152,31 +154,31 @@ units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration =
   end
 end
 
-function modifier_attack_rune:GetModifierModelChange()
+function modifier_spell_cd_rune:GetModifierModelChange()
   return "models/props_gameplay/rune_arcane.vmdl"
 end
 
-modifier_spell_rune_buff = class({})
-LinkLuaModifier("modifier_spell_rune_buff","items.lua",LUA_MODIFIER_MOTION_NONE)
+modifier_spell_cd_rune_buff = class({})
+LinkLuaModifier("modifier_spell_cd_rune_buff","items.lua",LUA_MODIFIER_MOTION_NONE)
 
-function modifier_spell_rune_buff:DeclareFunctions()
+function modifier_spell_cd_rune_buff:DeclareFunctions()
   local funcs = {
     MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE,
   }
   return funcs
 end
 
-function modifier_spell_rune_buff:GetModifierPercentageCooldown()
+function modifier_spell_cd_rune_buff:GetModifierPercentageCooldown()
   if IsServer() then
     return RUNE_BONUS_COOLDOWN_REDUCTION
   end
 end
 
-function modifier_spell_rune_buff:GetEffectName()
+function modifier_spell_cd_rune_buff:GetEffectName()
   return "particles/generic_gameplay/rune_arcane_owner.vpcf"
 end
 
-function modifier_spell_rune_buff:GetEffectAttachType()
+function modifier_spell_cd_rune_buff:GetEffectAttachType()
   return PATTACH_ABSORIGIN_FOLLOW
 end
 

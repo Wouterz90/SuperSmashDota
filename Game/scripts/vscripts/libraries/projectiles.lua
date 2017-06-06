@@ -55,6 +55,7 @@ function Projectiles:Think()
       -- Run the callback
       local status, nextCall = pcall(v.callback, Projectiles, v)
 
+
       -- Make sure it worked
       if status then
         -- Check if it needs to loop
@@ -308,11 +309,18 @@ function Projectiles:CreateProjectile(projectile)
       local vel = projectile.vel
       local pos = projectile.pos
 
+
+
       if projectile.bGroundLock then
 
         pos.z = GetGroundPosition(pos, projectile.Source).z + projectile.fGroundOffset
       end
-
+      if projectile.ProjectileThink then
+        local status, out = pcall(projectile.ProjectileThink, projectile, pos)
+        if not status then
+          print('[PROJECTILES] ProjectileThink Error: ' .. out)
+        end
+      end
       -- checks
       if curTime > projectile.spawnTime + projectile.fExpireTime or projectile.distanceTraveled > projectile.fDistance then
         ParticleManager:DestroyParticle(projectile.id, projectile.bDestroyImmediate)
@@ -589,10 +597,13 @@ function Projectiles:CreateProjectile(projectile)
         end
       end
 
+      
+
       projectile.radius = radius + projectile.radiusStep
       projectile.prevPos = projectile.pos
       projectile.distanceTraveled = projectile.distanceTraveled + velLength
       projectile.pos = pos + vel
+
 
 
       return curTime

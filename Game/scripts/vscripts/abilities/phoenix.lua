@@ -191,6 +191,10 @@ function phoenix_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
 
+  caster:RemoveModifierByName("modifier_left")
+  caster:RemoveModifierByName("modifier_right")
+  caster:RemoveModifierByName("modifier_jump")
+
   self.targets = {}
   caster:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,80))
   caster:AddNewModifier(caster,self,"modifier_phoenix_special_down_egg",{duration = 4})
@@ -423,8 +427,6 @@ function phoenix_special_top:OnSpellStart()
         end)
       end
 
-      
-  
       local angle =  (math.pi)*(progress)
       local pos
       if progress < 0.5 then

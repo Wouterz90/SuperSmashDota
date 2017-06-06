@@ -217,11 +217,23 @@ end
 
 function FilterUnitsBasedOnHeight(tableUnits,vOrigin,flRadius)
   local units = {}
-
   for k,v in pairs (tableUnits) do
     if (vOrigin-v:GetAbsOrigin()):Length() <= flRadius then
       table.insert(units,v)
     end
   end
   return units
+end
+
+function StoreSpecialKeyValues(object,ability)
+if not ability then ability = object end
+local tab = LoadKeyValues("scripts/npc/npc_abilities.txt")
+for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_custom.txt")) do tab[k] = v end
+  for k,v in pairs(tab[ability:GetName()].AbilitySpecial) do
+    for K,V in pairs(v) do
+      if K ~= "var_type" and K ~= "LinkedSpecialBonus" then
+        object[tostring(K)] = V
+      end
+    end
+  end
 end

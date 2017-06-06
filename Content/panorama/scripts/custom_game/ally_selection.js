@@ -1,5 +1,5 @@
 "use strict";
-var debugging = 0
+var debugging = 1
 var colorPlayer1 = "red"
 var colorPlayer2 = "blue"
 var colorPlayer3 = "green"
@@ -106,7 +106,7 @@ function ColorPlayerBox(ids)
 function ShowTeams()
 {
 	if(debugging >= 1) {$.Msg("Ally_Selection ShowTeams") }
-    $.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Header").GetChild(0).text = "The teams are:"
+    $.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Header").text = "The teams are:"
     // Mark the players for team A red and team B blue
     // Player one is always on team A
     $.GetContextPanel().GetParent().GetParent().FindChildTraverse("Player1").style.backgroundColor = colorPlayer1
@@ -136,11 +136,13 @@ function KillAllySelectionScreen()
 	if(debugging >= 1) {$.Msg("ally_selection KillAllySelectionScreen")}
 	if ($.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main"))
 	{
-		$.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().RemoveAndDeleteChildren()
+		if(debugging >= 1) {$.Msg("ally_selection KillAllySelectionScreen killed")}
+		$.Msg($.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_X").GetParent().GetParent())
+		$.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_X").GetParent().GetParent().RemoveAndDeleteChildren()
+		
 	}
     //$.GetContextPanel().GetParent().GetParent().FindChildTraverse("Ally_Selection_Main").GetParent().style.visibility = "collapse"	
 }
-
 (function()
 {  
     BuildAllySelectionScreen()

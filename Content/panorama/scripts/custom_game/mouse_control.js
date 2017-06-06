@@ -5,9 +5,9 @@ function RemoveHudThings()
 	if(debugging >= 1) {$.Msg("mouse_control RemoveHudThings" )}
   $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("quickstats").style.visibility = "collapse";
 
-  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("KillCam").style.visibility
-  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("ChannelBar").style.visibility
-
+  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("KillCam").style.visibility = "collapse";
+  $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("ChannelBar").style.visibility = "collapse";
+  //$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("DashboardButton").style.visibility = "collapse";
 
  
 }

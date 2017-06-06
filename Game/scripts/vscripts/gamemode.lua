@@ -14,7 +14,7 @@ Laws = {
   flMinDamage = 4,
   flMaxDamage = 8,
   flAttackRange = 110,
-  flSideAttackFactor = 1.5,
+  flSideAttackFactor = 2,
 
   flMaxHeight = 3000,
   flMinHeight = -100,
@@ -31,7 +31,7 @@ BAREBONES_VERSION = "1.00"
 -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
 -- You can also change the cvar 'barebones_spew' at any time.
 -- 0 is no debug calls, 1 is giving function names, 2 also includes timers and loops.
-LUA_DEBUG_SPEW = 0
+LUA_DEBUG_SPEW = 0 
 PANORAMA_DEBUG_SPEW = 0
 
 
@@ -167,7 +167,7 @@ function GameMode:OnAllPlayersLoaded()
     end
   end
   
-  --CustomGameEventManager:Send_ServerToAllClients("register_keys",{}) 
+  --eEventManager:Send_ServerToAllClients("register_keys",{}) CustomGam
 end
 
 
@@ -224,7 +224,7 @@ function GameMode:OnHeroInGame(hero)
     hero:SetMoveCapability(DOTA_UNIT_CAP_MOVE_NONE)
     hero:SetRespawnsDisabled(false)
     --hero:AddNewModifier(hero,nil,"modifier_jump",{duration = 1})
-    Timers:CreateTimer(1/30,function()
+    Timers:CreateTimer(4,function()
       if hero then
         DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnHeroInGame")
         hero:AddNewModifier(hero,nil,"modifier_basic",{})
@@ -233,9 +233,13 @@ function GameMode:OnHeroInGame(hero)
 
     hero:AddAbility("basic_attack_mid")
     hero:AddAbility("basic_attack_top")
+    hero:AddAbility("basic_attack_top_release")
     hero:AddAbility("basic_attack_bottom")
+    hero:AddAbility("basic_attack_bottom_release")
     hero:AddAbility("basic_attack_left")
+    hero:AddAbility("basic_attack_left_release")
     hero:AddAbility("basic_attack_right")
+    hero:AddAbility("basic_attack_right_release")
 
     hero:AddAbility("special_shield")
     
@@ -260,7 +264,7 @@ end
 
 -- An NPC has spawned somewhere in game.  This includes heroes
 function GameMode:OnNPCSpawned(keys)
-  DebugPrint(1,"[BAREBONES] NPC Spawned")
+  DebugPrint(1,"[BAREBONES] NPC Spawned",EntIndexToHScript(keys.entindex):GetUnitName())
   DebugPrintTable(1,keys)
   local npc = EntIndexToHScript(keys.entindex)
   Timers:CreateTimer(0.1,function()
@@ -280,14 +284,15 @@ function GameMode:OnNPCSpawned(keys)
       --print(hero:GetUnitName()..hero:GetPlayerOwnerID())
       if not hero.firstRespawn then
         if not CustomNetTables:GetTableValue("settings","nStartingLifes") then
-          CustomNetTables:SetTableValue("settings","nStartingLifes",{value = 2})
+          CustomNetTables:SetTableValue("settings","nStartingLifes",{value = 1})
         end 
         PlayerTables:CreateTable(tostring(hero:GetPlayerOwnerID()),{lifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value},true)
         PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()),"hero",hero:entindex())
         PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()),"charges",0)
         hero.firstRespawn = true  
       end
-      hero:SetAbsOrigin(Vector(RandomInt(-platform[1].radius,platform[1].radius),0,600))
+      hero:SetAbsOrigin(Vector(RandomInt(-platform[1].radius,platform[1].radius),0,800))
+
       hero:AddNewModifier(hero,nil,"modifier_jump",{duration=1})
       hero.jumps = 0 
       Timers:CreateTimer(1/32,function()
@@ -317,7 +322,6 @@ function GameMode:OnGameInProgress()
     HeroSelection = CustomNetTables:GetTableValue("settings","HeroSelection").value,
     Format = CustomNetTables:GetTableValue("settings","Format").value,
     StartingLifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value,
-    PlannedRounds = CustomNetTables:GetTableValue("settings","nAmountOfRounds").value,
   }
 
   Timers:CreateTimer(RandomInt(20,40),function()
@@ -362,8 +366,9 @@ function GameMode:Reset()
 
   -- Remove all the platforms
   ClearPlatforms()
-
-  if GameMode:FindTheOnlyConnectedTeam() and not IsInToolsMode() and not SINGLE_PLAYER_GAME then
+  local winTeam = GameMode:FindTheOnlyConnectedTeam()
+  print(winTeam)
+  if winTeam and not SINGLE_PLAYER_GAME then
     statCollection:submitRound(true)
     DeclareWinningTeam(GameMode:FindTheOnlyConnectedTeam())
     return
@@ -373,7 +378,7 @@ function GameMode:Reset()
   resetcount = resetcount +1
 
   if not CustomNetTables:GetTableValue("settings","nAmountOfRounds").value then
-    CustomNetTables:SetTableValue("settings","nAmountOfRounds",{value = "2"})
+    CustomNetTables:SetTableValue("settings","nAmountOfRounds",{value = "50"})
   end
   if tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) ~= -1 and resetcount >= tonumber(CustomNetTables:GetTableValue("settings","nAmountOfRounds").value) then 
     DebugPrint(1,"[SMASH] The last round has been played")
@@ -418,6 +423,7 @@ function GameMode:Reset()
   GameMode.playersPicked = {}
   
   heroPickTimerStarted = false
+  GameMode["lifeTable"] = {}
   GameMode:HeroPickStarted()
 
 end
@@ -450,11 +456,12 @@ function GameMode:InitGameMode()
 
   --Listening to events
   CustomGameEventManager:RegisterListener("key_event", Dynamic_Wrap(control, 'KeyEvent'))
-  CustomGameEventManager:RegisterListener("setting_change", Dynamic_Wrap(GameMode, 'ChangeSettings'))
+  CustomGameEventManager:RegisterListener("request_start", Dynamic_Wrap(GameMode, 'RequestStart'))
+  CustomGameEventManager:RegisterListener("setting_change", Dynamic_Wrap(GameMode, 'ChangeRadioSettings'))
   CustomGameEventManager:RegisterListener("ally_selection", Dynamic_Wrap(GameMode, 'StoreAlliedRequest'))
   CustomGameEventManager:RegisterListener("submit_pick", Dynamic_Wrap(GameMode, 'ConfirmHeroPick'))
-  
-
+  CustomGameEventManager:RegisterListener("get_lifes", Dynamic_Wrap(GameMode, 'SetStartingLifes'))
+  CustomGameEventManager:RegisterListener("player_leaves", Dynamic_Wrap(GameMode, 'CheckLeftoverPlayers'))
 
   -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
   Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
@@ -464,6 +471,55 @@ function GameMode:InitGameMode()
   DebugPrint(1,'[BAREBONES] Done loading Barebones gamemode!\n\n')
 end
 
+function GameMode:CheckLeftoverPlayers(keys)
+  DebugPrint(1,"GameMode:CheckLeftoverPlayers")
+  -- Put the leaving player as observer
+  Timers:CreateTimer(1,function()
+    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnDisconnect")
+    local hero = PlayerResource:GetSelectedHeroEntity(keys.PlayerID)
+    if not hero:IsAlive() then
+      hero:RespawnHero(false,false,false)
+    end
+    UTIL_MessageTextAll(PlayerResource:GetPlayerName(keys.PlayerID).." has decided to quit.", 255, 255, 255, 255)
+    PlayerTables:SetTableValue(tostring(keys.PlayerID),"lifes",0)
+    hero:ForceKill(false)
+
+    local winning = GameMode:FindTheOnlyConnectedTeam()
+    if winning then 
+      statCollection:submitRound(true)
+      DeclareWinningTeam(winning)
+    elseif PlayerHasCustomGameHostPrivileges(PlayerResource:GetPlayer(keys.PlayerID)) then
+      statCollection:submitRound(true)
+      DeclareWinningTeam(1)
+    else
+      -- Show screen to player
+    end 
+      
+    PlayerResource:UpdateTeamSlot(keys.PlayerID,DOTA_TEAM_NOTEAM,0)
+  end)
+  
+  
+end
+function GameMode:SetStartingLifes(keys)
+  GameMode["lifeTable"] = GameMode["lifeTable"] or {}
+  GameMode["lifeTable"][keys.PlayerID+1] = keys.nStartingLifes
+  local number = 0
+  for k,v in pairs(GameMode["lifeTable"]) do
+    number = number + v
+  end
+  number  = math.ceil(number / #GameMode["lifeTable"])
+  for i=0,3 do
+    if PlayerResource:IsValidTeamPlayerID(i) then
+      PlayerTables:SetTableValue(tostring(i),"lifes",number)
+    end
+  end
+end
+
+function GameMode:RequestStart(keys)
+  if GAME_HAS_STARTED then return end
+  GAME_HAS_STARTED = true
+  CustomGameEventManager:Send_ServerToAllClients("start_game",{})
+end
 
 function GameMode:Reload_KeyValues()
   GameRules:Playtesting_UpdateAddOnKeyValues()
@@ -498,10 +554,12 @@ function GameMode:SetupGame()
     "npc_dota_hero_axe",
     "npc_dota_hero_magnataur",
     "npc_dota_hero_phoenix",
+    "npc_dota_hero_pudge",
   -- Agi
     "npc_dota_hero_mirana",
     "npc_dota_hero_nyx_assassin",
     "npc_dota_hero_vengefulspirit",
+    "npc_dota_hero_nevermore",
   -- Int
     "npc_dota_hero_tinker",
     "npc_dota_hero_lina",
@@ -509,29 +567,45 @@ function GameMode:SetupGame()
     "npc_dota_hero_zuus",
     "npc_dota_hero_storm_spirit",
   }
-  
 
   GameMode.heroesPicked = {}
   GameMode.playersPicked = {}
   Rules = {
     -- Things that should be changable
-    nStartingLifes= 0, -- Starting Lifes
-    nAmountOfRounds = 2, -- How many rounds are we playing?
+    nStartingLifes= 1, -- Starting Lifes
+    nAmountOfRounds = 50, -- How many rounds are we playing?
 
     -- Radio options
     MapSelection = 1, -- Should the maps be switched
     HeroSelection = 1, -- Force a random?
     Format = 1, -- Teams or ffa?
     
-    -- Checkbox options
-    duplicate_rounds = 0, -- Do we allow 2 the same heroes?
 
   }
 end
 
-function GameMode:ChangeSettings(keys)
-  
-  CustomNetTables:SetTableValue("settings",keys.setting,{value =keys.value})
+function GameMode:ChangeRadioSettings(keys)
+  GameMode[keys.setting] = GameMode[keys.setting] or {}
+  GameMode[keys.setting][keys.PlayerID] = keys.value
+
+  local count = {}
+
+  for i = 0,3 do
+    if PlayerResource:IsValidPlayerID(i) then
+      if GameMode[keys.setting][keys.PlayerID] then
+        count[GameMode[keys.setting][keys.PlayerID]] = (count[GameMode[keys.setting][keys.PlayerID]] or 0) + 1
+      end
+    end
+  end
+  local max = 0
+  local highest
+  for k,v in pairs(count) do
+    if v > 0 then
+      max = v
+      highest = k
+    end
+  end
+  CustomNetTables:SetTableValue("settings",keys.setting,{value =highest})
 end
 
 function GameMode:OnHeroDeath(hero)
@@ -623,11 +697,11 @@ function GameMode:OnDisconnect(keys)
     PlayerTables:SetTableValue(tostring(userid),"lifes",0)
     hero:ForceKill(false)
 
-    if not self.playersLeft then
-      self.playersLeft = 1
-    else
-      self.playersLeft = self.playersLeft+1
+    if GameMode:FindTheOnlyConnectedTeam() then
+      statCollection:submitRound(true)
+      DeclareWinningTeam(GameMode:FindTheOnlyConnectedTeam())
     end
+
   end)
 end
   --[[
@@ -663,14 +737,14 @@ function GameMode:FindTheOnlyConnectedTeam()
   end
 
   for i=0,3 do
-    if PlayerResource:IsValidPlayerID(i) then 
+    if PlayerResource:IsValidTeamPlayerID(i) then 
       if PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_ABANDONED or PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_DISCONNECTED then
         teams[PlayerResource:GetTeam(i)] = teams[PlayerResource:GetTeam(i)] + 1
       end
     end
   end
 
-  for i=0,10 do
+  for i=6,10 do
     if teams[i] > 0 then
       teamsLeft = teamsLeft + 1
       winning = i

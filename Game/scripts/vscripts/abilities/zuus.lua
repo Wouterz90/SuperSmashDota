@@ -95,7 +95,7 @@ end
 function zuus_special_side:OnSpellStart()
   local caster = self:GetCaster()
   local range = self:GetSpecialValueFor("range")
-  local radius = self:GetSpecialValueFor("radius")
+  local radius = self:GetSpecialValueFor("radius") *2
   local vector = self.mouseVector
   local ability = self
   local direction
@@ -126,8 +126,7 @@ function zuus_special_side:OnSpellStart()
       return 1/32
     else
       
-      local bounceCenter = dummy:GetAbsOrigin()+direction*radius+Vector(0,0,-16 )
-
+      local bounceCenter = dummy:GetAbsOrigin()+direction*radius+Vector(0,0,-20 )
       -- Make the unit bounce on a platform
       local halfarcTable = {
         Vector(-8/8,0,0) * radius,
@@ -158,8 +157,8 @@ function zuus_special_side:OnSpellStart()
       local bouncecontroller = 0
       Timers:CreateTimer(1/32,function()
         -- Check for new targets
-        local units = FindUnitsInRadius(caster:GetTeam(), dummy:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-        units = FilterUnitsBasedOnHeight(units,dummy:GetAbsOrigin(),radius)
+        local units = FindUnitsInRadius(caster:GetTeam(), dummy:GetAbsOrigin(), nil, radius/2, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+        units = FilterUnitsBasedOnHeight(units,dummy:GetAbsOrigin(),radius/2)
         for k,v in pairs (units) do
           if not self.targets[v] then
             self.targets[v] = true
@@ -190,6 +189,7 @@ function zuus_special_side:OnSpellStart()
           caster:EmitSound("Hero_Disruptor.ThunderStrike.Target") 
         end
         dummy:SetAbsOrigin(bounceCenter+halfarcTable[bouncecontroller])
+        print(VectorToAngles(halfarcTable[bouncecontroller]))
         return 1/32
       end)
     end

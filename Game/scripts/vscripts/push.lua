@@ -20,14 +20,17 @@ function push:DamageFilter(filterTable)
   if victim.bFilterThisDamage then victim.bFilterThisDamage = nil return false end
   if victim.bShieldActivated then return false end
 
-  -- Show on hit effects
-  local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,victim)
-  Timers:CreateTimer(1,function()
-    ParticleManager:DestroyParticle(particle,true)
-    ParticleManager:ReleaseParticleIndex(particle)
-  end)
+  if filterTable["damage"] > 1 and not attacker == victim then
+    -- Show on hit effects
+    local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,victim)
+    Timers:CreateTimer(1,function()
+      ParticleManager:DestroyParticle(particle,true)
+      ParticleManager:ReleaseParticleIndex(particle)
+    end)
+  end
   
-  local push_ability = ability:GetSpecialValueFor("push")
+  local push_ability = ability.Push or ability:GetSpecialValueFor("push")
+
   if not push_ability then return true end
 
   local damageType = filterTable["damagetype_const"]

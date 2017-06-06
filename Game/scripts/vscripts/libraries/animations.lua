@@ -495,10 +495,12 @@ function StartAnimation(unit, table)
 end
 
 function FreezeAnimation(unit, duration)
-  if duration then
-    unit:AddNewModifier(unit, nil, "modifier_animation_freeze", {duration=duration})
-  else
-    unit:AddNewModifier(unit, nil, "modifier_animation_freeze", {})
+  if unit:HasModifier("modifier_animation") then
+    if duration then
+      unit:AddNewModifier(unit, nil, "modifier_animation_freeze", {duration=duration})
+    else
+      unit:AddNewModifier(unit, nil, "modifier_animation_freeze", {})
+    end
   end
 end
 
@@ -525,6 +527,13 @@ end
 function RemoveAnimationTranslate(unit)
   unit:RemoveModifierByName("modifier_animation_translate_permanent")
 end
+
+function ChangeAnimationRate(unit,rate)
+  if unit:FindModifierByName("modifier_animation") then
+    unit:FindModifierByName("modifier_animation").rate = rate
+  end
+end
+
 
 GameRules.StartAnimation = StartAnimation
 GameRules.EndAnimation = EndAnimation

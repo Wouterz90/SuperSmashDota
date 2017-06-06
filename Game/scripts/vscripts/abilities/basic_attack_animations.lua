@@ -15,6 +15,7 @@ attackAnimationTop = {
   npc_dota_hero_phoenix = ACT_DOTA_CAST_ABILITY_5,
   npc_dota_hero_storm_spirit = ACT_DOTA_ATTACK,
   npc_dota_hero_magnataur = ACT_DOTA_ATTACK,
+  npc_dota_hero_nevermore = ACT_DOTA_ATTACK,
 
 }
 
@@ -35,6 +36,7 @@ attackAnimationBottom = {
   npc_dota_hero_phoenix = ACT_DOTA_SPAWN,
   npc_dota_hero_storm_spirit = ACT_DOTA_ATTACK,
   npc_dota_hero_magnataur = ACT_DOTA_ATTACK,
+  npc_dota_hero_nevermore = ACT_DOTA_ATTACK,
 
 }
 

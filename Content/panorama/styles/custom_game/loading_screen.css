@@ -1,0 +1,560 @@
+.TeamSelect
+{	
+	width:100%;
+	height:100%;
+	z-index:2;
+}
+.Settings_Container
+{
+	width:100%;
+	height:100%;
+	background-color: black;
+}
+
+.Gamemode_Name
+{
+	horizontal-align: center;
+	background-color: black;
+	width: 70%;
+	height: 15%;
+	margin-top: 5%;
+}
+.Gamemode_Name Label,
+{
+	font-family: Dejavu Sans;
+	text-shadow: 2px 2px 0px 3.0 dark-red;  
+	font-weight: bold;
+	font-size: 100px;
+	color:#800000;
+	opacity: 1;
+	horizontal-align: center;
+	margin-top: 3%;
+}
+#Settings_Box_Options
+{
+	background-color: #800000;
+	width: 15%;
+	height: 30%;
+	margin-left: 83%;
+	margin-top: 51%;
+	border-radius: 3%;
+}
+#Settings_Box_Body_Options
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 95%;
+	height: 80%;
+	margin-bottom: 2%;
+	border-radius: 1% 1% 3% 3%;
+	flow-children:down;
+
+}
+#Settings_Box_Body_Options Label,
+{
+	font-family: Impact;
+	font-size: 24px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 2%;
+}
+#Settings_Box_Shield
+{
+	background-color: #800000;
+	width: 17%;
+	height: 30%;
+	margin-left: 64.5%;
+	margin-top: 51%;
+	border-radius: 3%;
+}
+#Settings_Box_Body_Shield
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 95%;
+	height: 80%;
+	margin-bottom: 2%;
+	border-radius: 1% 1% 3% 3%;
+
+}
+#Settings_Box_Body_Shield Label,
+{
+	font-family: Impact;
+	font-size: 24px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 2%;
+}
+#Settings_Box_Special
+{
+	background-color: #800000;
+	width: 17%;
+	height: 30%;
+	margin-left: 64.5%;
+	margin-top: 20%;
+	border-radius: 3%;
+}
+#Settings_Box_Body_Special
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 95%;
+	height: 80%;
+	margin-bottom: 2%;
+	border-radius: 1% 1% 3% 3%;
+	flow-children:down;
+
+}
+#Settings_Box_Body_Special Label,
+{
+	font-family: Impact;
+	font-size: 24px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 2%;
+}
+#Settings_Box_Attacks
+{
+	background-color: #800000;
+	width: 17%;
+	height: 30%;
+	margin-left: 27%;
+	margin-top: 20%;
+	border-radius: 3%;
+}
+#Settings_Box_Body_Attacks
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 95%;
+	height: 80%;
+	margin-bottom: 2%;
+	border-radius: 1% 1% 3% 3%;
+	flow-children:down;
+
+}
+#Settings_Box_Body_Attacks Label,
+{
+	font-family: Impact;
+	font-size: 24px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 2%;
+}
+
+#Settings_Box_Translate
+{
+	background-color: #800000;
+	width: 38%;
+	height: 15%;
+	margin-left: 27%;
+	margin-top: 83%;
+	border-radius: 5px;
+}
+#Settings_Box_Body_Translate
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 98%;
+	height: 60%;
+	margin-bottom: 3%;
+	border-radius: 5px 5px 8px 8px;
+}
+
+#Settings_Box_Body_Translate Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 5%;
+}
+#Settings_Box_Start
+{
+	background-color: #800000;
+	width: 15%;
+	height: 15%;
+	margin-left: 83%;
+	margin-top: 83%;
+	border-radius: 5px;
+	box-shadow: #E6E6FA 2px 2px 4px 0px;
+	animation-name: ProbablyUnlocalizedAnimation;
+	animation-duration: 2.0s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	
+}
+
+@keyframes 'ProbablyUnlocalizedAnimation'
+{
+	0%
+	{
+		pre-transform-scale2d: 0.95;
+	}
+				
+	50%
+	{
+		pre-transform-scale2d: 1.05;
+	}
+
+	100%
+	{
+		pre-transform-scale2d: 0.95;
+	}
+}
+#Settings_Box_Start:hover
+{
+	background-color: #800000;
+	width: 15%;
+	height: 15%;
+	margin-left: 83%;
+	margin-top: 83%;
+	border-radius: 5px;
+	box-shadow: #E6E6FA 2px 2px 8px 0px;
+}
+#Settings_Box_Body_Start
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 97%;
+	height: 60%;
+	margin-bottom: 3%;
+	border-radius: 5px 5px 8px 8px;
+}
+
+#Settings_Box_Body_Start Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 5%;
+}
+
+
+#Settings_Box_Wiki
+{
+	background-color: #800000;
+	width: 15%;
+	height: 15%;
+	margin-left:66.5%;
+	margin-top: 83%;
+	border-radius: 5px;
+	//box-shadow: #E6E6FA 2px 2px 4px 0px;
+}
+#Settings_Box_Wiki:Hover
+{
+	background-color: #800000;
+	width: 15%;
+	height: 15%;
+	margin-left:66.5%;
+	margin-top: 83%;
+	border-radius: 5px;
+	box-shadow: #E6E6FA 2px 2px 8px 0px;
+}
+#Settings_Box_Body_Wiki
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 97%;
+	height: 60%;
+	margin-bottom: 3%;
+	border-radius: 5px 5px 8px 8px;
+}
+
+#Settings_Box_Body_Wiki Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 5%;
+}
+
+#Settings_Box_Changelog
+{
+	background-color: #800000;
+	width: 24%;
+	height: 30%;
+	margin-left: 2%;
+	margin-top: 51%;
+	border-radius: 5px;
+}
+#Settings_Box_Body_Changelog
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 98%;
+	height: 80%;
+	margin-bottom: 1.5%;
+	border-radius: 1% 1% 3% 3%;
+}
+
+#Settings_Box_Body_Changelog Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 5%;
+}
+
+#Settings_Box_Body_Mouse_Image
+{
+	margin-left: 47%;
+	margin-top: 28%;
+}
+#Settings_Box_Keys
+{
+	background-color: #800000;
+	width: 24%;
+	height: 30%;
+	margin-left: 2%;
+	margin-top: 20%;
+	border-radius: 3%;
+}
+#Settings_Box_Body_Keys
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 98%;
+	height: 80%;
+	margin-bottom: 1.5%;
+	border-radius: 1% 1% 3% 3%;
+}
+#Settings_Box_Body_Keys_Image
+{
+	horizontal-align:center;
+	margin-top: 5%;
+}
+#Settings_Box_Body_Keys Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: bottom;
+	margin-bottom: 	5%;
+	margin-left: 5%;
+}
+#Settings_Box_Mouse
+{
+	background-color: #800000;
+	width: 17%;
+	height: 30%;
+	margin-left: 27%;
+	margin-top: 51%;
+	border-radius: 3%;
+}
+#Settings_Box_Body_Mouse
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 95%;
+	height: 80%;
+	margin-bottom: 2%;
+	border-radius: 1% 1% 3% 3%;
+}
+#Settings_Box_Body_Mouse_Directions
+{
+	horizontal-align:center;
+	width: 100%;
+	height: 60%;
+}
+#Settings_Box_Body_Mouse Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 60%;
+	margin-bottom: 	5%;
+	margin-left: 5%;
+}
+.Settings_Box Label,
+{
+	font-family: Impact;
+	font-weight: bold;
+	font-size: 40px;
+	color:#E6E6FA;
+	opacity: 1;
+	horizontal-align: center;
+	margin-top: 3%;
+}
+
+
+
+.RadioBox
+{
+    min-width: 25px;
+    min-height: 25px;
+	
+  
+}
+
+RadioButton
+{
+	width: 100%;
+	
+}
+
+RadioButton Label,
+{
+    margin-left: 5px;
+	margin-top:2%;
+    color: black;
+    font-size: 18px;
+	text-transform:none;
+}
+
+#RadioButtons
+{
+	width: 100%;
+	flow-children: down;
+	
+}
+
+.RadioSection
+{
+	margin-left: 2%;
+	flow-children: right;
+	width: 100%;
+}
+RadioButton
+{
+	background-color: none;
+	flow-children: right;
+//	padding: 4px 4px;
+	color: white;
+
+	transition-property: background-color, box-shadow, color, brightness;
+	transition-duration: 0.25s;
+	transition-timing-function: ease-in-out;
+}
+
+RadioButton > .RadioBox
+{
+	min-width: 20px;
+	min-height: 20px;
+	
+	border-radius: 50%;
+	background-color: gradient( radial, 50% 50%, 0% 0%, 10% 10%, from( #000000 ), to( #000000 ) );
+	
+	border: 2px solid #5e686966;
+	box-shadow: #00000055 -2px -2px 1px 4px;
+	
+	transition-property: background-color, box-shadow, color, border;
+	transition-duration: 0.20s;
+	transition-timing-function: ease-in-out;
+}
+
+RadioButton:selected > .RadioBox
+{
+	background-color: gradient( radial, 50% 50%, 0% 0%, 50% 50%, from( #e7f6f5 ), to( #333399 ) );
+	border: 3px solid #000000;
+
+	box-shadow: #5b62bf77 -3px -3px 6px 6px;
+	
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-in-out;
+}
+
+RadioButton:enabled:hover > .RadioBox
+{
+	border: 2px solid #697879;
+}
+
+RadioButton:enabled:selected:hover > .RadioBox
+{
+	border: 3px solid #000000;
+}
+
+RadioButton > Label
+{
+	margin-left: 0px;
+	font-size: 16px;
+	
+	transition-property: color;
+	transition-duration: 0.2s;
+	transition-timing-function: linear;
+}
+
+DOTASettingsEnum RadioButton > Label
+{
+	font-size: 18px;
+	color: #7d8688;
+}
+
+
+RadioButton:selected > Label
+{
+	color: white;
+
+	transition-property: color, text-shadow;
+	transition-duration: 0.2s;
+	transition-timing-function: linear;
+}
+
+RadioButton:enabled:hover > Label
+{
+	color: white;
+
+	transition-property: color;
+	transition-duration: 0.2s;
+	transition-timing-function: linear;
+}
+
+RadioButton:disabled > .RadioBox
+{
+	color: transparent;
+	box-shadow: #33333377 -4px -4px 8px 8px;
+	background-color: #00000000;
+}
+
+RadioButton:disabled:selected > .RadioBox
+{
+	background-color: gradient( radial, 50% 50%, 0% 0%, 50% 50%, from( #e7f6f533 ), to( #33339933 ) );
+}
+
+RadioButton:disabled > Label
+{
+	color: #333333;
+}

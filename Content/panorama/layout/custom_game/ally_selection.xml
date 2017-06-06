@@ -12,58 +12,66 @@
   --> 
   <Panel class="Ally_Selection" hittest="true">
     <Panel id="Ally_Selection_Main" class="Ally_Selection_Main" hittest="false" visible="false">
-      <Panel id="Ally_Selection_HeaderBox" class="Ally_Selection_HeaderBox">
-        <Panel id="Ally_Selection_Header" class="Ally_Selection_Header">
-          <Label text="#ChooseAlly"/>
-        </Panel>
-      </Panel>
+		<Image  id="Exit_Image" src="file://{images}/custom_game/close.png" onactivate="DOTAHUDShowDashboard();"/>
+		<Panel id="Ally_Selection_X">
+			<Panel id="Ally_Selection_Header" class="Ally_Selection_Header">
+				<Label text="#ChooseAlly"/>
+			</Panel>
 
-      <Panel id="Ally_Selection_Playerboxes" class= "Ally_Selection_Playerboxes">
-        <Panel id="Player1" class="AllySelectPanelPlayer1">
-          <Panel id="Player1_SteamName" class="SteamName">
-            <Label id="steamname" text="1"/>
-          </Panel>
-          <Panel id="Player1_SteamAvatar" class="SteamAvatar">
-            <DOTAAvatarImage id="AvatarImageProfile"/>
-          </Panel>
-          <Button id="AllyPlayer1" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer1()">
-            <Label text="Choose as ally" />
-          </Button>
-        </Panel>
-        <Panel id="Player2" class="AllySelectPanelPlayer2">
-          <Panel id="Player2_SteamName" class="SteamName">
-             <Label id="steamname" text="2"/>
-          </Panel>
-          <Panel id="Player2_SteamAvatar" class="SteamAvatar">
-			<DOTAAvatarImage id="AvatarImageProfile"/>
-          </Panel>
-          <Button id="AllyPlayer2" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer2()">
-            <Label text="Choose as ally" />
-          </Button>
-        </Panel>
-        <Panel id="Player3" class="AllySelectPanelPlayer3">
-          <Panel id="Player3_SteamName" class="SteamName">
-             <Label id="steamname" text="3"/>
-          </Panel>
-          <Panel id="Player3_SteamAvatar" class="SteamAvatar">
-			<DOTAAvatarImage id="AvatarImageProfile"/>
-          </Panel>
-          <Button id="AllyPlayer3" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer3()">
-            <Label text="Choose as ally" />
-          </Button>
-        </Panel>
-        <Panel id="Player4" class="AllySelectPanelPlayer4">
-          <Panel id="Player4_SteamName" class="SteamName">
-             <Label id="steamname" text="4"/>
-          </Panel>
-          <Panel id="Player4_SteamAvatar" class="SteamAvatar">
-			<DOTAAvatarImage id="AvatarImageProfile"/>
-          </Panel>
-          <Button id="AllyPlayer4" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer4()">
-            <Label text="Choose as ally" />
-          </Button>
-        </Panel>
-      </Panel>
-    </Panel>
+			
+				<Panel id="Player1" class="AllySelectPanelPlayer1">
+					<Panel id="Player1_SteamName" class="SteamName">
+						<Label id="steamname" text="1"/>
+					</Panel>
+					<Panel id="AllySelectPanelPlayer1_Body" class="AllySelectPanelPlayer_Body">
+						<Panel id="Player1_SteamAvatar" class="SteamAvatar">
+							<DOTAAvatarImage id="AvatarImageProfile"/>
+						</Panel>
+						<Button id="AllyPlayer1" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer1()">
+							<Label text="Choose as ally" />
+						</Button>
+					</Panel>
+				</Panel>
+				<Panel id="Player2" class="AllySelectPanelPlayer2">
+					<Panel id="Player2_SteamName" class="SteamName">
+						<Label id="steamname" text="2"/>
+					</Panel>
+					<Panel id="AllySelectPanelPlayer2_Body" class="AllySelectPanelPlayer_Body">
+						<Panel id="Player2_SteamAvatar" class="SteamAvatar">
+							<DOTAAvatarImage id="AvatarImageProfile"/>
+						</Panel>
+						<Button id="AllyPlayer2" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer2()">
+							<Label text="Choose as ally" />
+						</Button>
+					</Panel>
+				</Panel>
+				<Panel id="Player3" class="AllySelectPanelPlayer3">
+					<Panel id="Player3_SteamName" class="SteamName">
+						<Label id="steamname" text="3"/>
+					</Panel>
+					<Panel id="AllySelectPanelPlayer2_Body" class="AllySelectPanelPlayer_Body">
+						<Panel id="Player3_SteamAvatar" class="SteamAvatar">
+							<DOTAAvatarImage id="AvatarImageProfile"/>
+						</Panel>
+						<Button id="AllyPlayer3" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer3()">
+							<Label text="Choose as ally" />
+						</Button>
+					</Panel>
+				</Panel>
+				<Panel id="Player4" class="AllySelectPanelPlayer4">
+					<Panel id="Player4_SteamName" class="SteamName">
+						<Label id="steamname" text="4"/>
+					</Panel>
+					<Panel id="AllySelectPanelPlayer2_Body" class="AllySelectPanelPlayer_Body">
+						<Panel id="Player4_SteamAvatar" class="SteamAvatar">
+							<DOTAAvatarImage id="AvatarImageProfile"/>
+						</Panel>
+						<Button id="AllyPlayer4" class="AllyPlayerButton" onactivate="OnRequestAllyPlayer4()">
+							<Label text="Choose as ally" />
+						</Button>
+					</Panel>
+				</Panel>
+			</Panel>
+		</Panel>
   </Panel>
 </root>

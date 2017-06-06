@@ -10,4 +10,5 @@ jumpModifiers = {
   ["modifier_batrider_lasso"] = true,
   ["modifier_tusk_sigil_dummy"] = true,
   ["modifier_nyx_assassin_spiked_carapace_smash"] = true,
+  ["modifier_pudge_rot_smash"] = true,s
 }

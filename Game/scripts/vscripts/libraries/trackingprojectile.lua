@@ -256,6 +256,8 @@ function TrackingProjectiles:OnProjectileHitUnit( params,projectileID )
         ( GameRules:GetGameTime() - params.creation_time ) .. ' seconds.' )]]
     if not params.bProjectileDodged then
         pcall(params.OnProjectileHitUnit, params, projectileID)
+    else
+        pcall(params.OnProjectileDodge, params, projectileID)
     end
 end
 
@@ -265,6 +267,7 @@ end
 function TrackingProjectiles:hookFunctions()
     local this = self
     
+    -- ProjectileManager:ProjectileDodge(hUnit)
     local oldProjectileDodge = ProjectileManager.ProjectileDodge
     ProjectileManager.ProjectileDodge = function(projectileManager,unit)
         -- Set the unit do be dodging
