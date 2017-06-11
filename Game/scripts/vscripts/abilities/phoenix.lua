@@ -222,7 +222,9 @@ function modifier_phoenix_special_down_egg:GetModifierModelScale()
 end
 
 function modifier_phoenix_special_down_egg:OnCreated()
+  if  IsServer() then print(self:GetParent().GetLocalPlayer) end
   if IsServer() then
+    StoreSpecialKeyValues(self,self:GetAbility())
     self:GetCaster():SetModelScale(3  )
     self:StartIntervalThink(1/30)
     --self:GetCaster().zDelta = self:GetCaster().zDelta -90
@@ -282,17 +284,7 @@ function modifier_phoenix_special_down_egg:OnIntervalThink()
     caster:SetAbsOrigin(nextPosition[1])
   else
     self:StartIntervalThink(-1)
-    caster:EmitSound("Hero_Phoenix.SuperNova.Explode")
-    Timers:CreateTimer(0.05 ,function()
-      local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_phoenix/phoenix_supernova_reborn.vpcf",PATTACH_ABSORIGIN,self:GetCaster())
-      ParticleManager:SetParticleControlEnt( particle, 0, self:GetCaster(), PATTACH_POINT_FOLLOW, "follow_origin", self:GetCaster():GetAbsOrigin(), true )
-      ParticleManager:SetParticleControlEnt( particle, 1, self:GetCaster(), PATTACH_POINT_FOLLOW, "attach_hitloc", self:GetCaster():GetAbsOrigin(), true )
-      self:Destroy()
-      Timers:CreateTimer(0.5,function()
-        ParticleManager:DestroyParticle(particle,false) 
-        ParticleManager:ReleaseParticleIndex(particle)
-      end)
-    end)
+    self:Destroy()
   end
 end
 
@@ -303,11 +295,27 @@ function modifier_phoenix_special_down_egg:OnDestroy()
     local caster = self:GetCaster()
     local ability = self:GetAbility()
     local position = caster:GetAbsOrigin()
-  
-    local radius = ability:GetSpecialValueFor("radius") * 2
-    local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-    units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),radius)
-    for k,v in pairs(units) do
+
+
+    -- Only explode if the egg existed for over 0.35 second
+    if GameRules:GetGameTime() -  self:GetCreationTime() > self.min_time_to_explode -0.05 then
+      
+      local radius = ability:GetSpecialValueFor("radius") * 1.5
+      local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+      units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),radius)
+      
+      local particle_exp = ParticleManager:CreateParticle("particles/units/heroes/hero_phoenix/phoenix_supernova_reborn.vpcf",PATTACH_ABSORIGIN,self:GetCaster())
+      ParticleManager:SetParticleControlEnt( particle_exp, 0, self:GetCaster(), PATTACH_POINT_FOLLOW, "follow_origin", self:GetCaster():GetAbsOrigin(), true )
+      ParticleManager:SetParticleControlEnt( particle_exp, 1, self:GetCaster(), PATTACH_POINT_FOLLOW, "attach_hitloc", self:GetCaster():GetAbsOrigin(), true )
+      
+      Timers:CreateTimer(0.5,function()
+        ParticleManager:DestroyParticle(particle_exp,false) 
+        ParticleManager:ReleaseParticleIndex(particle_exp)
+      end)
+
+      caster:EmitSound("Hero_Phoenix.SuperNova.Explode")
+
+      for k,v in pairs(units) do
         local damageTable = {
           victim = v,
           attacker = self:GetCaster(),
@@ -323,21 +331,22 @@ function modifier_phoenix_special_down_egg:OnDestroy()
           ParticleManager:DestroyParticle(particle,true)
           ParticleManager:ReleaseParticleIndex(particle)
         end)
-
+      end
     end
 
     local modifier = caster:FindModifierByNameAndCaster("modifier_smash_stun",caster)
     if modifier then
       modifier:Destroy()
     end
-
     caster:SetRenderColor(255,255,255)
     --self:GetCaster().zDelta = self:GetCaster().zDelta +90
     self:GetCaster():SetModelScale(1)
     
-    
     --self:GetCaster().zDelta = self:GetCaster().zDelta +900
   end
+  
+
+  
 end
 
 function modifier_phoenix_special_down_egg:GetEffectName()
@@ -427,7 +436,7 @@ function phoenix_special_top:OnSpellStart()
         end)
       end
 
-      local angle =  (math.pi)*(progress)
+      local angle = (math.pi)*(progress)
       local pos
       if progress < 0.5 then
         pos = casterOrigin + dashLength * Vector(math.cos(angle)*dir, 0, math.sin(angle))

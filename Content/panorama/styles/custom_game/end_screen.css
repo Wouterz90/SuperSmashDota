@@ -164,7 +164,7 @@
 	background-color: #800000;
 	width: 42%;
 	height: 15%;
-	margin-left: 2%;
+	margin-left: 18.5%;
 	margin-top: 83%;
 	border-radius: 5px;
 }
@@ -180,6 +180,63 @@
 }
 
 #Settings_Box_Body_Translate Label,
+{
+	font-family: Impact;
+	font-size: 22px;
+	color:black;
+	opacity: 1;
+	horizontal-align: left;
+	vertical-align: top;
+	margin-top: 5%;
+	margin-left: 5%;
+}
+#Vote1
+{
+	margin-top: 20%;
+	margin-left: 10%;
+	height:282px;
+	width:203px;
+	box-shadow: black 0px 0px 60px 0px;
+	
+}
+
+#Vote2
+{
+	margin-top: 20%;
+	margin-left: 41%;
+	height:282px;
+	width:203px;
+	box-shadow: black 0px 0px 60px 0px;
+}
+#Vote3
+{
+	margin-top: 20%;
+	margin-left: 72%;
+	height:282px;
+	width:203px;
+	box-shadow: black 0px 0px 60px 0px;
+}	
+#Settings_Box_Vote
+{
+	background-color: #800000;
+	width: 63%;
+	height: 60%;
+	horizontal-align:center;
+	margin-top: 20%;
+	border-radius: 5px;
+}
+#Settings_Box_Body_Vote
+{
+	horizontal-align: center;
+	vertical-align: bottom;
+	background-color: 	#E6E6FA;
+	width: 98%;
+	height: 80%;
+	margin-bottom: 3%;
+	border-radius: 5px 5px 8px 8px;
+}
+
+#Settings_Box_Body_Vote Label,
 {
 	font-family: Impact;
 	font-size: 22px;

@@ -1,5 +1,5 @@
 "use strict";
-var debugging = 1
+var debugging = 0
 var colorPlayer1 = "red"
 var colorPlayer2 = "blue"
 var colorPlayer3 = "green"
@@ -108,7 +108,7 @@ function BuildHeroSelectionScreen()
 
 
 // Functions for selecting a hero
-function SetSelectedHero(heroName)
+function selectedHero(heroName)
 {
     $.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("SelectedHero").heroname = "npc_dota_hero_".concat(heroName)
     // Set his abilities
@@ -148,94 +148,6 @@ function SetRatings(heroName)
     }
 }
 
-
-function selectedHeroClock()
-{
-    var heroName = "rattletrap"
-    SetSelectedHero(heroName)
-}
-function selectedHeroPuck()
-{
-    var heroName = "puck"
-    SetSelectedHero(heroName)
-}
-function selectedHeroTusk()
-{
-    var heroName = "tusk"
-    SetSelectedHero(heroName)
-}
-function selectedHeroEarthshaker()
-{
-    var heroName = "earthshaker"
-    SetSelectedHero(heroName)
-}
-function selectedHeroMirana()
-{
-    var heroName = "mirana"
-    SetSelectedHero(heroName)
-}
-function selectedHeroTinker()
-{
-    var heroName = "tinker"
-    SetSelectedHero(heroName)
-}
-function selectedHeroZuus()
-{
-    var heroName = "zuus"
-    SetSelectedHero(heroName)
-}
-function selectedHeroLina()
-{
-    var heroName = "lina"
-    SetSelectedHero(heroName)
-}
-
-function selectedHeroNyx()
-{
-    var heroName = "nyx_assassin"
-    SetSelectedHero(heroName)
-}
-function selectedHeroVenge()
-{
-    var heroName = "vengefulspirit"
-    SetSelectedHero(heroName)
-}
-function selectedHeroAxe()
-{
-    var heroName = "axe"
-    SetSelectedHero(heroName)
-}
-function selectedHeroStorm()
-{
-    var heroName = "storm_spirit"
-    SetSelectedHero(heroName)
-}
-function selectedHeroMagnus()
-{
-    var heroName = "magnataur"
-    SetSelectedHero(heroName)
-}
-function selectedHeroPhoenix()
-{
-    var heroName = "phoenix"
-    SetSelectedHero(heroName)
-}
-
-function selectedHeroShadowFiend()
-{
-    var heroName = "nevermore"
-    SetSelectedHero(heroName)
-}
-function selectedHeroPudge()
-{
-    var heroName = "pudge"
-    SetSelectedHero(heroName)
-}
-function selectedHeroRandom()
-{   
-    var heroName = ""
-    SetSelectedHero(heroName)
-}
 
 function OnSelectedHeroClicked()
 {
@@ -382,10 +294,20 @@ function PlayerPressedDashboard()
 	if(debugging >= 1) {$.Msg("HeroSelect PlayerPressedDashboard" )}
 	GameEvents.SendCustomGameEventToServer("player_leaves", {})
 	$.GetContextPanel().GetParent().RemoveAndDeleteChildren()
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("EndScreen").style.visibility = "visible"
+}
+function PlayerPressedHelp()
+{
+	if(debugging >= 1) {$.Msg("HeroSelect PlayerPressedHelp" )}
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HelpScreen").style.visibility = "visible"
+}
+function PlayerPressedHelpOut()
+{
+	if(debugging >= 1) {$.Msg("HeroSelect PlayerPressedHelp" )}
+	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("HelpScreen").style.visibility = "collapse"
 }
 (function()
 {  
-    
     GameEvents.Subscribe( "pick_heroes", BuildHeroSelectionScreen);
     GameEvents.Subscribe( "hero_pick_accepted", HeroPickAccepted);
     GameEvents.Subscribe( "kill_pick_screen", KillPickScreen);

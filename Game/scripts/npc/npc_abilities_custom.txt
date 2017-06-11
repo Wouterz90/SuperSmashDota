@@ -2073,7 +2073,12 @@
       "06"
       {
         "var_type"      "FIELD_FLOAT"
-        "stun_duration"       "0.75"
+        "stun_duration"       "0.5"
+      }
+      "07"
+      {
+        "var_type" "FIELD_FLOAT"
+        "min_time_to_explode" "0.25"
       }
     }
   }
@@ -2123,7 +2128,7 @@
       "06"
       {
         "var_type"      "FIELD_INTEGER"
-        "number_of_spirits"       "4"
+        "number_of_spirits"       "3"
       }
       "07"
       {

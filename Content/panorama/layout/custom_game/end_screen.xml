@@ -10,93 +10,30 @@
     </scripts>
     <Panel hittest="false" class="TeamSelect">
         <Panel hittest="false" class="Settings_Container" id="Settings_Container">	
+			<Image id="DisconnectImage" src="file://{images}/custom_game/close.png"  onactivate="DOTAHUDShowDashboard();"/>
 			<Panel hittest="false" class="Gamemode_Name" id="Gamemode_Name">
-				<Label text="Thank you for playing!"/>
+				<Label text="#Thanks"/>
 			</Panel>
-			<!--<Panel hittest="false" class="Settings_Box" id="Settings_Box_Keys">
-				<Label text="Directional Movement"/>
-				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Keys">
-					<Image  id="Settings_Box_Body_Keys_Image" src="file://{images}/custom_game/keys2.png" />
-					<Label text="DirectionMovement"/>
-				</Panel>
-			</Panel>
-			
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Mouse">
-				<Label text="Mouse Usage"/>
-				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Mouse">
-					<Image  id="Settings_Box_Body_Mouse_Directions" src="file://{images}/custom_game/example_controls.jpg" />
-					<Label text="Each color/direction functions as button"/>
-				</Panel>
-			</Panel>
-			
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Changelog">
-				<Label text="Changelog_Title"/>
-				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Changelog">
-					<Label text="#Changelog_Body"/>
-				</Panel>
-			</Panel>
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Shield">
-				<Label text="Shield_Title"/>
-				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Shield">
-					<Label text="Shield_Body"/>
-				</Panel>
-			</Panel>
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Special">
-				<Label text="#Special_Title"/>
-				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Special">
-					<Label text="#Special_Body"/>
-				</Panel>
-			</Panel>
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Attacks">
-				<Label text="#Attacks_Title"/>
-				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Attacks">
-					<Label text="#Attacks_Body"/>
+			<!--<Panel hittest="false" class="Settings_Box" id="Settings_Box_Vote">
+				<Label text="Vote for the next hero!"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Vote">
+					<DOTAHeroImage id="Vote1" class="heroImage" heroname="npc_dota_hero_batrider" heroimagestyle="portrait" onmouseout="OnHoverOutVote(1)" onmouseover="OnHoverVote(1)" onactivate="OnVote(1)"/>
+					<DOTAHeroImage id="Vote2" class="heroImage" heroname="npc_dota_hero_brewmaster" heroimagestyle="portrait" onmouseout="OnHoverOutVote(2)" onmouseover="OnHoverVote(2)" onactivate="OnVote(2)"/>"/>
+					<DOTAHeroImage id="Vote3" class="heroImage" heroname="npc_dota_hero_kunkka" heroimagestyle="portrait" onmouseout="OnHoverOutVote(3)" onmouseover="OnHoverVote(3)" onactivate="OnVote(3)"/>"/>
 				</Panel>
 			</Panel>-->
-			<Image  id="Settings_Box_Body_Mouse_Image" src="file://{images}/custom_game/thanks.png" />
 			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Translate">
-				<Label text="Contribute"/>
+				<Label text="#Contribute_Title"/>
 				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Translate">
-					<Label text="I am always looking for feedback, graphical, technical or gameplay. If this is not written in your language and you want to translate, you are very welcome! Other help might also be very welcome."/>
+					<Label text="#Contribute_Body"/>
 				</Panel>
 			</Panel>
 			<Button class="Settings_Box" id="Settings_Box_Wiki" onactivate="DOTADisplayURL('http://supersmashdota.wikia.com/wiki/SuperSmashDota');"	>
-				<Label text="Wiki"/>
+				<Label text="#Wiki_Title"/>
 				<Panel class="Settings_Box_Body" id="Settings_Box_Body_Wiki" > 
-					<Label text="For more detailed information about Super Smash Dota visit the wiki!"/>
+					<Label text="#Wiki_Body"/>
 				</Panel>
 			</Button>
-			
-			<!--
-			<Button class="Settings_Box" id="Settings_Box_Start" onactivate="RequestStart()">
-				<Label text=""/>
-				<Panel class="Settings_Box_Body" id="Settings_Box_Body_Start"> 
-					<Label text="Thank you for playing!"/>
-				</Panel>
-			</Button>
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Options" >
-				<Label text="Settings"/>
-				<Panel hittest="false"  id="Settings_Box_Body_Options">
-					<Panel id="RadioButtons">
-						<Label class="OptionLabel" text="Gamemode:" />
-						<Panel class="RadioSection">
-							<RadioButton group="Format" onactivate="SelectRadioGameMode('1')" id="FFA" text="Free for all" checked="true"/>
-						</Panel>	
-						 <Panel class="RadioSection">
-							<RadioButton group="Format" onactivate="SelectRadioGameMode('2')" id="2v2" text="2 v 2" />
-						</Panel>
-					</Panel> 
-					<Panel id="RadioButtons">
-						<Label class="OptionLabel" text="Hero selection:" />
-						<Panel class="RadioSection">
-							<RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('1')" id="Pick" text="Pick" checked="true"/>
-						</Panel>
-						 <Panel class="RadioSection">
-							<RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('2')" id="Random" text="Random" />
-						</Panel>
-					</Panel> 
-				</Panel>
-			</Panel>-->
 		</Panel>
 
     </Panel>

@@ -1,7 +1,7 @@
 
 "use strict";
-var debugging = 0
-
+var debugging = 1
+var PlayerTables = GameUI.CustomUIConfig().PlayerTables
 function SelectRadioGameMode(option) {
 	if(debugging >= 1) {$.Msg("settings SelectRadioGameMode",option )}
     var currentRadioOption = '1'
@@ -46,8 +46,43 @@ function StartGame()
 	Game.AutoAssignPlayersToTeams();
 	Game.SetTeamSelectionLocked( true );
 }
-
-
+function OnVote(nVote)
+{
+	if(debugging >= 1) {$.Msg("Settings OnVote", nVote )}
+	GameEvents.SendCustomGameEventToServer("player_votes_endscreen", {vote : nVote})
+	
+}
+function OnHoverVote(nVote)
+{
+	
+	if (PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"endVote")) {return}
+	if(debugging >= 1) {$.Msg("Settings OnHoverVote", nVote)}	
+	for (var i = 1; i < 4; i++)	
+	{
+		if (i==nVote)
+		{
+			$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Vote".concat(i)).style.boxShadow = "green 0px 0px 60px 0px"
+		}
+		else
+		{
+			$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Vote".concat(i)).style.boxShadow = "black 0px 0px 60px 0px"
+		}
+	}
+	
+}
+function OnHoverOutVote(nVote)
+{
+	
+	if (PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"endVote") !== null) {return}
+	if(debugging >= 1) {$.Msg("Settings OnHoverOutVote", nVote)}
+		
+	for (var i = 1; i < 4; i++)	
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Vote".concat(i)).style.boxShadow = "black 0px 0px 60px 0px"
+	}
+	
+}
+ 
 (function()
 {  
     

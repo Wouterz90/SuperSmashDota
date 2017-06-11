@@ -19,7 +19,11 @@
 }
 #Exit_Image
 {
-	margin-left:1%;
+	margin-left:0%;
+}
+#Help_Image
+{
+	margin-left:2%;
 }
 #DashboardButton
 {

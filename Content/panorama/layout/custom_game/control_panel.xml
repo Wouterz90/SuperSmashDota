@@ -9,7 +9,120 @@
   </scripts>
   
   <Panel class="MainPanel" hittest="false">
-	<Image id="Exit_Image" src="file://{images}/custom_game/close.png" onactivate="DOTAHUDShowDashboard()" onmouseactivate="PlayerPressedDashboard()" />
+	<Panel hittest="false" id="EndScreen" class="EndScreen">
+		<Image id="DisconnectImage" src="file://{images}/custom_game/close.png"  onactivate="DOTAHUDShowDashboard();"/>
+        <Panel hittest="false" class="Settings_Container" id="Settings_Container">	
+			<Panel hittest="false" class="Gamemode_Name" id="Gamemode_Name">
+				<Label text="#Thanks"/>
+			</Panel>
+			
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Translate">
+				<Label text="#Contribute_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Translate">
+					<Label text="#Contribute_Body"/>
+				</Panel>
+			</Panel>
+			<Button class="Settings_Box" id="Settings_Box_Wiki" onactivate="DOTADisplayURL('http://supersmashdota.wikia.com/wiki/SuperSmashDota');"	>
+				<Label text="#Wiki_Title"/>
+				<Panel class="Settings_Box_Body" id="Settings_Box_Body_Wiki" > 
+					<Label text="#Wiki_Body"/>
+				</Panel>
+			</Button>
+		</Panel>
+
+    </Panel>
+	<Panel hittest="false" id="HelpScreen" class="HelpScreen">
+	<Image id="UnHelp_Image" src="file://{images}/custom_game/close.png"  onactivate="PlayerPressedHelpOut();"/>
+        <Panel hittest="false" class="Settings_Container" id="Settings_Container">	
+			<Panel hittest="false" class="Gamemode_Name" id="Gamemode_Name">
+				<Label text="SUPER SMASH DOTA"/>
+			</Panel>
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Keys">
+				<Label text="#DirectionalMovement_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Keys">
+					<Image  id="Settings_Box_Body_Keys_Image" src="file://{images}/custom_game/keys2.png" />
+					<Label text="#DirectionalMovement_Body"/>
+				</Panel>
+			</Panel>
+			<Image  id="Settings_Box_Body_Mouse_Image" src="file://{images}/custom_game/mouse.png" />
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Mouse">
+				<Label text="#MouseUsage_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Mouse">
+					<Image  id="Settings_Box_Body_Mouse_Directions" src="file://{images}/custom_game/example_controls.jpg" />
+					<Label text="#MouseUsage_Body"/>
+				</Panel>
+			</Panel>
+			
+			<!--<Panel hittest="false" class="Settings_Box" id="Settings_Box_Changelog">
+				<Label text="#Changelog_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Changelog">
+					<Label text="#Changelog_Body"/>
+				</Panel>
+			</Panel>-->
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Shield">
+				<Label text="#Shield_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Shield">
+					<Label text="#Shield_Body"/>
+				</Panel>
+			</Panel>
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Special">
+				<Label text="#Special_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Special">
+					<Label text="#Special_Body"/>
+				</Panel>
+			</Panel>	
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Attacks">
+				<Label text="#Attacks_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Attacks">
+					<Label text="#Attacks_Body"/>
+				</Panel>
+			</Panel>
+			<!--<Panel hittest="false" class="Settings_Box" id="Settings_Box_Translate">
+				<Label text="#Contribute_Title"/>
+				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Translate">
+					<Label text="#Contribute_Body"/>
+				</Panel>
+			</Panel>
+			<Button class="Settings_Box" id="Settings_Box_Wiki" onactivate="DOTADisplayURL('http://supersmashdota.wikia.com/wiki/SuperSmashDota');"	>
+				<Label text="#Wiki_Title"/>
+				<Panel class="Settings_Box_Body" id="Settings_Box_Body_Wiki" > 
+					<Label text="#Wiki_Body"/>
+				</Panel>
+			</Button>-->
+			<!--<Button class="Settings_Box" id="Settings_Box_Start" onactivate="RequestStart()">
+				<Label text="#Start"/>
+				<Panel class="Settings_Box_Body" id="Settings_Box_Body_Start"> 
+					<Label text="#Start_Body"/>
+				</Panel>
+			</Button>
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Options" >
+				<Label text="#Settings_Title"/>
+				<Panel hittest="false"  id="Settings_Box_Body_Options">
+					<Panel id="RadioButtons">
+						<Label class="OptionLabel" text="#Gamemode" />
+						<Panel class="RadioSection">
+							<RadioButton group="Format" onactivate="SelectRadioGameMode('1')" id="FFA" text="#FFA" checked="true"/>
+						</Panel>	
+						 <Panel class="RadioSection">
+							<RadioButton group="Format" onactivate="SelectRadioGameMode('2')" id="2v2" text="#2v2" />
+						</Panel>
+					</Panel> 
+					<Panel id="RadioButtons">
+						<Label class="OptionLabel" text="Hero selection:" />
+						<Panel class="RadioSection">
+							<RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('1')" id="Pick" text="#AP" checked="true"/>
+						</Panel>
+						 <Panel class="RadioSection">
+							<RadioButton group="HeroSelection" onactivate="SelectRadioHeroSelection('2')" id="Random" text="#AR" />
+						</Panel>
+					</Panel> 
+				</Panel>
+			</Panel>-->
+		</Panel>
+
+    </Panel>
+	<Image id="Exit_Image" src="file://{images}/custom_game/close.png" onmouseactivate="PlayerPressedDashboard()" />
+	<Image id="Help_Image" src="file://{images}/custom_game/help.png"  onactivate="PlayerPressedHelp();"/>
 	<DOTAAbilityImage id="Mainspecial_top" class="TopIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_left" class="RightIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_right" class="LeftIcon" abilityname=""/>

@@ -8,37 +8,39 @@
     <scripts>
         <include src="file://{resources}/scripts/settings.js" />
     </scripts>
+	
     <Panel hittest="false" class="TeamSelect">
+	
         <Panel hittest="false" class="Settings_Container" id="Settings_Container">	
 			<Panel hittest="false" class="Gamemode_Name" id="Gamemode_Name">
 				<Label text="SUPER SMASH DOTA"/>
 			</Panel>
 			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Keys">
-				<Label text="Directional Movement"/>
+				<Label text="#DirectionalMovement_Title"/>
 				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Keys">
 					<Image  id="Settings_Box_Body_Keys_Image" src="file://{images}/custom_game/keys2.png" />
-					<Label text="DirectionMovement"/>
+					<Label text="#DirectionalMovement_Body"/>
 				</Panel>
 			</Panel>
 			<Image  id="Settings_Box_Body_Mouse_Image" src="file://{images}/custom_game/mouse.png" />
 			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Mouse">
-				<Label text="Mouse Usage"/>
+				<Label text="#MouseUsage_Title"/>
 				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Mouse">
 					<Image  id="Settings_Box_Body_Mouse_Directions" src="file://{images}/custom_game/example_controls.jpg" />
-					<Label text="Each color/direction functions as button"/>
+					<Label text="#MouseUsage_Body"/>
 				</Panel>
 			</Panel>
 			
 			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Changelog">
-				<Label text="Changelog_Title"/>
+				<Label text="#Changelog_Title"/>
 				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Changelog">
 					<Label text="#Changelog_Body"/>
 				</Panel>
 			</Panel>
 			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Shield">
-				<Label text="Shield_Title"/>
+				<Label text="#Shield_Title"/>
 				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Shield">
-					<Label text="Shield_Body"/>
+					<Label text="#Shield_Body"/>
 				</Panel>
 			</Panel>
 			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Special">
@@ -53,16 +55,16 @@
 					<Label text="#Attacks_Body"/>
 				</Panel>
 			</Panel>
-			<!--<Panel hittest="false" class="Settings_Box" id="Settings_Box_Translate">
-				<Label text="Contribute"/>
+			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Translate">
+				<Label text="#Contribute_Title"/>
 				<Panel hittest="false" class="Settings_Box_Body" id="Settings_Box_Body_Translate">
-					<Label text="I am always looking for feedback, graphical, technical or gameplay. If this is not written in your language and you want to translate, you are very welcome! Other help might also be very welcome."/>
+					<Label text="#Contribute_Body"/>
 				</Panel>
 			</Panel>
-			<Button class="Settings_Box" id="Settings_Box_Wiki" onactivate="DOTADisplayURL('http://supersmashdota.wikia.com/wiki/SuperSmashDota');"	>
-				<Label text="Wiki"/>
+			<!--<Button class="Settings_Box" id="Settings_Box_Wiki" onactivate="DOTADisplayURL('http://supersmashdota.wikia.com/wiki/SuperSmashDota');"	>
+				<Label text"#Wiki_Title"/>
 				<Panel class="Settings_Box_Body" id="Settings_Box_Body_Wiki" > 
-					<Label text="For more detailed information about Super Smash Dota visit the wiki!"/>
+					<Label text="#Wiki_Body"/>
 				</Panel>
 			</Button>
 			<Button class="Settings_Box" id="Settings_Box_Start" onactivate="RequestStart()">

@@ -15,31 +15,31 @@
 			
 		<Panel id="Hero_Selection_HeroBox" class="Hero_Selection_HeroBox" hittest="false">
 			<Panel id="HeroPickContainerRow1" class="HeroPickContainerRow" hittest="false"> <!--94x71-->
-				<DOTAHeroImage id="HeroPickpuck" class="heroImage" heroname="npc_dota_hero_puck" heroimagestyle="portrait" onactivate="selectedHeroPuck()"/>
-				<DOTAHeroImage id="HeroPickrattletrap" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait" onactivate="selectedHeroClock()"/>
-				<DOTAHeroImage id="HeroPickzuus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait" onactivate="selectedHeroZuus()"/>
-				<DOTAHeroImage id="HeroPickearthshaker" class="heroImage" heroname="npc_dota_hero_earthshaker" heroimagestyle="portrait" onactivate="selectedHeroEarthshaker()"/>
-				<DOTAHeroImage id="HeroPickstorm_spirit" class="heroImage" heroname="npc_dota_hero_storm_spirit" heroimagestyle="portrait" onactivate="selectedHeroStorm()"/>
+				<DOTAHeroImage id="HeroPickpuck" class="heroImage" heroname="npc_dota_hero_puck" heroimagestyle="portrait" onactivate="selectedHero('puck')"/>
+				<DOTAHeroImage id="HeroPickrattletrap" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait" onactivate="selectedHero('rattletrap')"/>
+				<DOTAHeroImage id="HeroPickzuus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait" onactivate="selectedHeroZuus('zuus')"/>
+				<DOTAHeroImage id="HeroPickearthshaker" class="heroImage" heroname="npc_dota_hero_earthshaker" heroimagestyle="portrait" onactivate="selectedHero('earthshaker')"/>
+				<DOTAHeroImage id="HeroPickstorm_spirit" class="heroImage" heroname="npc_dota_hero_storm_spirit" heroimagestyle="portrait" onactivate="selectedHero('storm_spirit')"/>
 			</Panel>
 			<Panel id="HeroPickContainerRow2" class="HeroPickContainerRow" hittest="false">
-				<DOTAHeroImage id="HeroPickmirana" class="heroImage" heroname="npc_dota_hero_mirana" heroimagestyle="portrait" onactivate="selectedHeroMirana()"/>
-				<DOTAHeroImage id="HeroPicklina" class="heroImage" heroname="npc_dota_hero_lina" heroimagestyle="portrait" onactivate="selectedHeroLina()"/>
-				<DOTAHeroImage id="HeroPicktusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait" onactivate="selectedHeroTusk()"/>
-				<DOTAHeroImage id="HeroPicktinker" class="heroImage" heroname="npc_dota_hero_tinker" heroimagestyle="portrait" onactivate="selectedHeroTinker()"/>
-				<DOTAHeroImage id="HeroPickmagnataur" class="heroImage" heroname="npc_dota_hero_magnataur" heroimagestyle="portrait" onactivate="selectedHeroMagnus()"/>
+				<DOTAHeroImage id="HeroPickmirana" class="heroImage" heroname="npc_dota_hero_mirana" heroimagestyle="portrait" onactivate="selectedHero('mirana')"/>
+				<DOTAHeroImage id="HeroPicklina" class="heroImage" heroname="npc_dota_hero_lina" heroimagestyle="portrait" onactivate="selectedHero('lina')"/>
+				<DOTAHeroImage id="HeroPicktusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait" onactivate="selectedHero('tusk')"/>
+				<DOTAHeroImage id="HeroPicktinker" class="heroImage" heroname="npc_dota_hero_tinker" heroimagestyle="portrait" onactivate="selectedHero('tinker')"/>
+				<DOTAHeroImage id="HeroPickmagnataur" class="heroImage" heroname="npc_dota_hero_magnataur" heroimagestyle="portrait" onactivate="selectedHero('magnataur')"/>
 			</Panel>
 			<Panel id="HeroPickContainerRow3" class="HeroPickContainerRow" hittest="false"> 
-				<DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHeroNyx()"/>
-				<DOTAHeroImage id="HeroPickaxe" class="heroImage" heroname="npc_dota_hero_axe" heroimagestyle="portrait" onactivate="selectedHeroAxe()"/>
-				<DOTAHeroImage id="HeroPickvengefulspirit" class="heroImage" heroname="npc_dota_hero_vengefulspirit" heroimagestyle="portrait" onactivate="selectedHeroVenge()"/>
-				<DOTAHeroImage id="HeroPickphoenix" class="heroImage" heroname="npc_dota_hero_phoenix" heroimagestyle="portrait" onactivate="selectedHeroPhoenix()"/>
-				<DOTAHeroImage id="HeroPicknevermore" class="heroImage" heroname="npc_dota_hero_nevermore" heroimagestyle="portrait" onactivate="selectedHeroShadowFiend()"/>
+				<DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHero('nyx_assassin')"/>
+				<DOTAHeroImage id="HeroPickaxe" class="heroImage" heroname="npc_dota_hero_axe" heroimagestyle="portrait" onactivate="selectedHero('axe')"/>
+				<DOTAHeroImage id="HeroPickvengefulspirit" class="heroImage" heroname="npc_dota_hero_vengefulspirit" heroimagestyle="portrait" onactivate="selectedHero('vengefulspirit')"/>
+				<DOTAHeroImage id="HeroPickphoenix" class="heroImage" heroname="npc_dota_hero_phoenix" heroimagestyle="portrait" onactivate="selectedHero('phoenix')"/>
+				<DOTAHeroImage id="HeroPicknevermore" class="heroImage" heroname="npc_dota_hero_nevermore" heroimagestyle="portrait" onactivate="selectedHero('nevermore')"/>
 			</Panel>
 		
 			<Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
           
-				<DOTAHeroImage id="HeroPickpudge" class="heroImage" heroname="npc_dota_hero_pudge" heroimagestyle="portrait" onactivate="selectedHeroPudge()"/>
-				<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHeroRandom()"/>
+				<DOTAHeroImage id="HeroPickpudge" class="heroImage" heroname="npc_dota_hero_pudge" heroimagestyle="portrait" onactivate="selectedHero('pudge')"/>
+				<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHero('')"/>
 				<!--<DOTAHeroImage id="HeroPickZeus" class="heroImage" heroname="npc_dota_hero_zuus" heroimagestyle="portrait"/>
 				<DOTAHeroImage id="HeroPickTusk" class="heroImage" heroname="npc_dota_hero_tusk" heroimagestyle="portrait"/>-->
 			</Panel>
@@ -152,7 +152,7 @@
                     <Label id="Minus" text="-"/>
                 </Button>
 				<Panel class="Lifes" id="Lifes">
-                    <Label id="nStartingLifes" text="4"/> 
+                    <Label id="nStartingLifes" text="1"/> 
                 </Panel>
                 <Button class="Plus" onactivate="ValueChange('nStartingLifes', 1);">
 					<Label id="Plus" text="+"/>
@@ -172,7 +172,6 @@
 	</Panel>
 	
 </Panel>
-
 	<Image id="Exit_Image" src="file://{images}/custom_game/close.png"  onactivate="PlayerPressedDashboard();"/>
 	
     <Button id="LockHero" class="LockHeroButton" onactivate="LockHeroAndReady()">

@@ -61,7 +61,7 @@ function BuildGameArray()
 
     -- Add game values here as game.someValue = GetSomeGameValue()
     game.Lifes = CustomNetTables:GetTableValue("settings","nStartingLifes").value
-    game.map = CustomNetTables:GetTableValue("settings","map").values
+    game.map = CustomNetTables:GetTableValue("settings","map").value
 
     return game
 end

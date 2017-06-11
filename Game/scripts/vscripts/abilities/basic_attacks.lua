@@ -84,8 +84,10 @@ end
 function modifier_basic_attack_charge:OnIntervalThink()
   local caster = self:GetCaster()
   self:IncrementStackCount()
-  --print(self:GetStackCount())
   ParticleManager:SetParticleControl(self.particle,1,Vector(self:GetStackCount()/1.5+2,0,0))
+  if caster:HasModifier("modifier_smash_stun") or caster:HasModifier("modifier_smash_disarm") then
+    self:Destroy()
+  end
 end
 
 function modifier_basic_attack_charge:OnRemoved()
@@ -134,7 +136,7 @@ end
 basic_attack_left_release = class({})
 function basic_attack_left_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
-  
+  if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
   self:GetCaster():EmitSound("hero_Crystal.attack")
   self:GetCaster():SetForwardVector(Vector(-1,0,0))
@@ -196,7 +198,7 @@ end
 basic_attack_right_release = class({})
 function basic_attack_right_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
-  
+  if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
   self:GetCaster():EmitSound("hero_Crystal.attack")
   self:GetCaster():SetForwardVector(Vector(1,0,0))
@@ -260,7 +262,7 @@ end
 basic_attack_top_release = class({})
 function basic_attack_top_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
-  
+  if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
   self:GetCaster():EmitSound("hero_Crystal.attack")
   return true
@@ -325,7 +327,7 @@ end
 basic_attack_bottom_release = class({})
 function basic_attack_bottom_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
-  
+  if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
   self:GetCaster():EmitSound("hero_Crystal.attack")
   return true

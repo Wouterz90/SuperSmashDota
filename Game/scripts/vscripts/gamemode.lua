@@ -13,7 +13,7 @@ Laws = {
 
   flMinDamage = 4,
   flMaxDamage = 8,
-  flAttackRange = 110,
+  flAttackRange = 130,
   flSideAttackFactor = 2,
 
   flMaxHeight = 3000,
@@ -339,9 +339,9 @@ function GameMode:OnGameInProgress()
     SINGLE_PLAYER_GAME = true
   end
   -- Set the format to ffa if there aren't 4 players
-  if PlayerResource:GetTeamPlayerCount() ~= 4 and not IsInToolsMode() then
+ -- if PlayerResource:GetTeamPlayerCount() ~= 4 and not IsInToolsMode() then
     CustomNetTables:SetTableValue("settings","Format",{value = "1"})
-  end
+  --end
   if CustomNetTables:GetTableValue("settings","Format").value ~= "2" then -- not 2v2
     --Timers:CreateTimer(0.25,function()
       GameMode:HeroPickStarted()
@@ -462,6 +462,7 @@ function GameMode:InitGameMode()
   CustomGameEventManager:RegisterListener("submit_pick", Dynamic_Wrap(GameMode, 'ConfirmHeroPick'))
   CustomGameEventManager:RegisterListener("get_lifes", Dynamic_Wrap(GameMode, 'SetStartingLifes'))
   CustomGameEventManager:RegisterListener("player_leaves", Dynamic_Wrap(GameMode, 'CheckLeftoverPlayers'))
+  CustomGameEventManager:RegisterListener("player_votes_endscreen", Dynamic_Wrap(GameMode, 'StoreEndScreenVote'))
 
   -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
   Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
@@ -471,35 +472,42 @@ function GameMode:InitGameMode()
   DebugPrint(1,'[BAREBONES] Done loading Barebones gamemode!\n\n')
 end
 
+function GameMode:StoreEndScreenVote(keys)
+  -- Everything is already sent at this point, find something else
+  GameMode.endScreenVotes = GameMode.endScreenVotes or {}
+  GameMode.endScreenVotes[keys.PlayerID] = keys.vote
+end
+
 function GameMode:CheckLeftoverPlayers(keys)
+
   DebugPrint(1,"GameMode:CheckLeftoverPlayers")
-  -- Put the leaving player as observer
-  Timers:CreateTimer(1,function()
-    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnDisconnect")
+  Timers:CreateTimer(0.1,function()
     local hero = PlayerResource:GetSelectedHeroEntity(keys.PlayerID)
     if not hero:IsAlive() then
       hero:RespawnHero(false,false,false)
     end
-    UTIL_MessageTextAll(PlayerResource:GetPlayerName(keys.PlayerID).." has decided to quit.", 255, 255, 255, 255)
+    Say(PlayerResource:GetPlayer(keys.PlayerID),"I am out!",false)
     PlayerTables:SetTableValue(tostring(keys.PlayerID),"lifes",0)
     hero:ForceKill(false)
 
+    PlayerResource:UpdateTeamSlot(keys.PlayerID,DOTA_TEAM_NOTEAM,0)
     local winning = GameMode:FindTheOnlyConnectedTeam()
     if winning then 
       statCollection:submitRound(true)
       DeclareWinningTeam(winning)
-    elseif PlayerHasCustomGameHostPrivileges(PlayerResource:GetPlayer(keys.PlayerID)) then
+      return
+    end
+
+
+    if GameRules:PlayerHasCustomGameHostPrivileges(PlayerResource:GetPlayer(keys.PlayerID)) then
       statCollection:submitRound(true)
       DeclareWinningTeam(1)
     else
-      -- Show screen to player
+      -- Show screen to player (Done clientside)
     end 
-      
-    PlayerResource:UpdateTeamSlot(keys.PlayerID,DOTA_TEAM_NOTEAM,0)
   end)
-  
-  
 end
+
 function GameMode:SetStartingLifes(keys)
   GameMode["lifeTable"] = GameMode["lifeTable"] or {}
   GameMode["lifeTable"][keys.PlayerID+1] = keys.nStartingLifes
@@ -508,6 +516,7 @@ function GameMode:SetStartingLifes(keys)
     number = number + v
   end
   number  = math.ceil(number / #GameMode["lifeTable"])
+  CustomNetTables:SetTableValue("settings","nStartingLifes",{value = number})
   for i=0,3 do
     if PlayerResource:IsValidTeamPlayerID(i) then
       PlayerTables:SetTableValue(tostring(i),"lifes",number)
@@ -738,14 +747,14 @@ function GameMode:FindTheOnlyConnectedTeam()
 
   for i=0,3 do
     if PlayerResource:IsValidTeamPlayerID(i) then 
-      if PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_ABANDONED or PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_DISCONNECTED then
+      if PlayerResource:GetTeam(i) == DOTA_TEAM_NOTEAM or PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_ABANDONED or PlayerResource:GetConnectionState(i) ~= DOTA_CONNECTION_STATE_DISCONNECTED then
         teams[PlayerResource:GetTeam(i)] = teams[PlayerResource:GetTeam(i)] + 1
       end
     end
   end
 
-  for i=6,10 do
-    if teams[i] > 0 then
+  for i=0,10 do
+    if  i ~= 5 and teams[i] > 0 then
       teamsLeft = teamsLeft + 1
       winning = i
     end

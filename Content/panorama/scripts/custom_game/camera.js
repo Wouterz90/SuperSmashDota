@@ -328,7 +328,6 @@ function CancelCameraSettings(){
   // Cancel the updates
   camera = 0
 }
-
 function CreatePlayerHeroAvatars()
 {
 	if(debugging >= 1) {$.Msg("camera CreatePlayerHeroAvatars") }
@@ -350,9 +349,41 @@ function CreatePlayerHeroAvatars()
 	var hero = Players.GetPlayerHeroEntityIndex(Players.GetLocalPlayer())
 	var str = Entities.GetUnitName(hero).substr(14)
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").abilityname = str.concat("_special_top")
+	if (Entities.GetAbilityByName( hero, str.concat("_special_top_release")) !== -1)
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").AddClass("Releasable")
+	}
+	else
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_top").RemoveClass("Releasable")
+	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").abilityname = str.concat("_special_side")
+	if (Entities.GetAbilityByName( hero, str.concat("_special_side_release")) !== -1)
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").AddClass("Releasable")
+	}
+	else
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_left").RemoveClass("Releasable")
+	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").abilityname = str.concat("_special_side")
+	if (Entities.GetAbilityByName( hero, str.concat("_special_side_release")) !== -1)
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").AddClass("Releasable")
+	}
+	else
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_right").RemoveClass("Releasable")
+	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").abilityname = str.concat("_special_bottom")
+	if (Entities.GetAbilityByName( hero, str.concat("_special_bottom_release")) !== -1)
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").AddClass("Releasable")
+	}
+	else
+	{
+		$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottom").RemoveClass("Releasable")
+	}
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_topSilence").style.opacity = 0
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_leftSilence").style.opacity = 0
 	$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_rightSilence").style.opacity = 0
