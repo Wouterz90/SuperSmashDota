@@ -7,7 +7,7 @@ LinkLuaModifier("modifier_right","movement.lua",LUA_MODIFIER_MOTION_HORIZONTAL)
 LinkLuaModifier("modifier_basic","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
 
 
-
+LinkLuaModifier("modifier_no_gravity","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_smash_root","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_smash_silence","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_smash_stun","modifiers.lua",LUA_MODIFIER_MOTION_NONE)
@@ -203,3 +203,4 @@ function modifier_basic:CheckState()
   return funcs
 end
 
+modifier_no_gravity = class({})

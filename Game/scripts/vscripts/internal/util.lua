@@ -226,14 +226,62 @@ function FilterUnitsBasedOnHeight(tableUnits,vOrigin,flRadius)
 end
 
 function StoreSpecialKeyValues(object,ability)
-if not ability then ability = object end
-local tab = LoadKeyValues("scripts/npc/npc_abilities.txt")
-for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_custom.txt")) do tab[k] = v end
-  for k,v in pairs(tab[ability:GetName()].AbilitySpecial) do
+  if not ABILITIES_TXT then
+    ABILITIES_TXT = LoadKeyValues("scripts/npc/npc_abilities.txt")
+    for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_override.txt")) do ABILITIES_TXT[k] = v end
+    for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_custom.txt")) do ABILITIES_TXT[k] = v end
+  end
+
+  if not ability then ability = object end
+
+  for k,v in pairs(ABILITIES_TXT[ability:GetName()]["AbilitySpecial"]) do
     for K,V in pairs(v) do
       if K ~= "var_type" and K ~= "LinkedSpecialBonus" then
-        object[tostring(K)] = V
+        local array = StringToArray(V)
+        object[tostring(K)] = tonumber(array[ability:GetLevel()]) or tonumber(array[#array])
+        --[[if v["LinkedSpecialBonus"] then
+          local caster = ability:GetCaster()
+          local talentName = v["LinkedSpecialBonus"]
+          local talent = caster:FindAbilityByName(talentName)
+          --object["talent"][tostring(K)] = 0
+          if talent and talent:GetLevel() ~= 0 then
+            object["talent"][tostring(K)] = tonumber(ABILITIES_TXT[talentName]["AbilitySpecial"]["01"]["value"])
+          end
+        end]]
+        --Print to verify
+        --print(K,object[tostring(K)],object["talent"][tostring(K)])
       end
     end
   end
+end
+
+function StringToArray(inputString, seperator)
+  if not seperator then seperator = " " end
+  local array={}
+  local i=1
+
+  for str in string.gmatch(inputString, "([^"..seperator.."]+)") do
+    array[i] = str
+    i = i + 1
+  end
+  return array
+end
+
+function Reload_AbilityKeyValues()
+  print("Reloading Ability files")
+  ABILITIES_TXT = LoadKeyValues("scripts/npc/npc_abilities.txt")
+  for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_override.txt")) do ABILITIES_TXT[k] = v end
+  for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_custom.txt")) do ABILITIES_TXT[k] = v end
+end
+
+function GetMinMaxValue(input)
+
+  local min = math.huge
+  local max = -math.huge
+  for k,v in pairs (input) do
+
+    if v < min then min = v end
+    if v > max then max = v end
+  end
+  return (min+max)/2
 end

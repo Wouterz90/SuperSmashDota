@@ -1,6 +1,6 @@
 
 "use strict";
-var debugging = 1
+var debugging = 0
 var PlayerTables = GameUI.CustomUIConfig().PlayerTables
 function SelectRadioGameMode(option) {
 	if(debugging >= 1) {$.Msg("settings SelectRadioGameMode",option )}

@@ -181,7 +181,7 @@ function zuus_special_side:OnSpellStart()
             UTIL_Remove(dummy)
             --ParticleManager:DestroyParticle(particle,true)
             --ParticleManager:ReleaseParticleIndex(particle)
-            return
+            return nil
           end
           bouncecontroller = 1
           bounceCenter = bounceCenter + direction * (radius*2)
@@ -189,7 +189,6 @@ function zuus_special_side:OnSpellStart()
           caster:EmitSound("Hero_Disruptor.ThunderStrike.Target") 
         end
         dummy:SetAbsOrigin(bounceCenter+halfarcTable[bouncecontroller])
-        print(VectorToAngles(halfarcTable[bouncecontroller]))
         return 1/32
       end)
     end

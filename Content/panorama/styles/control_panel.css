@@ -671,6 +671,51 @@ RadioButton:disabled > Label
 	width:12%;
 	height:12%;
 }
+.TopIconPress
+{
+	vertical-align:top;
+	horizontal-align:center;
+	border-radius: 25px;
+	opacity:0;
+	width:6%;
+	height:12%;
+}
+.LeftIconPress
+{
+	vertical-align:center;
+	horizontal-align:right;
+	border-radius: 25px;
+	margin-right:-2.5%;
+	opacity:0;
+	width:6%;
+	height:12%;
+}
+.RightIconPress
+{
+	vertical-align:center;
+	horizontal-align:left;
+	border-radius: 25px;
+	margin-left:-2.5%;
+	opacity:0;
+	width:6%;
+	height:12%;
+}
+.BottomIconPress
+{
+	vertical-align:bottom;
+	horizontal-align:center;
+	border-radius: 25px;
+	opacity:0;
+	width:6%;
+	height:12%;
+}
+.MainPanelBoxes
+{
+    width: 100%;
+    height: 100%;
+    flow-children: none;
+    z-index: 1;
+}
 
 .TopPanelBox
 {
@@ -682,7 +727,7 @@ RadioButton:disabled > Label
   border-left: 250% solid transparent;
   border-right: 250% solid transparent;
   border-top: 25% solid green;
-  opacity: 0.05;
+  opacity: 0.075;
 }
 
 .LeftPanelBox
@@ -694,7 +739,7 @@ RadioButton:disabled > Label
   border-bottom: 95% solid transparent;
   border-top: 95% solid transparent;
   border-left: 80% solid blue;
-  opacity: 0.05;
+  opacity: 0.075;
   vertical-align: top;
   horizontal-align:left;
 }
@@ -707,7 +752,7 @@ RadioButton:disabled > Label
   border-bottom: 95% solid transparent;
   border-top: 95% solid transparent;
   border-right: 80% solid yellow;
-  opacity: 0.05;
+  opacity: 0.075;
   vertical-align: top;
   horizontal-align:right;
 }
@@ -722,7 +767,7 @@ RadioButton:disabled > Label
   border-left: 250% solid transparent;
   border-right: 250% solid transparent;
   border-bottom: 25% solid red;
-  opacity: 0.05;
+  opacity: 0.075;
   vertical-align: bottom;
   horizontal-align:left;
 }

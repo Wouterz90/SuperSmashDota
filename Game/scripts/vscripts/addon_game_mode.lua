@@ -38,11 +38,20 @@ function Precache( context )
   PrecacheResource("model_folder", "particles/heroes/puck", context)
   PrecacheResource("model_folder", "particles/heroes/mirana", context)
   PrecacheResource("model_folder", "particles/heroes/tinker", context)
-  PrecacheResource("model_folder", "particles/heroes/tusk", context)
- 
+  PrecacheResource("model_folder", "particles/heroes/magnataur", context)
+  PrecacheResource("model_folder", "particles/heroes/phoenix", context)
+  PrecacheResource("model_folder", "particles/heroes/pudge", context)
+  PrecacheResource("model_folder", "particles/heroes/kunkka", context)
+  PrecacheResource("model_folder", "particles/heroes/centaur", context)
+  PrecacheResource("model_folder", "particles/heroes/vengefulspirit", context)
+  PrecacheResource("model_folder", "particles/heroes/nevermore", context)
+  PrecacheResource("model_folder", "particles/heroes/batrider", context)
+  PrecacheResource("model_folder", "particles/heroes/vengefulspirit", context)
+  PrecacheResource("model_folder", "particles/heroes/storm_spirit", context)
 
 
-  PrecacheResource("model", "particles/heroes/viper/viper.vmdl", context)
+  PrecacheResource("model", "models/props_winter/egg.vmdl", context)
+  PrecacheResource("model", "models/phoenix_egg.vmdl.vmdl"  , context)
   PrecacheResource("model", "models/particle/snowball.vmdl", context)
   PrecacheModel("models/heroes/earthshaker/earthshaker.vmdl", context)
   PrecacheModel("models/heroes/zuus/zuus.vmdl", context)
@@ -59,6 +68,7 @@ function Precache( context )
   -- Sounds can precached here like anything else
   -- Precaching CM for the sounds
   PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_crystalmaiden.vsndevts", context)
+  PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_ursa.vsndevts", context)
   -- Precaching the jump sound from zuus for the rune.
   PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_zuus.vsndevts", context)
 

@@ -2247,12 +2247,12 @@
       "01"
       {
         "var_type"      "FIELD_FLOAT"
-        "stun_duration"    "1.5"
+        "stun_duration"    "1.75"
       }
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"        "275"
+        "radius"        "300"
       }
       "03"
       {
@@ -2646,5 +2646,471 @@
     "ScriptFile"            "abilities/pudge.lua"
     "AbilityCastPoint"        "0"
     "AbilityCooldown"       "0"
+  }
+
+  "batrider_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "batrider_flamebreak"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/batrider.lua"
+    "AbilityCastPoint"        "0.3"
+    "AbilityCooldown"       "5"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_batrider.vsndevts"
+      "particle"  "particles/batrider/batrider_flamebreak.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "900"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_radius"        "150"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "20"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "4"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1.5" // Initial
+      }
+       "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "dot_push"       "0" // DOT
+      }
+      "07"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_range"    "750"
+      }
+      "08"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "explosion_radius"        "350"
+      }
+      "09"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"        "2"
+      }
+    }
+  }
+
+  "batrider_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "batrider_flaming_lasso"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/batrider.lua"
+    "AbilityCastPoint"        "0.4"
+    "AbilityCooldown"       "8"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_batrider.vsndevts"
+      //"particle"  "particles/batrider/.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "search_duration"    "2.5"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "search_radius"        "200"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "damage"       "5" // Per 0.3 so 25 total
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "1"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "0"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "pull_range"       "200"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "break_range"       "400"
+      }
+      "08"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "lasso_duration"    "1.5"
+      }
+    }
+  }
+
+  "batrider_special_top"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "batrider_firefly"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/batrider.lua"
+    "AbilityCastPoint"        "0.1"
+    //"AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_6"
+    "AbilityCooldown"       "8"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_batrider.vsndevts"
+      "particle" "particles/units/heroes/hero_batrider/batrider_firefly_ember.vpcf"
+      "particle" "particles/batrider/batrider_firefly.vpcf" // Not the real one
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "1"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "0"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "0"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "250"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "fire_linger_duration"    "1"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"    "3.5"
+      }
+    }
+  }
+  "centaur_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "centaur_double_edge"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/centaur.lua"
+    "AbilityCastPoint"        "0.5"
+    "AbilityCooldown"       "3"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_centaur.vsndevts"
+      "particle"  "particles/centaur/centaur_double_edge.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "275"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "25"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "5"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "2.25"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "self_damage"       "25"
+      }
+    }
+  }
+
+  "centaur_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "centaur_hoof_stomp"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/centaur.lua"
+    "AbilityCastPoint"        "0.5"
+    "AbilityCooldown"       "4"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_centaur.vsndevts"
+      "particle"  "particles/units/heroes/hero_centaur/centaur_warstomp.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "stun_duration"    "1.25"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "200"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "damage"       "15" // Per 0.3 so 25 total
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "3"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1.5"
+      }
+    }
+  }
+
+  "centaur_special_top"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "centaur_stampede"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/centaur.lua"
+    "AbilityCastPoint"        "0.1"
+    //"AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_6"
+    "AbilityCooldown"       "8"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_centaur.vsndevts"
+      "particle" "particles/units/heroes/hero_centaur/centaur_stampede_overhead.vpcf"
+      "particle" ""
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"    "10"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"    "2"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "1"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"    "250"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "stun_duration"    "0.5"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "duration"    "1"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "bonus_speed_factor"    "1"
+      }
+    }
+  }
+  "kunkka_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "kunkka_torrent"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/kunkka.lua"
+    "AbilityCastPoint"        "0.3"
+    "AbilityCooldown"       "4"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_kunkka.vsndevts"
+      "particle"  "particles/units/heroes/hero_kunkka/kunkka_spell_torrent_splash.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "275"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "25"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "5"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1.5"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "cast_delay"       "1.5"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "torrent_height"        "450"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "stun_duration"       "0.75"
+      }
+    }
+  }
+
+  "kunkka_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "kunkka_ghostship"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/kunkka.lua"
+    "AbilityCastPoint"        "0.5"
+    "AbilityCooldown"       "8"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_kunkka.vsndevts"
+      "particle"  "particles/kunkka/kunkka_ghost_ship.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "stun_duration"    "1.25"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_radius"        "300"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "damage"       "15" // Per 0.3 so 25 total
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "3"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1.5"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_range"        "1500"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"        "1500"
+      }
+      "08"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "boat_spawn_distance"        "1000"
+      }
+    }
+  }
+
+  "kunkka_special_top"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "kunkka_x_marks_the_spot"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/kunkka.lua"
+    "AbilityCastPoint"        "0.3"
+    //"AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_6"
+    "AbilityCooldown"       "5"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_kunkka.vsndevts"
+      "particle" "particles/kunkka/kunkka_spell_x_spot.vpcf"
+      "particle" ""
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "push"    "0"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "x_time"    "2"
+      }
+    }
   }
 }

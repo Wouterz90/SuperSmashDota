@@ -6,11 +6,12 @@
   </styles>
   <scripts>
      <include src="file://{resources}/scripts/custom_game/hero_selection.js" />
+	 <include src="file://{resources}/scripts/custom_game/camera.js" />
   </scripts>
   
   <Panel class="MainPanel" hittest="false">
 	<Panel hittest="false" id="EndScreen" class="EndScreen">
-		<Image id="DisconnectImage" src="file://{images}/custom_game/close.png"  onactivate="DOTAHUDShowDashboard();"/>
+		<Image id="DisconnectImage" src="file://{images}/custom_game/close.png"  onactivate="PlayerPressedForfeit();"/>
         <Panel hittest="false" class="Settings_Container" id="Settings_Container">	
 			<Panel hittest="false" class="Gamemode_Name" id="Gamemode_Name">
 				<Label text="#Thanks"/>
@@ -121,7 +122,7 @@
 		</Panel>
 
     </Panel>
-	<Image id="Exit_Image" src="file://{images}/custom_game/close.png" onmouseactivate="PlayerPressedDashboard()" />
+	<Image id="Exit_Image" src="file://{images}/custom_game/close.png" onmouseactivate="PlayerPressedForfeit()" />
 	<Image id="Help_Image" src="file://{images}/custom_game/help.png"  onactivate="PlayerPressedHelp();"/>
 	<DOTAAbilityImage id="Mainspecial_top" class="TopIcon" abilityname=""/>
 	<DOTAAbilityImage id="Mainspecial_left" class="RightIcon" abilityname=""/>
@@ -131,9 +132,13 @@
 	<Image id="Mainspecial_leftSilence" class="RightIconSilence" src="file://{images}/custom_game/silence.png"/>
 	<Image id="Mainspecial_rightSilence" class="LeftIconSilence" src="file://{images}/custom_game/silence.png"/>
 	<Image id="Mainspecial_bottomSilence" class="BottomIconSilence" src="file://{images}/custom_game/silence.png"/>
-    <Panel id="MainPanel" class="MainPanel" hittest="false">
+	<Image id="Mainspecial_topPress" class="TopIconPress" src="file://{images}/custom_game/hold_button.png"/>
+	<Image id="Mainspecial_leftPress" class="LeftIconPress" src="file://{images}/custom_game/hold_button.png"/>
+	<Image id="Mainspecial_rightPress" class="RightIconPress" src="file://{images}/custom_game/hold_button.png"/>
+	<Image id="Mainspecial_bottomPress" class="BottomIconPress" src="file://{images}/custom_game/hold_button.png"/>
+    <Panel id="MainPanelBoxes" class="MainPanelBoxes" hittest="false">
       <Panel id= "TopPanelBox" class="TopPanelBox" hittest="true">
-      </Panel>  
+      </Panel>   
       <Panel id= "LeftPanelBox" class="LeftPanelBox" hittest="true">
       </Panel>  
       <Panel id= "RightPanelBox" class="RightPanelBox" hittest="true">

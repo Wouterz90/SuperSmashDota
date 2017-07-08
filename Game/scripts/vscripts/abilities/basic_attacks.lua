@@ -38,11 +38,11 @@ function basic_attack_mid:OnSpellStart()
       ability = self,
     }
     ApplyDamage(damageTable)
-    --local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,v)
-    --[[Timers:CreateTimer(1,function()
+    local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,v)
+    Timers:CreateTimer(1,function()
       ParticleManager:DestroyParticle(particle,true)
       ParticleManager:ReleaseParticleIndex(particle)
-    end)]]
+    end)
     break
   end
 end
@@ -138,7 +138,7 @@ function basic_attack_left_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
   if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
-  self:GetCaster():EmitSound("hero_Crystal.attack")
+  self:GetCaster():EmitSound("Hero_Ursa.PreAttack")
   self:GetCaster():SetForwardVector(Vector(-1,0,0))
 
   return true
@@ -169,7 +169,7 @@ function basic_attack_left_release:OnSpellStart()
       ability = self,
     }
     ApplyDamage(damageTable) -- Push
-    caster:EmitSound("hero_Crystal.projectileImpact")
+    caster:EmitSound("Hero_Ursa.Attack")
     break
   end
   
@@ -200,7 +200,7 @@ function basic_attack_right_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
   if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
-  self:GetCaster():EmitSound("hero_Crystal.attack")
+  self:GetCaster():EmitSound("Hero_Ursa.PreAttack")
   self:GetCaster():SetForwardVector(Vector(1,0,0))
   return true
 
@@ -231,7 +231,7 @@ function basic_attack_right_release:OnSpellStart()
       ability = self,
     }
     ApplyDamage(damageTable) -- Push
-    caster:EmitSound("hero_Crystal.projectileImpact")
+    caster:EmitSound("Hero_Ursa.Attack")
     local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,v)
     --[[Timers:CreateTimer(1,function()
       ParticleManager:DestroyParticle(particle,true)
@@ -264,7 +264,7 @@ function basic_attack_top_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
   if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
-  self:GetCaster():EmitSound("hero_Crystal.attack")
+  self:GetCaster():EmitSound("Hero_Ursa.PreAttack")
   return true
 
 end
@@ -295,7 +295,7 @@ function basic_attack_top_release:OnSpellStart()
       ability = self,
     }
     ApplyDamage(damageTable) -- Push
-    caster:EmitSound("hero_Crystal.projectileImpact")
+    caster:EmitSound("Hero_Ursa.Attack")
     local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,v)
     --[[Timers:CreateTimer(1,function()
       ParticleManager:DestroyParticle(particle,true)
@@ -329,7 +329,7 @@ function basic_attack_bottom_release:OnAbilityPhaseStart()
   local caster = self:GetCaster()
   if not self:GetCaster():CanCast(self) then return false end
   --StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=caster:GetAttackAnimationPoint()/self:GetCastPoint()})
-  self:GetCaster():EmitSound("hero_Crystal.attack")
+  self:GetCaster():EmitSound("Hero_Ursa.PreAttack")
   return true
 
 end
@@ -358,7 +358,7 @@ function basic_attack_bottom_release:OnSpellStart()
       ability = self,
     }
     ApplyDamage(damageTable) -- Push
-    caster:EmitSound("hero_Crystal.projectileImpact")
+    caster:EmitSound("Hero_Ursa.Attack")
     --[[local particle = ParticleManager:CreateParticle("particles/basic/basic_attack_mid_hit.vpcf",PATTACH_ABSORIGIN_FOLLOW,v)
     Timers:CreateTimer(1,function()
       ParticleManager:DestroyParticle(particle,true)

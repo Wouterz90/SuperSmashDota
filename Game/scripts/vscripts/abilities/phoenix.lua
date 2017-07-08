@@ -176,7 +176,7 @@ function phoenix_special_bottom:OnAbilityPhaseStart()
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
   caster:EmitSound("Hero_Phoenix.SuperNova.Begin")
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_OVERRIDE_ABILITY_4, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_5, rate=1})
   return true
 end
 
@@ -213,8 +213,8 @@ function modifier_phoenix_special_down_egg:DeclareFunctions()
 end
 
 function modifier_phoenix_special_down_egg:GetModifierModelChange()
-  return "models/props_winter/egg.vmdl"
-  --return "models/items/phoenix/ultimate/blazing_wing_blazing_egg/blazing_wing_blazing_egg.vmdl"
+return "models/props_winter/egg.vmdl"
+  --return "models/phoenix_egg.vmdl.vmdl"
 end
 
 function modifier_phoenix_special_down_egg:GetModifierModelScale()
@@ -414,7 +414,7 @@ function phoenix_special_top:OnSpellStart()
         local damageTable = {
           victim = v,
           attacker = self:GetCaster(),
-          damage = self:GetSpecialValueFor("damage")/2, 
+          damage = self:GetSpecialValueFor("damage")/20, 
           damage_type = DAMAGE_TYPE_MAGICAL,
           ability = self,
         } 
@@ -424,15 +424,6 @@ function phoenix_special_top:OnSpellStart()
         Timers:CreateTimer(1,function()
           ParticleManager:DestroyParticle(particle,true)
           ParticleManager:ReleaseParticleIndex(particle)
-
-          local damageTable = {
-            victim = v,
-            attacker = self:GetCaster(),
-            damage = self:GetSpecialValueFor("damage")/2, 
-            damage_type = DAMAGE_TYPE_MAGICAL,
-            ability = self,
-          } 
-          ApplyDamage(damageTable)
         end)
       end
 

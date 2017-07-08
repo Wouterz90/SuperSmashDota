@@ -71,10 +71,10 @@
 					<Label text="#Start_Body"/>
 				</Panel>
 			</Button>
-			<Panel hittest="false" class="Settings_Box" id="Settings_Box_Options" >
+			<!--<Panel hittest="false" class="Settings_Box" id="Settings_Box_Options" >
 				<Label text="#Settings_Title"/>
 				<Panel hittest="false"  id="Settings_Box_Body_Options">
-					<!--<Panel id="RadioButtons">
+					<Panel id="RadioButtons">
 						<Label class="OptionLabel" text="#Gamemode" />
 						<Panel class="RadioSection">
 							<RadioButton group="Format" onactivate="SelectRadioGameMode('1')" id="FFA" text="#FFA" checked="true"/>
@@ -82,7 +82,7 @@
 						 <Panel class="RadioSection">
 							<RadioButton group="Format" onactivate="SelectRadioGameMode('2')" id="2v2" text="#2v2" />
 						</Panel>
-					</Panel> -->
+					</Panel> 
 					<Panel id="RadioButtons">
 						<Label class="OptionLabel" text="Hero selection:" />
 						<Panel class="RadioSection">
@@ -93,7 +93,7 @@
 						</Panel>
 					</Panel> 
 				</Panel>
-			</Panel>
+			</Panel>-->
 		</Panel>
 
     </Panel>

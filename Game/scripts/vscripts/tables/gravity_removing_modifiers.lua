@@ -1,4 +1,5 @@
 jumpModifiers = {
+  ["modifier_no_gravity"] = true,
   ["modifier_jump"] = true,
   ["modifier_mirana_leap_jump"] = true,
   ["modifier_earthshaker_jump"] = true,
@@ -10,5 +11,7 @@ jumpModifiers = {
   ["modifier_batrider_lasso"] = true,
   ["modifier_tusk_sigil_dummy"] = true,
   ["modifier_nyx_assassin_spiked_carapace_smash"] = true,
-  ["modifier_pudge_rot_smash"] = true,s
+  ["modifier_pudge_rot_smash"] = true,
+  ["modifier_batrider_lasso_smash"] = false,
+  ["modifier_centaur_stampede_smash"] = true,
 }

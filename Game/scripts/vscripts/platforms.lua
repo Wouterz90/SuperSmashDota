@@ -21,12 +21,14 @@ function spawnPlatform()
   platform = {}
   
   -- Get map name from nettable or pick it randomly
-  
+  --
   mapnames2 = {
     [1] = "MapSmall",
     [2] = "MapSmallDestructable",
     [3] = "MapSliders",
-    --[4] = "MapFerrisWheel",
+    [4] = "MapSmallFunnel",
+    [5] = "MapFerrisWheel",
+    [6] = "MapPyramidSmall",
   }
   mapnames3 = {
     [1] = "MapSmall",
@@ -34,16 +36,20 @@ function spawnPlatform()
     [3] = "MapMedium",
     [4] = "MapLargeDestructable",
     [5] = "MapSliders",
-    
+    [6] = "MapFerrisWheel",
+    [7] = "MapPyramidSmall",
+    [8] = "MapPyramidLarge",
+    --[9] = "MapSmallFunnel",
   }
   mapnames4 = {
     [1] = "MapMedium",
     [2] = "MapLargeDestructable",
     [3] = "MapSliders",
-    --[4] = "MapFerrisWheel",
+    [4] = "MapFerrisWheel",
+    [5] = "MapPyramidLarge",
   }
   if PlayerResource:GetTeamPlayerCount() == 1 then
-    mapname =  "MapSmallDestructable"--mapnames3[RandomInt(1,#mapnames3)]
+    mapname = mapnames3[RandomInt(1,#mapnames3)]
   elseif PlayerResource:GetTeamPlayerCount() == 2 then
     mapname = mapnames2[RandomInt(1,#mapnames2)]
   elseif PlayerResource:GetTeamPlayerCount() == 3 then
@@ -174,31 +180,35 @@ function CDOTA_BaseNPC:isOnPlatform()
   sortPlatforms()
   self.rotation = nil
   for k,v in pairs(platform) do
-    v.unitsOnPlatform[self] = nil
+    if v.unitsOnPlatform then
+      v.unitsOnPlatform[self] = nil
+    end
   end
 
   for k,v in pairs(platform) do
-    -- Check if the unit has the same x coordinates as the platform
-    if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
-
-      -- If rotation is over (X) then slide backward?
-      -- Adjust movement to the platform
-      self.rotation = v:GetAngles().x
-
-      local distance_from_center = x - v:GetAbsOrigin().x
-      local delta_z = (-distance_from_center / 55) * self.rotation
-
-      -- Check if the height matches as well
-      if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) + delta_z and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5) + delta_z then
-
-        -- Slide the unit down
-        local delta_x = Laws.flMove * (self.rotation/180)
-        local delta_z = (-delta_x / 55) * self.rotation /1
-        --print(delta_x,delta_z)
-        self:SetAbsOrigin(Vector(self:GetAbsOrigin().x+delta_x,0,self:GetAbsOrigin().z+delta_z))
-
-        v.unitsOnPlatform[self] = true
-        return true
+    if v.unitsOnPlatform then
+      -- Check if the unit has the same x coordinates as the platform
+      if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
+  
+        -- If rotation is over (X) then slide backward?
+        -- Adjust movement to the platform
+        self.rotation = v:GetAngles().x
+  
+        local distance_from_center = x - v:GetAbsOrigin().x
+        local delta_z = (-distance_from_center / 55) * self.rotation
+  
+        -- Check if the height matches as well
+        if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) + delta_z and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5) + delta_z then
+  
+          -- Slide the unit down
+          local delta_x = Laws.flMove * (self.rotation/180)
+          local delta_z = (-delta_x / 55) * self.rotation /1
+          --print(delta_x,delta_z)
+          self:SetAbsOrigin(Vector(self:GetAbsOrigin().x+delta_x,0,self:GetAbsOrigin().z+delta_z))
+  
+          v.unitsOnPlatform[self] = true
+          return true
+        end
       end
     end
   end

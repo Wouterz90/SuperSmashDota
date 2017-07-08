@@ -174,7 +174,7 @@ end
 function puck_special_side:OnSpellStart()
   local caster = self:GetCaster()
 
-  caster:EmitSound("sounds/weapons/hero/puck/waning_rift.vsnd")
+  caster:EmitSound("Hero_Puck.Waning_Rift")
   local radius = self:GetSpecialValueFor("radius")
   local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_puck/puck_waning_rift.vpcf", PATTACH_ABSORIGIN, caster)
     ParticleManager:SetParticleControl(particle,0,Vector(caster:GetAbsOrigin().x,caster:GetAbsOrigin().y,caster:GetAbsOrigin().z+100))

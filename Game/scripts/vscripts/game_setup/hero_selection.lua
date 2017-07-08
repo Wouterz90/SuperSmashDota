@@ -29,7 +29,7 @@ function GameMode:ConfirmHeroPick(keys)
     end
     Timers:CreateTimer(time,function()
       DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] ConfirmHeroPick")
-      for i=0, PlayerResource:GetTeamPlayerCount()-1 do
+      for i=0, 3 do
         if not GameMode.playersPicked[i] and PlayerResource:IsValidTeamPlayerID(i) then
           GetRandomHero(i,true)
         end
@@ -74,8 +74,8 @@ end
 
 function RandomForAll()
   DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] RandomForAll")
-  for i=0,PlayerResource:GetTeamPlayerCount()-1 do
-    if PlayerResource:IsValidTeamPlayerID(i) then
+  for i=0,3 do
+    if PlayerResource:IsValidkunkkaID(i) then
       GetRandomHero(i,true)
     end
   end

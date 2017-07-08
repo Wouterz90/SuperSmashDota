@@ -44,7 +44,7 @@ require("statcollection/init")
 
 -- This library allow for easily delayed/timed actions
 require('libraries/timers')
-require('libraries/worldpanels')
+--require('libraries/worldpanels')
 -- This library can be used for advancted physics/motion/collision of units.  See PhysicsReadme.txt for more information.
 --require('libraries/physics')
 -- This library can be used for advanced 3D projectile systems.
@@ -55,15 +55,15 @@ require('libraries/notifications')
 -- This library can be used for starting customized animations on units from lua
 require('libraries/animations')
 -- This library can be used for performing "Frankenstein" attachments on units
-require('libraries/attachments')
+--require('libraries/attachments')
 -- This library can be used to synchronize client-server data via player/client-specific nettables
 require('libraries/playertables')
 -- This library can be used to create container inventories or container shops
 --require('libraries/containers')
 -- This library provides a searchable, automatically updating lua API in the tools-mode via "modmaker_api" console command
-require('libraries/modmaker')
+--require('libraries/modmaker')
 -- This library provides an automatic graph construction of path_corner entities within the map
-require('libraries/pathgraph')
+--require('libraries/pathgraph')
 -- This library (by Noya) provides player selection inspection and management from server lua
 require('libraries/selection')
 
@@ -101,13 +101,6 @@ require('push')
 require('items')
 
 
-
-
--- This is a detailed example of many of the containers.lua possibilities, but only activates if you use the provided "playground" map
-if GetMapName() == "playground" then
-  require("examples/playground")
-end
-
 --require("examples/worldpanelsExample")
 
 --[[
@@ -130,7 +123,7 @@ function GameMode:PostLoadPrecache()
   --PrecacheItemByNameAsync("item_example_item", function(...) end)
   --PrecacheItemByNameAsync("example_ability", function(...) end)
 
-
+  
   PrecacheUnitByNameAsync("npc_dota_hero_earthshaker", function(...) end)
   --PrecacheUnitByNameAsync("npc_dota_hero_enigma", function(...) end)
 end
@@ -151,7 +144,7 @@ function GameMode:OnAllPlayersLoaded()
   DebugPrint(1,"[BAREBONES] All Players have loaded into the game")
   spawnPlatform()
   GameMode.Players = {}
-
+  
 
   for i=0,3 do
     if PlayerResource:IsValidPlayerID(i) then
@@ -167,11 +160,41 @@ function GameMode:OnAllPlayersLoaded()
     end
   end
   
-  --eEventManager:Send_ServerToAllClients("register_keys",{}) CustomGam
+
+  --Create the camera unit
+  GameMode:CreateCameraUnit() 
 end
 
+function GameMode:CreateCameraUnit()
+  cameraDummyUnit = CreateUnitByName("npc_dummy_unit",Vector(0,0,0),false,nil,nil,DOTA_TEAM_NOTEAM)
+  cameraDummyUnit:SetAbsOrigin(Vector(0,0,0))
+  cameraDummyUnit:FindAbilityByName("dummy_unit"):SetLevel(1)
+  CustomNetTables:SetTableValue("settings","cameraUnit",{value = cameraDummyUnit:entindex()})
 
+  Timers:CreateTimer(0,function()
+    GameMode:ControlCamera()
+    return 1/30
+  end)
+end
 
+function GameMode:ControlCamera()
+  local positionsTableX = {}
+  local positionsTableZ = {}
+  for i=0,3 do
+    if PlayerResource:IsValidPlayerID(i) then
+      local hero = PlayerResource:GetSelectedHeroEntity(i)
+      if hero and hero:IsAlive() then
+        positionsTableX[i] = hero:GetAbsOrigin().x
+        positionsTableZ[i] = hero:GetAbsOrigin().z
+      end
+    end
+  end
+
+  local horizontalMid = GetMinMaxValue(positionsTableX)
+  local verticalMid = GetMinMaxValue(positionsTableZ)
+  cameraDummyUnit:SetAbsOrigin(Vector(horizontalMid,0,verticalMid))
+  
+end
 --[[
   This function is called once and only once for every player when they spawn into the game for the first time.  It is also called
   if the player's hero is replaced with a new hero for any reason.  This function is useful for initializing heroes, such as adding
@@ -184,7 +207,8 @@ function GameMode:OnHeroInGame(hero)
   if hero:GetUnitName() == "npc_dota_hero_wisp" then
     hero:SetAttackCapability(DOTA_UNIT_CAP_NO_ATTACK)
     hero:AddNoDraw() 
-    hero:SetAbsOrigin(Vector(-3000,-3000,0))
+    hero:SetAbsOrigin(Vector(0,0,0))
+    hero:AddNewModifier(hero,nil,"modifier_puck_phase_shift ",{})
     return 
   end
   if not firstHeroSpawned then 
@@ -209,8 +233,8 @@ function GameMode:OnHeroInGame(hero)
     hero.jumps = 0
     hero.amplify = 1
     hero.movespeedFactor = 1
-    hero.attackspeedFactor = 1
     hero.jumpfactor = 1
+    hero.attackspeedFactor = 1
     hero.attackDamageFactor = 1
     hero.spellDamageFactor = 1
     hero.zDelta = 0
@@ -256,6 +280,20 @@ function GameMode:OnHeroInGame(hero)
       if abil then
         PrecacheItemByNameAsync(abil:GetAbilityName(),function(...)end)
         abil:SetLevel(1)
+      end
+    end
+
+    -- Phoenix egg fix, causes a spike on spawn
+    if not bPhoenixHasSpawnedOnce and hero:GetUnitName() == "npc_dota_hero_phoenix" then
+      hero:RemoveModifierByName("modifier_smash_stun")
+      bPhoenixHasSpawnedOnce = true
+      local ab = hero:FindAbilityByName("phoenix_special_bottom")
+      if ab then
+        hero:CastAbilityNoTarget(ab,-1)
+        ab:EndCooldown()
+        Timers:CreateTimer(1/30,function()
+          hero:RemoveModifierByName("modifier_phoenix_special_down_egg")
+        end)
       end
     end
   end
@@ -408,7 +446,7 @@ function GameMode:Reset()
   
   ]]
   -- Stun all alive heroes first
-  for i=0,PlayerResource:GetTeamPlayerCount()-1 do
+  for i=0,3 do
       if PlayerResource:IsValidPlayerID(i) then
         if PlayerResource:GetSelectedHeroEntity(i) and PlayerResource:GetSelectedHeroEntity(i):IsAlive() then
           PlayerResource:GetSelectedHeroEntity(i):AddNewModifier(PlayerResource:GetSelectedHeroEntity(i),nil,"modifier_smash_stun",{})
@@ -463,15 +501,29 @@ function GameMode:InitGameMode()
   CustomGameEventManager:RegisterListener("get_lifes", Dynamic_Wrap(GameMode, 'SetStartingLifes'))
   CustomGameEventManager:RegisterListener("player_leaves", Dynamic_Wrap(GameMode, 'CheckLeftoverPlayers'))
   CustomGameEventManager:RegisterListener("player_votes_endscreen", Dynamic_Wrap(GameMode, 'StoreEndScreenVote'))
-
+  CustomGameEventManager:RegisterListener("player_forfeits", Dynamic_Wrap(GameMode, 'PlayerForfeitsRound'))
   -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
   Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
-  Convars:RegisterCommand( "reload_kv", Dynamic_Wrap(GameMode, 'Reload_KeyValues'), "A console command example", FCVAR_CHEAT )
+  Convars:RegisterCommand( "reload_kv", Reload_AbilityKeyValues, "Reloads values from npc_abilities files", FCVAR_CHEAT )
 
 
   DebugPrint(1,'[BAREBONES] Done loading Barebones gamemode!\n\n')
-end
+end 
 
+function GameMode:PlayerForfeitsRound(keys)
+  Timers:CreateTimer(0.1,function()
+    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, Forfeit")
+    local hero = PlayerResource:GetSelectedHeroEntity(keys.PlayerID)
+    Timers:CreateTimer(1/30,function()
+      if not hero:IsAlive() then
+        hero:RespawnHero(false,false,false)
+      end
+      
+      PlayerTables:SetTableValue(tostring(keys.PlayerID),"lifes",0)
+      hero:ForceKill(false)
+    end)
+  end)
+end
 function GameMode:StoreEndScreenVote(keys)
   -- Everything is already sent at this point, find something else
   GameMode.endScreenVotes = GameMode.endScreenVotes or {}
@@ -530,8 +582,11 @@ function GameMode:RequestStart(keys)
   CustomGameEventManager:Send_ServerToAllClients("start_game",{})
 end
 
-function GameMode:Reload_KeyValues()
-  GameRules:Playtesting_UpdateAddOnKeyValues()
+function Reload_KeyValues()
+  print("Reloading Ability files")
+  ABILITIES_TXT = LoadKeyValues("scripts/npc/npc_abilities.txt")
+  for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_override.txt")) do ABILITIES_TXT[k] = v end
+  for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_custom.txt")) do ABILITIES_TXT[k] = v end
 end
 -- This is an example console command
 function GameMode:ExampleConsoleCommand()
@@ -559,22 +614,26 @@ function GameMode:SetupGame()
   -- Str
     "npc_dota_hero_tusk",
     "npc_dota_hero_earthshaker",
-    "npc_dota_hero_rattletrap",
+    --"npc_dota_hero_rattletrap",
     "npc_dota_hero_axe",
     "npc_dota_hero_magnataur",
     "npc_dota_hero_phoenix",
     "npc_dota_hero_pudge",
+    --"npc_dota_hero_kunkka",
+    "npc_dota_hero_centaur",
   -- Agi
     "npc_dota_hero_mirana",
     "npc_dota_hero_nyx_assassin",
     "npc_dota_hero_vengefulspirit",
-    "npc_dota_hero_nevermore",
+    --"npc_dota_hero_nevermore",
   -- Int
     "npc_dota_hero_tinker",
+    "npc_dota_hero_batrider",
     "npc_dota_hero_lina",
     "npc_dota_hero_puck",
     "npc_dota_hero_zuus",
     "npc_dota_hero_storm_spirit",
+    --"npc_dota_hero_batrider",
   }
 
   GameMode.heroesPicked = {}
@@ -619,6 +678,7 @@ end
 
 function GameMode:OnHeroDeath(hero)
   if not hero:IsRealHero() then return end
+  hero:SetAbsOrigin(cameraDummyUnit:GetAbsOrigin())
   DebugPrint(1,"[SMASH] A hero died")
   -- Store the lifes to display on client
   PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes", PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()), "lifes") -1)
@@ -678,7 +738,9 @@ function GameMode:OnHeroDeath(hero)
   -- Remove ourselves from any platform
   if platform then
     for k,v in pairs(platform) do
-      v.unitsOnPlatform[hero] = nil
+      if v.unitsOnPlatform then
+        v.unitsOnPlatform[hero] = nil
+      end
     end
   end
 end
@@ -697,7 +759,7 @@ function GameMode:OnDisconnect(keys)
     return
   end
   Timers:CreateTimer(1,function()
-    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnDisconnect")
+    DebugPrint(1,"[SMASH] [TIMERS] Gamemode, Forfeit")
     local hero = PlayerResource:GetSelectedHeroEntity(userid)
     if not hero:IsAlive() then
       hero:RespawnHero(false,false,false)

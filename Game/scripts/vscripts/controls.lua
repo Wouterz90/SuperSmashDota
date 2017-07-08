@@ -83,21 +83,26 @@ function control:KeyEvent(keys)
     local abname_release  = "basic_attack_"..buttonDirection.."_release"
     local ab = hero:FindAbilityByName(abName)
     local ab_release = hero:FindAbilityByName(abname_release)
-    
+    if not ab then return end
     if action == "released" then 
       if hero.isChargingAbility then
         hero.isChargingAbility = nil
         hero:RemoveModifierByName("modifier_basic_attack_charge")
       end
     elseif action == "pressed" then
-      if not ab_release or (ab and not ab:IsInAbilityPhase() and not ab_release:IsInAbilityPhase()) then
-        hero:Interrupt()
-        hero:CastAbilityNoTarget(ab,-1)
-        if buttonDirection ~= "mid" then
+      if not ab_release then
+        if not ab:IsInAbilityPhase() then
+          hero:CastAbilityNoTarget(ab,-1)
+        end
+      else
+        if not ab_release:IsInAbilityPhase() then
+          hero:Interrupt()
           hero.isChargingAbility = ab
+          hero:CastAbilityNoTarget(ab,-1)
         end
       end
     end
+    return
   end
 
   if button == "right_mouse" then

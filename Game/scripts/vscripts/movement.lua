@@ -21,7 +21,8 @@ function modifier_left:OnIntervalThink()
     self:Destroy()
     return
   end
-  if self:GetParent():isOnPlatform() or self:GetParent():HasModifier("modifier_jump") then
+  --if self:GetParent():isOnPlatform() or self:GetParent():HasModifier("modifier_jump") then
+  if not self:GetParent():HasModifier("modifier_drop") or self:GetParent():isOnPlatform() then
     if self:GetParent().rotation and self:GetParent().rotation ~= 0  then
       --print(vec)
       vec = Vector(x,vec[2],vec[3] + (self:GetParent().rotation) * ((Laws.flMove * self:GetParent().movespeedFactor)/55))
@@ -41,14 +42,16 @@ function modifier_left:OnIntervalThink()
     self:GetParent():SetAbsOrigin(vec)
   end
   if not self:GetParent():HasModifier("modifier_animation") then
-    StartAnimation(self:GetCaster(), {duration=-1, activity=ACT_DOTA_RUN, rate=1})
+    StartAnimation(self:GetCaster(), {duration=-1, activity=ACT_DOTA_RUN, rate=1, priority=0})
   end
 end
 
 
 function modifier_left:OnDestroy()
   if IsServer() then
-    EndAnimation(self:GetParent())
+    if self:GetParent():FindModifierByName("modifier_animation") and bit.band(self:GetParent():FindModifierByName("modifier_animation"):GetStackCount(), 0x07FF) == ACT_DOTA_RUN then
+      EndAnimation(self:GetParent(),0)
+    end
     --self:GetParent():SetForwardVector(Vector(-1,0,0))
   end
 end
@@ -71,7 +74,8 @@ function modifier_right:OnIntervalThink()
     self:Destroy()
     return
   end
-  if self:GetParent():isOnPlatform() or self:GetParent():HasModifier("modifier_jump") then
+  --if self:GetParent():isOnPlatform() or self:GetParent():HasModifier("modifier_jump") then
+  if not self:GetParent():HasModifier("modifier_drop") or self:GetParent():isOnPlatform() then
     if self:GetParent().rotation and self:GetParent().rotation ~= 0  then
       --print(vec)
       vec = Vector(x,vec[2],vec[3] - (self:GetParent().rotation) * ((Laws.flMove * self:GetParent().movespeedFactor)/55))
@@ -91,7 +95,7 @@ function modifier_right:OnIntervalThink()
     self:GetParent():SetAbsOrigin(vec)
   end
   if not self:GetParent():HasModifier("modifier_animation") then
-    StartAnimation(self:GetCaster(), {duration=-1, activity=ACT_DOTA_RUN, rate=1})
+    StartAnimation(self:GetCaster(), {duration=-1, activity=ACT_DOTA_RUN, rate=1, priority=0})
   end
 
 end
@@ -99,7 +103,9 @@ end
 
 function modifier_right:OnDestroy()
   if IsServer() then
-    EndAnimation(self:GetParent())
+    if self:GetParent():FindModifierByName("modifier_animation") and bit.band(self:GetParent():FindModifierByName("modifier_animation"):GetStackCount(), 0x07FF) == ACT_DOTA_RUN then
+      EndAnimation(self:GetParent(),0)
+    end
     --self:GetParent():SetForwardVector(Vector(1,0,0))
   end
 end
@@ -147,7 +153,7 @@ modifier_drop = class({})
 
 function modifier_drop:OnDestroy()
   if IsServer() then
-   EndAnimation(self:GetParent())
+   --EndAnimation(self:GetParent())
  end
 end
 function modifier_drop:OnCreated()
@@ -167,7 +173,7 @@ function modifier_drop:OnIntervalThink()
   if not platform then return end
   for k,v in pairs(platform) do
     if not v:IsNull() then
-      if v.unitsOnPlatform[self:GetParent()] then
+      if v.unitsOnPlatform and v.unitsOnPlatform[self:GetParent()] then
         my_platform = v
         bCanDrop = v.canDropThrough
         break

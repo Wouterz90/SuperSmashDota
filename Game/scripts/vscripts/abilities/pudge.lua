@@ -158,6 +158,8 @@ function pudge_special_side:RetractHook(vLocation,hTarget)
       if hTarget then
         local platformHeight = FindNearestPlatform(vLocation):GetAbsOrigin().z or unit.z+50
         hTarget:SetAbsOrigin(Vector(unit.x,0, platformHeight+ 20))
+        hTarget:AddNewModifier(caster,ability,"modifier_jump",{duration = 0.1})
+        hTarget.jumps = 0
         hTarget:RemoveModifierByNameAndCaster("modifier_smash_stun",caster)  
       end
       local hHook = caster:GetTogglableWearable( DOTA_LOADOUT_TYPE_WEAPON )

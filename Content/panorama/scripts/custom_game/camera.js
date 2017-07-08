@@ -7,7 +7,7 @@ var colorTeam1 = "red"
 var colorTeam2 = "blue"
 var debugging = 0
 var camera = 1
-//CameraSettings() // To instantly edit
+CameraSettings() // To instantly edit
 
 function CameraSettings()	
 { 
@@ -16,49 +16,54 @@ function CameraSettings()
   GameUI.SetCameraYaw( 0 ); 
   GameUI.SetCameraPitchMin(1);
   GameUI.SetCameraPitchMax(1);
-  /*var width = Game.GetScreenWidth()
+  var width = Game.GetScreenWidth()
   var height = Game.GetScreenHeight()
   
-  var minDistance = 1100
+  var minDistance = 1000
   var maxDistance = 2250
   
   var positions = {}
   var positionsX = {}
   var positionsZ = {}
   
-  positionsX[1] = -1600 
-  positionsX[2] = 1600
-
   // Get positions
   for (var i = 0; i <= 3; i++) 
   {
-	var hero = PlayerTables.GetTableValue(i.toString(),"hero");
-	if (hero && PlayerTables.GetTableValue(i.toString(), "lifes") >= 0) 
+	if (Players.IsValidPlayerID(i))
 	{
-		//GameUI.SetCameraTarget(hero)
-		positions[i] = Entities.GetAbsOrigin(hero)
-		positionsX[i] = Number(Entities.GetAbsOrigin(hero)[0])
-		positionsZ[i] = Number(Entities.GetAbsOrigin(hero)[2])
-	}	
+		var hero = PlayerTables.GetTableValue(i.toString(),"hero");
+		if (hero && Entities.IsAlive( hero )) 
+		{
+			//GameUI.SetCameraTarget(hero)
+			positions[i] = Entities.GetAbsOrigin(hero)
+			if (positions[i])
+			{
+				positionsX[i] = Number(positions[i][0])
+				positionsZ[i] = Number(positions[i][2])
+			}
+		}
+	}
   }
   
   
 	// Get the needed width
-  var horizontalDifference = GetMinMaxValue(positionsX)
-  var verticalDifference = GetMinMaxValue(positionsZ)
+  var horizontalDifference = GetMinMaxValue(positionsX) + 400
+  var verticalDifference = GetMinMaxValue(positionsZ) + 400
   
   // Width needed to display the units
-  var desiredDistanceWidth = 1/(horizontalDifference/(632.975*))
+  var desiredDistanceWidth = 1/(Game.GetScreenWidth()/(632.975*horizontalDifference))
   if (desiredDistanceWidth < minDistance)
   {
 	desiredDistanceWidth = minDistance
   }
   if (desiredDistanceWidth > maxDistance)
   {
+	  // Todo aim at player hero instead of camera or something?
 	desiredDistanceWidth = maxDistance
   }
+  
 
-  var desiredDistanceHeight = 1/(verticalDifference/(632975))
+  var desiredDistanceHeight = 1/(Game.GetScreenHeight()/(632.975*verticalDifference))
   if (desiredDistanceHeight < minDistance)
   {
 	desiredDistanceHeight = minDistance
@@ -67,9 +72,9 @@ function CameraSettings()
   {
 	desiredDistanceHeight = maxDistance
   }
-  $.Msg(Math.max(desiredDistanceHeight))
   
-  //GameUI.SetCameraDistance(Math.max(desiredDistanceWidth,desiredDistanceHeight))
+ 
+  GameUI.SetCameraDistance(Math.max(desiredDistanceWidth,desiredDistanceHeight))
   //$.Msg(Math.max(desiredDistanceWidth,desiredDistanceHeight))
   /*var x = 0, total = 0, y = 0
   for( x in positionsZ) 
@@ -91,18 +96,25 @@ function CameraSettings()
    
   */
   
-  GameUI.SetCameraDistance( 1100 );
+  //GameUI.SetCameraDistance( 1100 );
   var hero = PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"hero");
   if (hero && PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes") >= 0) 
   { 
-    GameUI.SetCameraTarget(hero);
-    if (Entities.GetAbsOrigin(hero)) 
+	var camUnit = CustomNetTables.GetTableValue("settings","cameraUnit").value
+    GameUI.SetCameraTarget(camUnit);
+	
+    if (Entities.GetAbsOrigin(camUnit)) 
 	{ 
-		var height = Entities.GetAbsOrigin(hero)[2]
+		var height = Entities.GetAbsOrigin(camUnit)[2]
+		/*$.Msg(height)	
 		if (height > 3000 - 300)
 		{
 			height = 2700
 		}
+		if (height < 500)
+		{
+			height = 500	
+		}*/
       GameUI.SetCameraLookAtPositionHeightOffset(height-100);
     }
   }
@@ -157,23 +169,6 @@ function CameraSettings()
     Player1_Lifes.text = player_1_life.concat("x")
     }
 	Player1_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(0)-5))
-    /*if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-	{
-	  Player1_Health.style.color = colorPlayer1
-	}
-	else if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-	{
-	  Player1_Health.style.color = colorPlayer2
-	}
-	else if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
-	{
-	  Player1_Health.style.color = colorPlayer3
-	}
-	else if (Players.GetTeam(0) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
-	{
-	  Player1_Health.style.color = colorPlayer4
-	}
-	*/
 	Player1_Health.style.opacity = 0.75
 	next.GetChild(0).FindChild("Player1_Bar").style.width = (PlayerTables.GetTableValue(0, "charges") * 1.5).toString().concat("px")
   }
@@ -196,24 +191,8 @@ function CameraSettings()
     
     Player2_Lifes.text = player_2_life.concat("x")
     Player2_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(1)-5))  
-    /*if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-		{
-		  Player2_Health.style.color = colorPlayer1
-		}
-		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-		{
-		  Player2_Health.style.color = colorPlayer2
-		}
-		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
-		{
-		  Player2_Health.style.color = colorPlayer3
-		}
-		else if (Players.GetTeam(1) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
-		{
-		  Player2_Health.style.color = colorPlayer4
-		}*/
-		Player2_Health.style.opacity = 0.75
-		next.GetChild(1).FindChild("Player2_Bar").style.width = (PlayerTables.GetTableValue(1, "charges") * 1.5).toString().concat("px")
+	Player2_Health.style.opacity = 0.75
+	next.GetChild(1).FindChild("Player2_Bar").style.width = (PlayerTables.GetTableValue(1, "charges") * 1.5).toString().concat("px")
 	}
 
   }
@@ -236,22 +215,6 @@ function CameraSettings()
 		
 		Player3_Lifes.text = player_3_life.concat("x")
 		Player3_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(2)-5))
-		/*if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-		{
-		  Player3_Health.style.color = colorPlayer1
-		}
-		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-		{
-		  Player3_Health.style.color = colorPlayer2
-		}
-		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
-		{
-		  Player3_Health.style.color = colorPlayer3
-		}
-		else if (Players.GetTeam(2) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
-		{
-		  Player3_Health.style.color = colorPlayer4
-		}*/
 		Player3_Health.style.opacity = 0.75
 		next.GetChild(2).FindChild("Player3_Bar").style.width = (PlayerTables.GetTableValue(2, "charges") * 1.5).toString().concat("px")
     }  
@@ -262,35 +225,22 @@ function CameraSettings()
     var hero = PlayerTables.GetTableValue(3,"hero");
     if (Entities.IsAlive(hero))
 	{
+		
       var player_4_hp = Entities.GetMaxHealth(hero) - Entities.GetHealth(hero)
     } 
 	else  
 	{
       var player_4_hp = 0
     }
-    Player3_Health.text = player_3_hp;
+    Player4_Health.text = player_4_hp;
+
     if (PlayerTables.GetTableValue(3, "lifes") !== null)  
 	{
 		var player_4_life = (PlayerTables.GetTableValue(3, "lifes")).toString()
 		
 		Player4_Lifes.text = player_4_life.concat("x")
+		
 		Player4_Health.style.color = eval("colorPlayer".concat(Players.GetTeam(3)-5))
-		/*if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-		{
-		  Player4_Health.style.color = colorPlayer1
-		}
-		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_BADGUYS) 
-		{
-		  Player4_Health.style.color = colorPlayer2
-		}
-		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_CUSTOM_1) 
-		{
-		  Player4_Health.style.color = colorPlayer3
-		}
-		else if (Players.GetTeam(3) == DOTATeam_t.DOTA_TEAM_CUSTOM_2) 
-		{
-		  Player4_Health.style.color = colorPlayer4
-		}*/
 		Player4_Health.style.opacity = 0.75
 		next.GetChild(3).FindChild("Player4_Bar").style.width = (PlayerTables.GetTableValue(3, "charges") * 1.5).toString().concat("px")
 	
@@ -309,7 +259,7 @@ function CameraSettings()
 function CancelCameraSettings(){
   if(debugging >= 1) {$.Msg("camera CancelCameraSettings") }
   // Place to control triangles
-  var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("MainPanel")
+  var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("MainPanelBoxes")
   var topbox = next.GetChild(0)
   var leftbox = next.GetChild(1)
   var rightbox = next.GetChild(2)
@@ -334,6 +284,15 @@ function CreatePlayerHeroAvatars()
   $.Schedule(2, function()
   {	
 	if(debugging >= 1) {$.Msg("camera CreatePlayerHeroAvatars2") }
+	var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("MainPanelBoxes")
+	  var topbox = next.GetChild(0)
+	  var leftbox = next.GetChild(1)
+	  var rightbox = next.GetChild(2)
+	  var bottombox = next.GetChild(3)
+	  topbox.style.visibility = "visible";
+	  leftbox.style.visibility = "visible";
+	  rightbox.style.visibility = "visible";
+	  bottombox.style.visibility = "visible";
 	// Create the avatars in the bottom for the players
     var playerIDs = Game.GetAllPlayerIDs()     
     for (var i = 1; i < playerIDs.length +1; i++) 
@@ -406,9 +365,43 @@ function UpdateCooldowns(ability,panel)
 	{
 		panel.style.clip = "radial(50% 50%, 0deg, " + 100 * 	360 + "deg)"
 		panel.style.opacity = 1
+		if (Entities.GetAbilityByName( hero, abilityName.concat("_release")) !== -1)
+		{
+			if (abilityName.indexOf("special_top") !== -1)
+			{
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_topPress").style.opacity = 0
+			}
+			else if (abilityName.indexOf("special_bottom") !== -1)
+			{
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottomPress").style.opacity = 0
+			}
+			else if (abilityName.indexOf("special_side") !== -1)
+			{
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_leftPress").style.opacity = 0
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_rightPress").style.opacity = 0
+			}
+		}
 	}
 	else 
 	{
+		// Show press icon while ability is on cooldown
+		if (Entities.GetAbilityByName( hero, abilityName.concat("_release")) !== -1)
+		{
+			if (abilityName.indexOf("special_top") !== -1)
+			{
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_topPress").style.opacity = 0.75
+			}
+			else if (abilityName.indexOf("special_bottom") !== -1)
+			{
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_bottomPress").style.opacity = 0.75
+			}
+			else if (abilityName.indexOf("special_side") !== -1)
+			{
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_leftPress").style.opacity = 0.75
+				$.GetContextPanel().GetParent().GetParent().GetParent().FindChildTraverse("Mainspecial_rightPress").style.opacity = 0.75
+			}
+		}
+			
 		var cooldownLength = Abilities.GetCooldownLength( ability );
 		var cooldownRemaining = Abilities.GetCooldownTimeRemaining( ability );
 		var cooldownPercent = 1 -(cooldownRemaining / cooldownLength);
@@ -477,6 +470,12 @@ function ShowSilence(table)
 	}
 }
 
+function PlayerPressedForfeit()
+{
+	if(debugging >= 1) {$.Msg("Camera PlayerPressedForfeit" )}
+	GameEvents.SendCustomGameEventToServer("player_forfeits", {})
+}
+
 function GetMinMaxValue(input)
 {
 	var min = Infinity, max = -Infinity, x;
@@ -487,6 +486,26 @@ function GetMinMaxValue(input)
 	}
 	
 	return Math.abs(min-max)
+}
+function GetMinValue(input)
+{
+	var min = Infinity, x;
+	for( x in input) 
+	{
+		if( input[x] < min) min = input[x];
+	}
+	
+	return min
+}
+function GetMaxValue(input)
+{
+	var max = Infinity, x;
+	for( x in input) 
+	{
+		if( input[x] < max) max = input[x];
+	}
+	
+	return max
 }
 (function() {
   GameEvents.Subscribe( "kill_pick_screen", CreatePlayerHeroAvatars)

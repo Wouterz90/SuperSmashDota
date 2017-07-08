@@ -451,6 +451,7 @@ function StartAnimation(unit, table)
   local translate = table.translate
   local translate2 = table.translate2
   local rate = table.rate or 1.0
+  local priority = table.priority or 1
   
   rate = math.floor(math.max(0,math.min(255/20, rate)) * 20 + .5)
 
@@ -469,7 +470,7 @@ function StartAnimation(unit, table)
     return
   end
 
-  if unit:HasModifier("modifier_animation") or (unit._animationEnd ~= nil and unit._animationEnd + .067 > GameRules:GetGameTime()) then
+  --if (unit:HasModifier("modifier_animation") and unit:FindModifierByName("modifier_animation").priority <= priority) or (unit._animationEnd ~= nil and unit._animationEnd + .067 > GameRules:GetGameTime()) then
     EndAnimation(unit)
     Timers:CreateTimer(.066, function() 
       if translate2 ~= nil then
@@ -478,20 +479,20 @@ function StartAnimation(unit, table)
       end
       if IsValidEntity(unit) then
         unit._animationEnd = GameRules:GetGameTime() + duration
-        unit:AddNewModifier(unit, nil, "modifier_animation", {duration=duration, translate=translate})
+        unit:AddNewModifier(unit, nil, "modifier_animation", {duration=duration, translate=translate}).priority = priority
         unit:SetModifierStackCount("modifier_animation", unit, stacks)
       end
     end)
-  else
+  --[[else
     if translate2 ~= nil then
       unit:AddNewModifier(unit, nil, "modifier_animation_translate", {duration=duration, translate=translate2})
       unit:SetModifierStackCount("modifier_animation_translate", unit, _ANIMATION_TRANSLATE_TO_CODE[translate2])
     end
 
     unit._animationEnd = GameRules:GetGameTime() + duration
-    unit:AddNewModifier(unit, nil, "modifier_animation", {duration=duration, translate=translate})
+    unit:AddNewModifier(unit, nil, "modifier_animation", {duration=duration, translate=translate}).priority = priority
     unit:SetModifierStackCount("modifier_animation", unit, stacks)
-  end
+  end]]
 end
 
 function FreezeAnimation(unit, duration)

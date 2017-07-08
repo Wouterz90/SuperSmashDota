@@ -35,7 +35,6 @@ function nevermore_special_side:OnAbilityPhaseStart()
     return false
   end
 
-  --caster:EmitSound("Hero_Phoenix.FireSpirits.Launch")
   StartAnimation(caster, {duration=self:GetCastPoint(), activity=ACT_DOTA_RAZE_2 , rate=self:GetCastPoint()/0.55 })
 
   self.raze = raze
