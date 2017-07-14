@@ -171,11 +171,11 @@ function earthshaker_special_top:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
   caster.jumps = 3 
-
+  StoreSpecialKeyValues(self)
   
   -- Make sure the caster jumps
   caster:RemoveModifierByName("modifier_jump")
-  caster:AddNewModifier(caster,self,"modifier_earthshaker_jump",{duration = ability:GetSpecialValueFor("duration")})
+  caster:AddNewModifier(caster,self,"modifier_earthshaker_jump",{duration = self.duration})
   -- Start this to check if the target is on a platform
 end
 

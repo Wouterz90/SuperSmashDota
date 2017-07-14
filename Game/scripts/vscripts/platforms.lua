@@ -39,7 +39,7 @@ function spawnPlatform()
     [6] = "MapFerrisWheel",
     [7] = "MapPyramidSmall",
     [8] = "MapPyramidLarge",
-    --[9] = "MapSmallFunnel",
+    [9] = "MapSmallFunnel",
   }
   mapnames4 = {
     [1] = "MapMedium",
@@ -203,16 +203,17 @@ function CDOTA_BaseNPC:isOnPlatform()
           -- Slide the unit down
           local delta_x = Laws.flMove * (self.rotation/180)
           local delta_z = (-delta_x / 55) * self.rotation /1
+
           --print(delta_x,delta_z)
           self:SetAbsOrigin(Vector(self:GetAbsOrigin().x+delta_x,0,self:GetAbsOrigin().z+delta_z))
   
           v.unitsOnPlatform[self] = true
-          return true
+          return v
         end
       end
     end
   end
-  return false
+  return
 end
 
 function CDOTA_BaseNPC:isUnderPlatform()
@@ -255,7 +256,9 @@ function RotatePlatform(hPlatform,flRotation)
 
   -- Update the radius
   local delta_z = (hPlatform.originalRadius / 55) *flRotation
-  local radius = math.sqrt(math.pow(hPlatform.originalRadius,2) -  math.pow(delta_z,2))
+  -- For updating the radius??
+  local delta_Z =(hPlatform.originalRadius / 65) *flRotation
+  local radius = math.sqrt(math.pow(hPlatform.originalRadius,2) -  math.pow(delta_Z,2)) * 1.1
   -- Move the units on it along
   for k,v in pairs(hPlatform.unitsOnPlatform) do
     if IsValidEntity(k) then
@@ -329,6 +332,7 @@ end
 
 function DestroyPlatform(hPlatform,flDuration)
   DebugPrint(1,"[SMASH] [PLATFORMS] DestroyPlatform")
+  flDuration = flDuration or 5
   if not platform then return end
   local fadeTime = 5 -- 1 Divided by this
   local blinks = 5 -- Should be uneven
@@ -381,7 +385,23 @@ function FindNearestPlatform(vLocation)
   end
 end
 
+function FindPlatformsInRadius(vLocation,flRadius)
+  DebugPrint(1,"[SMASH] [PLATFORMS] FindPlatformsInRadius")
+  if not platform then return end
+  local tab = {}
+  local entsInRadius = Entities:FindAllInSphere(vLocation,flRadius)
+  
+  for K,V in pairs(entsInRadius) do
+    if V.unitsOnPlatform then
+      table.insert(tab, V)
+    end
+  end
+  
+  return tab
+end
+
 function GridNav:IsWall(pos)
+  DebugPrint(2,"[SMASH] [PLATFORMS] IsWall")
   if not platform then return end
   for k,v in pairs(platform) do
     

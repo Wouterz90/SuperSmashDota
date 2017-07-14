@@ -1,6 +1,7 @@
 jumpModifiers = {
   ["modifier_no_gravity"] = true,
   ["modifier_jump"] = true,
+  ["modifier_lina_cyclone"] = true,
   ["modifier_mirana_leap_jump"] = true,
   ["modifier_earthshaker_jump"] = true,
   ["modifier_storm_ball_lightning"] = true,
@@ -14,4 +15,5 @@ jumpModifiers = {
   ["modifier_pudge_rot_smash"] = true,
   ["modifier_batrider_lasso_smash"] = false,
   ["modifier_centaur_stampede_smash"] = true,
+  ["modifier_blast_off_jump"] = true,
 }

@@ -1,4 +1,5 @@
 var PlayerTables = GameUI.CustomUIConfig().PlayerTables
+var colorPlayer0 = "white"
 var colorPlayer1 = "red"
 var colorPlayer2 = "blue"
 var colorPlayer3 = "green"

@@ -207,24 +207,25 @@ function kunkka_special_top:OnAbilityPhaseStart()
   if self:GetCaster().jumps > 3 then return end
   local caster = self:GetCaster()
   StoreSpecialKeyValues(self)
-  caster:EmitSound("Hero_kunkka.Stampede.Cast")
+  caster:EmitSound("Ability.XMarksTheSpot.Target")
   StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_3, rate=1})
   return true
 end
 
 function kunkka_special_top:OnAbilityPhaseInterrupted()
   local caster = self:GetCaster()
-  caster:StopSound("Hero_kunkka.Stampede.Cast")
+  caster:StopSound("Ability.XMarksTheSpot.Target")
   EndAnimation(caster)
 end
 
 function kunkka_special_top:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
+  StoreSpecialKeyValues(self)
   caster.jumps = 3
   self:EndCooldown()
 
-  caster:SetAbsOrigin(caster:GetAbsOrigin()+self.mouseVector*500)
+  caster:SetAbsOrigin(caster:GetAbsOrigin()+self.mouseVector*self.range)
   Timers:CreateTimer(1/10,function()
 
     self.particle = ParticleManager:CreateParticle("particles/kunkka/kunkka_spell_x_spot.vpcf", PATTACH_CUSTOMORIGIN, caster)

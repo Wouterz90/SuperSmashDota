@@ -22,12 +22,12 @@ end
 
 function nyx_assassin_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
-  local range = 600--self:GetSpecialValueFor("range")
   local vector = self.mouseVector
-  local projectile_speed = 600 --self:GetSpecialValueFor("projectile_speed")
   local ability = self
-  local duration = self:GetSpecialValueFor("duration")
-
+  StoreSpecialKeyValues(self)
+  local duration = self.duration
+  local projectile_speed = self.projectile_speed
+  
   if not caster:isOnPlatform() then
     ability:EndCooldown()
     return
@@ -61,7 +61,7 @@ function nyx_assassin_special_bottom:OnSpellStart()
     --EeffectName = "",
     vSpawnOrigin = caster:GetAbsOrigin() + Vector(0,0,10),  
     --vSpawnOrigin = {unit=caster, attach="attach_attack1", offset=Vector(0,0,0)},
-    fDistance = range,
+    fDistance = self.range,
     fStartRadius = 200,
     fEndRadius = 200,
     Source = caster,
@@ -92,7 +92,7 @@ function nyx_assassin_special_bottom:OnSpellStart()
       local damageTable = {
         victim = unit,
         attacker = caster,
-        damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
+        damage =  ability.damage + RandomInt(0,ability.damage_offset),
         damage_type = DAMAGE_TYPE_MAGICAL,
         ability = ability,
       }
@@ -112,7 +112,7 @@ function nyx_assassin_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint()*1.5, activity=ACT_DOTA_CAST_ABILITY_1, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint()*1.5, activity=ACT_DOTA_CAST_ABILITY_1, rate=1.75})
   return true
 end
 

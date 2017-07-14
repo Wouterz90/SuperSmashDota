@@ -378,6 +378,17 @@ function MapFerrisWheel()
   platform[9].unitsOnPlatform = {}
   platform[9].rotationCount = 315
   RotatePlatformAroundPoint(platform[9],Vector(0,0,900),600,0.6,true)
+
+  platform[10] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+  platform[10]:SetAbsOrigin(Vector(0,0,900))
+  platform[10]:SetModelScale(1)
+  platform[10].radius = 128
+  platform[10].height = 32
+  platform[10].isDestructable = true
+  platform[10].canDropThrough = true
+  platform[10].mapRadius = 1000
+  platform[10].unitsOnPlatform = {}
+
 end
 
 
@@ -554,9 +565,9 @@ function MapSmallFunnel()
 end
 
 function MapPyramidSmall()
-  local nPlatforms = 7
+  local nPlatforms = 6
   for i=0,nPlatforms do
-    if math.fmod(i, 2) == 0 then
+    --if math.fmod(i, 2) == 0 then
       platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
       platform[i]:SetAbsOrigin(Vector(-600+i*200,0,400))
       platform[i]:SetModelScale(1)
@@ -566,16 +577,16 @@ function MapPyramidSmall()
       platform[i].canDropThrough = true
       platform[i].mapRadius = 600
       platform[i].unitsOnPlatform = {}
-      if i == 0 then
-        platform[1] = platform[0]
-      end
-    end
+      --if i == 0 then
+      --  platform[1] = platform[0]
+      --end
+    --end
   end
   local nPlatforms = 5
   for i=0,nPlatforms do
     if math.fmod(i, 2) == 0 then
       platform[i+8] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i+8]:SetAbsOrigin(Vector(-400+i*200,0,700))
+      platform[i+8]:SetAbsOrigin(Vector(-400+i*200,0,800))
       platform[i+8]:SetModelScale(1)
       platform[i+8].radius = 128
       platform[i+8].height = 32
@@ -589,7 +600,7 @@ function MapPyramidSmall()
   for i=0,nPlatforms do
     if math.fmod(i, 2) == 0 then
       platform[i+13] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i+13]:SetAbsOrigin(Vector(-200+i*200,0,1000))
+      platform[i+13]:SetAbsOrigin(Vector(-200+i*200,0,1200))
       platform[i+13]:SetModelScale(1)
       platform[i+13].radius = 128
       platform[i+13].height = 32
@@ -603,7 +614,7 @@ function MapPyramidSmall()
   for i=0,nPlatforms do
     if math.fmod(i, 2) == 0 then
       platform[i+14] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i+14]:SetAbsOrigin(Vector(-0+i*200,0,1300))
+      platform[i+14]:SetAbsOrigin(Vector(-0+i*200,0,1600))
       platform[i+14]:SetModelScale(1)
       platform[i+14].radius = 128
       platform[i+14].height = 32
@@ -616,11 +627,11 @@ function MapPyramidSmall()
 end
 
 function MapPyramidLarge()
-  local nPlatforms = 9
+  local nPlatforms = 8
   for i=0,nPlatforms do
-    if math.fmod(i, 2) == 0 then
+    --if math.fmod(i, 2) == 0 then
       platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i]:SetAbsOrigin(Vector(-800+i*200,0,500))
+      platform[i]:SetAbsOrigin(Vector(-800+i*200,0,300))
       platform[i]:SetModelScale(1)
       platform[i].radius = 128
       platform[i].height = 32
@@ -628,16 +639,16 @@ function MapPyramidLarge()
       platform[i].canDropThrough = false
       platform[i].mapRadius = 800
       platform[i].unitsOnPlatform = {}
-      if i == 0 then
-        platform[1] = platform[0]
-      end
-    end
+      --if i == 0 then
+      --  platform[1] = platform[0]
+      --end
+    --end
   end
   local nPlatforms = 7
   for i=0,nPlatforms do
     if math.fmod(i, 2) == 0 then
       platform[i+10] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i+10]:SetAbsOrigin(Vector(-600+i*200,0,800))
+      platform[i+10]:SetAbsOrigin(Vector(-600+i*200,0,700))
       platform[i+10]:SetModelScale(1)
       platform[i+10].radius = 128
       platform[i+10].height = 32
@@ -665,7 +676,7 @@ function MapPyramidLarge()
   for i=0,nPlatforms do
     if math.fmod(i, 2) == 0 then
       platform[i+20] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i+20]:SetAbsOrigin(Vector(-200+i*200,0,1400))
+      platform[i+20]:SetAbsOrigin(Vector(-200+i*200,0,1500))
       platform[i+20]:SetModelScale(1)
       platform[i+20].radius = 128
       platform[i+20].height = 32
@@ -679,7 +690,7 @@ function MapPyramidLarge()
   for i=0,nPlatforms do
     if math.fmod(i, 2) == 0 then
       platform[i+23] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-      platform[i+23]:SetAbsOrigin(Vector(-0+i*200,0,1700))
+      platform[i+23]:SetAbsOrigin(Vector(-0+i*200,0,1900))
       platform[i+23]:SetModelScale(1)
       platform[i+23].radius = 128
       platform[i+23].height = 32

@@ -15,15 +15,16 @@ function lina_special_top:OnSpellStart()
   local ability = self
   if caster.jumps > 2 then return end
   caster.jumps = 3
-
+  StoreSpecialKeyValues(self)
   caster:EmitSound("DOTA_Item.Cyclone.Activate")
-
   local tornado_degrees_to_spin = nil
-  local tornado_height =  Laws.flDropSpeed + (self:GetSpecialValueFor("height") /32)
-  local tornado_lift_duration = self:GetSpecialValueFor("duration")
+  local tornado_height =  (self.height /32)
+  local tornado_lift_duration = self.duration
   local total_degrees = 1440/32 -- 22.5 720 is 2 full rotations
   local count = 1 -- Count to stop the timer
   local caster_x_origin = caster:GetAbsOrigin().x
+
+  caster:AddNewModifier(caster,ability,"modifier_lina_cyclone",{duration = tornado_lift_duration})
 
   local particle = ParticleManager:CreateParticle("particles/econ/items/invoker/invoker_ti6/invoker_tornado_child_ti6.vpcf",PATTACH_ABSORIGIN,caster)
 
@@ -56,7 +57,7 @@ function lina_special_top:OnSpellStart()
   end)
   
 end
-
+LinkLuaModifier("modifier_lina_cyclone","abilities/lina.lua",LUA_MODIFIER_MOTION_NONE)
 modifier_lina_cyclone = class({})
 
 --[[function modifier_lina_cyclone:DeclareFunctions()

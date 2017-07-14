@@ -68,7 +68,12 @@ function modifier_storm_ball_lightning:OnIntervalThink()
   local caster = self:GetCaster()
   local ability = self:GetAbility()
   local modifier = caster:FindModifierByName(ability:GetIntrinsicModifierName())
-  local direction = ability.mouseVector 
+  local direction = ability.mouseVector
+
+  if caster:GetUnitName() ~= "npc_dota_hero_storm_spirit" then
+    self:Destroy()
+    return
+  end
 
   local radius = ability:GetSpecialValueFor("radius")
   local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
@@ -124,6 +129,7 @@ end
 
 function modifier_storm_spirit_special_top_counter:OnCreated()
   if IsServer() then
+    self.pID = self:GetCaster():GetPlayerOwnerID()
     self:SetStackCount(100)-- self:GetAbility():GetSpecialValueFor("max_charges") * 10
     --self:GetAbility().particle = ParticleManager:CreateParticle("particles/custom/storm_counter.vpcf", PATTACH_OVERHEAD_FOLLOW, self:GetParent())
     self:StartIntervalThink(1/20)
@@ -132,6 +138,10 @@ function modifier_storm_spirit_special_top_counter:OnCreated()
 end
 
 function modifier_storm_spirit_special_top_counter:OnIntervalThink()
+  if not self:GetCaster() or PlayerResource:GetSelectedHeroEntity(self.pID):GetUnitName() ~= "npc_dota_hero_storm_spirit" then
+    self:Destroy()
+    return
+  end
   --[[for i=1,8 do
     if self:GetStackCount()/10 >= i then
       ParticleManager:SetParticleControl(self:GetAbility().particle, i, Vector(1,0,0))

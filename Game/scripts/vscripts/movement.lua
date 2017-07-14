@@ -115,14 +115,14 @@ modifier_jump = class({})
 
 function modifier_jump:OnCreated()
   if IsServer() then
-    if self:GetParent().jumps < 2 then
+    --if self:GetParent().jumps < 2 then
       self:GetParent().jumps = self:GetParent().jumps +1
       self:StartIntervalThink(1/32)
       if self:GetParent():HasModifier("modifier_jump_rune_buff") then
         self:GetParent():EmitSound("Hero_Zuus.Taunt.Jump")
       end
       
-    end
+    --end
   end
 end
 
@@ -158,15 +158,16 @@ function modifier_drop:OnDestroy()
 end
 function modifier_drop:OnCreated()
   if IsServer() then
+    self.count = 0
     self:StartIntervalThink(0.05)
-    
   end
 end
 
 
 function modifier_drop:OnIntervalThink()
   local vec = self:GetParent():GetAbsOrigin()
-  local z = vec[3] - Laws.flDropSpeed
+  self.count = self.count + 1
+  local z = vec[3] - Laws.flDropSpeed * math.pow(Laws.flDropAcceleration, self.count)
   vec = Vector(vec[1],vec[2],z)
   local bCanDrop = true
   local my_platform

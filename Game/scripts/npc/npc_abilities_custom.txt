@@ -288,7 +288,7 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "distance"      "750"
+        "distance"      "800"
       }
       "02"
       {
@@ -746,7 +746,7 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "height"    "400"
+        "height"    "550"
       }
       "02"
       {
@@ -871,7 +871,7 @@
       "soundfile" "soundevents/game_sounds_heroes/game_sounds_earthshaker.vsndevts"
     }
     "AbilitySpecial"
-    {
+    { // 500
       "01"
       {
         "var_type"      "FIELD_FLOAT"
@@ -900,7 +900,7 @@
       "06"
       {
         "var_type"      "FIELD_FLOAT"
-        "duration"    "1"
+        "duration"    "0.6"
       }
     }
   }
@@ -1269,7 +1269,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "range"    "400"
+        "range"    "500"
       }
     }
   }
@@ -1470,7 +1470,7 @@
       "04"
       {
         "var_type"      "FIELD_INTEGER"
-        "range"    "400"
+        "range"    "550"
       }
       "05"
       {
@@ -1581,8 +1581,8 @@
     "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
     "AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_1"
     "ScriptFile"            "abilities/nyx.lua"
-    "AbilityCastPoint"        "0.5"
-    "AbilityCooldown"       "5"
+    "AbilityCastPoint"        "0.3"
+    "AbilityCooldown"       "7"
     "precache"
     {
       "particle" "particles/units/heroes/hero_nyx_assassin/nyx_assassin_impale.vpcf"
@@ -1608,12 +1608,12 @@
       "04"
       {
         "var_type"      "FIELD_INTEGER"
-        "projectile_speed"    "500"
+        "projectile_speed"    "800"
       }
       "05"
       {
         "var_type"      "FIELD_INTEGER"
-        "range"    "500"
+        "range"    "550"
       }
       "06"
       {
@@ -1629,9 +1629,9 @@
     "MaxLevel"                "1"
     "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
     "ScriptFile"            "abilities/nyx.lua"
-    "AbilityCastPoint"        "0.35"
+    "AbilityCastPoint"        "0.15"
     
-    "AbilityCooldown"       "3"
+    "AbilityCooldown"       "4"
     "precache"
     {
       "particle" "particles/units/heroes/hero_nyx_assassin/nyx_assassin_mana_burn.vpcf"
@@ -1647,7 +1647,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "range"    "500"
+        "range"    "600"
       }
       "03"
       {
@@ -1667,7 +1667,7 @@
       "06"
       {
         "var_type"      "FIELD_FLOAT"
-        "silence_duration"    "1.5"
+        "silence_duration"    "2"
       }
     }
   }
@@ -1680,7 +1680,7 @@
     "ScriptFile"            "abilities/nyx.lua"
     "AbilityCastPoint"        "0.05"
     
-    "AbilityCooldown"       "4"
+    "AbilityCooldown"       "5"
     "precache"
     {
       "particle" "particles/items3_fx/lotus_orb_shield.vpcf"
@@ -1696,7 +1696,7 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "jump_speed"    "1400"
+        "jump_speed"    "1100"
       }
 
     }
@@ -1800,12 +1800,12 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "jump_speed"    "1200"
+        "jump_speed"    "1200" //600
       }
       "04"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"        "300"
+        "radius"        "400"
       }
       "03"
       {
@@ -2472,7 +2472,7 @@
       "05"
       {
         "var_type"      "FIELD_INTEGER"
-        "blink_range"    "450"
+        "blink_range"    "500"
       }
     }
   }
@@ -2743,7 +2743,7 @@
       "03"
       {
         "var_type"      "FIELD_FLOAT"
-        "damage"       "5" // Per 0.3 so 25 total
+        "damage"       "3" // Per 0.3 so *5 total?
       }
       "04"
       {
@@ -3110,6 +3110,176 @@
       {
         "var_type"      "FIELD_FLOAT"
         "x_time"    "2"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "range"    "500"
+      }
+    }
+  }
+  "techies_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "techies_remote_mines"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/techies.lua"
+    "AbilityCooldown"       "6"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_techies.vsndevts"
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_earth_spirit.vsndevts"
+      "particle"  "particles/units/heroes/hero_techies/techies_remote_mine_plant.vpcf"
+      "particle"  "particles/techies/techies_remote_mines_detonate.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "350"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "20"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "4"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "2"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "cast_point"       "0.55"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "rolling_speed"      "450"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "original_ability_cast_time"       "1"
+      }
+    }
+  }
+
+  "techies_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "techies_land_mines"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/techies.lua"
+    "AbilityCooldown"       "8"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_techies.vsndevts"
+      "particle"  "particles/units/heroes/hero_techies/techies_land_mine_explode.vpcf"
+      "particle"  "particles/units/heroes/hero_techies/techies_land_mine.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "activation_delay"    "1"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "250"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "damage"       "15"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "3"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1.5"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "cast_point"       "0.5"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "original_ability_cast_time"       "1"
+      }
+    }
+  }
+
+  "techies_special_top"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "techies_suicide"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET "
+    "ScriptFile"            "abilities/techies.lua"
+    //"AbilityCastAnimation"      "ACT_DOTA_CAST_ABILITY_6"
+    "AbilityCooldown"       "6"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_techies.vsndevts"
+      "particle" "particles/techies/techies_remote_mines_detonate.vpcf"
+      "particle" ""
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "350"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "20"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "4"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "2"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "cast_point"       "0.25"
+      }
+      "06"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "original_ability_cast_time"       "1"
+      }
+      "07"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "jump_duration"       "0.85"
       }
     }
   }

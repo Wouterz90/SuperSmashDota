@@ -184,8 +184,9 @@ end
 
 function axe_special_top:OnSpellStart()
   local caster = self:GetCaster()
-  local radius = 400--self:GetSpecialValueFor("radius")
-  local jump_speed = 1200 --self:GetSpecialValueFor("jump_speed")
+  StoreSpecialKeyValues(self)
+  local radius = self.radius
+  local jump_speed = self.jump_speed
   local vector = self.mouseVector
   FreezeAnimation(self:GetCaster(),0.75)
   caster.jumps = 3

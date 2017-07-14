@@ -5,7 +5,8 @@ Laws = {
   flJumpSpeed = 25,
   flJumpDuration = 20/32,
   flJumpDeceleration = 0.925,
-  flDropSpeed = 25,
+  flDropAcceleration = 1.015,
+  flDropSpeed = 20,
   flMove = 16,
 
   flPushDeceleration = 0.5, -- 0.5 per second
@@ -21,8 +22,8 @@ Laws = {
 
   flRuneDuration = 10,
 }
-Laws.flPushDeceleration = math.pow(Laws.flPushDeceleration,1/32) -- Converting the number to 1/32th
-
+Laws.flPushDeceleration = math.pow(0.925,1/32) -- Converting the number to 1/32th
+--Laws.flDropAcceleration = math.pow(1.155,1/32) -- Converting the number to 1/32th
 
 
 -- This is the primary barebones gamemode script and should be used to assist in initializing your game mode
@@ -181,7 +182,7 @@ function GameMode:ControlCamera()
   local positionsTableX = {}
   local positionsTableZ = {}
   for i=0,3 do
-    if PlayerResource:IsValidPlayerID(i) then
+    if PlayerResource:IsValidPlayerID(i) and PlayerResource:GetTeam(i) ~= DOTA_TEAM_NOTEAM then
       local hero = PlayerResource:GetSelectedHeroEntity(i)
       if hero and hero:IsAlive() then
         positionsTableX[i] = hero:GetAbsOrigin().x
@@ -397,6 +398,7 @@ function GameMode:Reset()
     if PlayerResource:IsValidPlayerID(i) and PlayerResource:GetSelectedHeroEntity(i) then
       PlayerResource:GetSelectedHeroEntity(i):RemoveModifierByName("modifier_basic")
       PlayerResource:GetSelectedHeroEntity(i):RemoveModifierByName("modifier_drop")
+      PlayerResource:ReplaceHeroWith(i,"npc_dota_hero_wisp",0,0)
     end
   end
 
@@ -405,7 +407,6 @@ function GameMode:Reset()
   -- Remove all the platforms
   ClearPlatforms()
   local winTeam = GameMode:FindTheOnlyConnectedTeam()
-  print(winTeam)
   if winTeam and not SINGLE_PLAYER_GAME then
     statCollection:submitRound(true)
     DeclareWinningTeam(GameMode:FindTheOnlyConnectedTeam())
@@ -423,7 +424,7 @@ function GameMode:Reset()
     local score = 0
     local winner = DOTA_TEAM_GOODGUYS
     for i=0,3 do
-      if PlayerResource:IsValidPlayerID(i) then
+      if PlayerResource:IsValidPlayerID(i) and PlayerResource:GetTeam(i) ~= DOTA_TEAM_NOTEAM then
         assists = PlayerResource:GetAssists(i)
         if assists > score then
           score = assists
@@ -614,18 +615,18 @@ function GameMode:SetupGame()
   -- Str
     "npc_dota_hero_tusk",
     "npc_dota_hero_earthshaker",
-    --"npc_dota_hero_rattletrap",
+    "npc_dota_hero_rattletrap",
     "npc_dota_hero_axe",
     "npc_dota_hero_magnataur",
     "npc_dota_hero_phoenix",
     "npc_dota_hero_pudge",
-    --"npc_dota_hero_kunkka",
+    "npc_dota_hero_kunkka",
     "npc_dota_hero_centaur",
   -- Agi
     "npc_dota_hero_mirana",
     "npc_dota_hero_nyx_assassin",
     "npc_dota_hero_vengefulspirit",
-    --"npc_dota_hero_nevermore",
+    "npc_dota_hero_nevermore",
   -- Int
     "npc_dota_hero_tinker",
     "npc_dota_hero_batrider",
@@ -633,7 +634,7 @@ function GameMode:SetupGame()
     "npc_dota_hero_puck",
     "npc_dota_hero_zuus",
     "npc_dota_hero_storm_spirit",
-    --"npc_dota_hero_batrider",
+    "npc_dota_hero_techies",
   }
 
   GameMode.heroesPicked = {}
@@ -697,7 +698,7 @@ function GameMode:OnHeroDeath(hero)
       deadplayers = 0
 
       -- Find the player with lives left
-      for i=0, PlayerResource:GetTeamPlayerCount() -1 do
+      for i=0, PlayerResource:GetTeamPlayerCount()-1 do
         if tonumber(  PlayerTables:GetTableValue(tostring(i),"lifes")) >= 0 then
           -- Use assists to track score for now
           GameRules.Winner = PlayerResource:GetTeam(i)

@@ -30,7 +30,7 @@ function GameMode:ConfirmHeroPick(keys)
     Timers:CreateTimer(time,function()
       DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] ConfirmHeroPick")
       for i=0, 3 do
-        if not GameMode.playersPicked[i] and PlayerResource:IsValidTeamPlayerID(i) then
+        if not GameMode.playersPicked[i] and PlayerResource:IsValidTeamPlayerID(i) and PlayerResource:GetTeam(i) ~= DOTA_TEAM_NOTEAM then
           GetRandomHero(i,true)
         end
       end
@@ -75,7 +75,7 @@ end
 function RandomForAll()
   DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] RandomForAll")
   for i=0,3 do
-    if PlayerResource:IsValidkunkkaID(i) then
+    if PlayerResource:IsValidPlayerID(i) then
       GetRandomHero(i,true)
     end
   end

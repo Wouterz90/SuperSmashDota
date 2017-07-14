@@ -189,6 +189,11 @@ function modifier_basic:OnIntervalThink()
   end
   -- Make sure gravity works when we are not on a platform
   if not self:GetParent():isOnPlatform() and not self:GetParent():HasModifier("modifier_jump") then
+    for k,v in pairs(jumpModifiers) do
+      if self:GetParent():HasModifier(k) then
+        return
+      end
+    end
     self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
   

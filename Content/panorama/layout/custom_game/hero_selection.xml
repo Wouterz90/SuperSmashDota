@@ -33,24 +33,28 @@
 				<DOTAHeroImage id="HeroPickaxe" class="heroImage" heroname="npc_dota_hero_axe" heroimagestyle="portrait" onactivate="selectedHero('axe')"/>
 				<DOTAHeroImage id="HeroPickvengefulspirit" class="heroImage" heroname="npc_dota_hero_vengefulspirit" heroimagestyle="portrait" onactivate="selectedHero('vengefulspirit')"/>
 				<DOTAHeroImage id="HeroPickphoenix" class="heroImage" heroname="npc_dota_hero_phoenix" heroimagestyle="portrait" onactivate="selectedHero('phoenix')"/>
-				<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHero('')"/>
+				<DOTAHeroImage id="HeroPicknevermore" class="heroImage" heroname="npc_dota_hero_nevermore" heroimagestyle="portrait" onactivate="selectedHero('nevermore')"/>
 			</Panel>
 		
-			<!--<Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
+			<Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
 				<DOTAHeroImage id="HeroPickrattletrap" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait" onactivate="selectedHero('rattletrap')"/>
-				<DOTAHeroImage id="HeroPickpudge" class="heroImage" heroname="npc_dota_hero_pudge" heroimagestyle="portrait" onactivate="selectedHero('pudge')"/>
+				<DOTAHeroImage id="HeroPickbatrider" class="heroImage" heroname="npc_dota_hero_batrider" heroimagestyle="portrait" onactivate="selectedHero('batrider')"/>
 				<DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHero('nyx_assassin')"/>
 				<DOTAHeroImage id="HeroPickkunkka" class="heroImage" heroname="npc_dota_hero_kunkka" heroimagestyle="portrait" onactivate="selectedHero('kunkka')"/>
-				<DOTAHeroImage id="HeroPicknevermore" class="heroImage" heroname="npc_dota_hero_nevermore" heroimagestyle="portrait" onactivate="selectedHero('nevermore')"/>
-			</Panel>-->
-			<!--
+				<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHero('')"/>
+			</Panel>
+			
 			<Panel id="HeroPickContainerRow5" class="HeroPickContainerRow" hittest="false">
-				<DOTAHeroImage id="HeroPickbrewmaster" class="heroImage" heroname="npc_dota_hero_brewmaster" heroimagestyle="portrait" onactivate="selectedHero('brewmaster')"/>
 				<DOTAHeroImage id="HeroPicktechies" class="heroImage" heroname="npc_dota_hero_techies" heroimagestyle="portrait" onactivate="selectedHero('techies')"/>
+				<!--
+				<DOTAHeroImage id="HeroPickbrewmaster" class="heroImage" heroname="npc_dota_hero_brewmaster" heroimagestyle="portrait" onactivate="selectedHero('brewmaster')"/>
 				<DOTAHeroImage id="HeroPickinvoker" class="heroImage" heroname="npc_dota_hero_invoker" heroimagestyle="portrait" onactivate="selectedHero('invoker')"/>
 				<DOTAHeroImage id="HeroPicknecrolyte" class="heroImage" heroname="npc_dota_hero_necrolyte" heroimagestyle="portrait" onactivate="selectedHero('necrolyte')"/>
 				<DOTAHeroImage id="HeroPickwindrunner" class="heroImage" heroname="npc_dota_hero_windrunner" heroimagestyle="portrait" onactivate="selectedHero('windrunner')"/>
-			</Panel>-->
+				<DOTAHeroImage id="HeroPicktidehunter" class="heroImage" heroname="npc_dota_hero_tidehunter" heroimagestyle="portrait" onactivate="selectedHero('tidehunter')"/>
+				<DOTAHeroImage id="HeroPickskywrath_mage" class="heroImage" heroname="npc_dota_hero_skywrath_mage" heroimagestyle="portrait" onactivate="selectedHero('skywrath_mage')"/>
+				-->
+			</Panel>
 		</Panel>
 	  
 	  
