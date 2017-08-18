@@ -100,11 +100,11 @@ function modifier_storm_ball_lightning:OnIntervalThink()
     modifier:DecrementStackCount()
   end
   
-
-  caster:SetAbsOrigin(caster:GetAbsOrigin()+direction*35)
-  if caster:GetAbsOrigin().z +100 > Laws.flMaxHeight then
-    caster:SetAbsOrigin(caster:GetAbsOrigin()-Vector(0,0,-35))
-  end
+  Physics2D:SetStaticVelocity(self:GetParent(),"storm_zip",direction*35)
+  --caster:SetAbsOrigin(caster:GetAbsOrigin()+direction*35)
+  --if caster:GetAbsOrigin().z +100 > Laws.flMaxHeight then
+  --  caster:SetAbsOrigin(caster:GetAbsOrigin()-Vector(0,0,-35))
+  --end
 
   if modifier:GetStackCount() <= 0 then
     caster.isChargingAbility = nil
@@ -118,6 +118,7 @@ function modifier_storm_ball_lightning:OnDestroy()
     self:GetCaster():StopSound("Hero_StormSpirit.BallLightning.Loop")
     self:GetAbility():StartCooldown(self:GetAbility():GetCooldown(1))
     CustomGameEventManager:Send_ServerToPlayer(self:GetCaster():GetPlayerOwner(),"show_cooldown",{sAbilityName = self:GetAbility():GetAbilityName(),ability = self:GetAbility():entindex(), nCooldown = self:GetAbility():GetCooldown(1)})
+    Physics2D:SetStaticVelocity(self:GetParent(),"storm_zip",Vector(0))
   end
 end
 
@@ -192,7 +193,8 @@ function storm_spirit_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
   local remnant = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin(),true,caster,caster:GetOwner(),caster:GetTeamNumber())
   remnant:SetAbsOrigin(caster:GetAbsOrigin())
-
+  Physics2D:CreateObject("AABB",remnant:GetAbsOrigin(),true,false,remnant,100,150,"Unit")
+  remnant.IsSmashUnit = true
   remnant:AddNewModifier(caster,self,"modifier_basic",{})
   remnant:AddNewModifier(caster,self,"modifier_storm_remnant",{duration = self:GetSpecialValueFor("remnant_duration")})
 end
@@ -271,7 +273,7 @@ storm_spirit_special_side = class({})
 function storm_spirit_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
-  StartAnimation(self:GetCaster(),{duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=1})
+  StartAnimation(self:GetCaster(),{duration=self:GetCastPoint(), activity=ACT_DOTA_ATTACK, rate=self:GetCastPoint()/0.3})
   self:GetCaster():EmitSound("Hero_StormSpirit.Attack")
   return true
 end
@@ -282,59 +284,47 @@ function storm_spirit_special_side:OnAbilityPhaseInterrupted()
   EndAnimation(caster)
 end
 function storm_spirit_special_side:OnSpellStart()
+
   local caster = self:GetCaster()
   local ability = self
-
-  local projectile = {
-    --EffectName = "particles/magnus/magnataur_shockwave.vpcf",
-    EffectName = "particles/storm/stormspirit_base_attack.vpcf",
-    --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-    --EeffectName = "",
-    --vSpawnOrigin = caster:GetAbsOrigin(),
-    vSpawnOrigin = {unit=caster, attach="attach_attack1"},
-    fDistance = self:GetSpecialValueFor("range"),
-    fStartRadius = self:GetSpecialValueFor("radius"),
-    fEndRadius = self:GetSpecialValueFor("radius"),
-    Source = caster,
-    fExpireTime = self:GetSpecialValueFor("range")/self:GetSpecialValueFor("projectile_speed"),
-    vVelocity = self.mouseVector * self:GetSpecialValueFor("projectile_speed"), -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_DESTROY ,
-    bMultipleHits = false,
-    bIgnoreSource = true,
-    TreeBehavior = PROJECTILES_NOTHING,
-    bCutTrees = false,
-    bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_BOUNCE,
-    GroundBehavior = PROJECTILES_NOTHING,
-    fGroundOffset = 0,
-    nChangeMax = 1,
-    bRecreateOnChange = true,
-    bZCheck = true,
-    bGroundLock = false,
-    bProvidesVision = true,
-    iVisionRadius = self:GetSpecialValueFor("radius"),
-    iVisionTeamNumber = caster:GetTeam(),
-    bFlyingVision = false,
-    fVisionTickTime = .1,
-    fVisionLingerDuration = 1,
-    draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
-    OnUnitHit = function(self, unit)
-      caster:EmitSound("Hero_StormSpirit.ElectricVortexCast")
-      local damageTable = {
-        victim = unit,
-        attacker = caster,
-        damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-        damage_type = DAMAGE_TYPE_MAGICAL,
-        ability = ability,
-      }
-      ApplyDamage(damageTable)
-      unit:AddNewModifier(caster,ability,"modifier_smash_stun",{ duration = ability:GetSpecialValueFor("grab_duration")})
-      unit:AddNewModifier(caster,ability,"modifier_storm_side_grab",{ duration = ability:GetSpecialValueFor("grab_duration")})
-    end,
+  StoreSpecialKeyValues(self)
+  --caster:EmitSound("Hero_StormSpirit.ElectricVortexCast")
+  local projectileTable = 
+    { 
+      vDirection = ability.mouseVector,
+      hCaster = caster,
+      vSpawnOrigin = caster:GetAbsOrigin(),
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flMaxDistance = ability.range,
+      sEffectName = "particles/units/heroes/hero_stormspirit/stormspirit_base_attack.vpcf",
+      PlatformBehavior = PROJECTILES_DESTROY,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit.IsSmashUnit and unit:IsRealHero() and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit)
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage = ability.damage + RandomInt(0,ability.damage_offset),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+        ApplyDamage(damageTable)
+        
+        unit:AddNewModifier(caster,ability,"modifier_smash_stun",{ duration = ability:GetSpecialValueFor("grab_duration")})
+        unit:AddNewModifier(caster,ability,"modifier_storm_side_grab",{ duration = ability:GetSpecialValueFor("grab_duration")})
+  
+        local nFXIndex = ParticleManager:CreateParticle("particles/units/heroes/hero_stormspirit/stormspirit_base_attack_explosion.vpcf", PATTACH_CUSTOMORIGIN, unit)
+        ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", projectile.location, true )
+        Timers:CreateTimer(0.5,function()
+          ParticleManager:DestroyParticle(nFXIndex,false)
+          ParticleManager:ReleaseParticleIndex( nFXIndex )
+        end)
+      end,
     }
-  Projectiles:CreateProjectile(projectile)
+  Physics2D:CreateLinearProjectile(projectileTable) 
 end
 
 modifier_storm_side_grab = class({})
@@ -345,6 +335,8 @@ function modifier_storm_side_grab:OnCreated()
     ParticleManager:SetParticleControlEnt( self.particle, 0, self:GetCaster(),PATTACH_POINT_FOLLOW, "attach_hitloc", self:GetCaster():GetAbsOrigin(), true )
     ParticleManager:SetParticleControlEnt( self.particle, 1, self:GetParent(), PATTACH_POINT_FOLLOW, "attach_hitloc", self:GetParent():GetAbsOrigin(), true )
     self:StartIntervalThink(1/30)
+
+    
     self:GetCaster():EmitSound("Hero_StormSpirit.ElectricVortex")
   end
 end
@@ -355,9 +347,10 @@ function modifier_storm_side_grab:OnIntervalThink()
   local unit = self:GetParent()
 
   local direction = (caster:GetAbsOrigin()-unit:GetAbsOrigin()):Normalized()
-  local pull_speed = ability:GetSpecialValueFor("pull_speed")/30
-
-  unit:SetAbsOrigin(unit:GetAbsOrigin()+direction*pull_speed)
+  local pull_speed = ability:GetSpecialValueFor("pull_speed")
+  --self:GetParent():SetStaticVelocity("storm_pull",direction*pull_speed)
+  Physics2D:SetStaticVelocity(self:GetParent(),"storm_pull",direction*pull_speed*FrameTime())
+  --unit:SetAbsOrigin(unit:GetAbsOrigin()+direction*pull_speed)
 end
 
 
@@ -366,5 +359,6 @@ function modifier_storm_side_grab:OnDestroy()
     self:GetCaster():StopSound("Hero_StormSpirit.ElectricVortex")
     ParticleManager:DestroyParticle(self.particle,true)
     ParticleManager:ReleaseParticleIndex(self.particle)
+    Physics2D:SetStaticVelocity(self:GetParent(),"storm_pull",Vec(0))
   end
 end

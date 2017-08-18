@@ -7,6 +7,7 @@ function spawnPlatform()
   -- Walls are just used to prevent getting under the lowest platform, might get use in the future
   if platform then
     for k,v in pairs(platform) do
+      Physics:RemoveCollider(v.colliderName)
       UTIL_Remove(v)
     end
   end
@@ -49,7 +50,7 @@ function spawnPlatform()
     [5] = "MapPyramidLarge",
   }
   if PlayerResource:GetTeamPlayerCount() == 1 then
-    mapname = mapnames3[RandomInt(1,#mapnames3)]
+    mapname = "MapSmall"--mapnames3[RandomInt(1,#mapnames3)]
   elseif PlayerResource:GetTeamPlayerCount() == 2 then
     mapname = mapnames2[RandomInt(1,#mapnames2)]
   elseif PlayerResource:GetTeamPlayerCount() == 3 then
@@ -88,7 +89,7 @@ function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirect
   local direction = directions[sDirection]
 
   -- Start moving in the direction
-  Timers:CreateTimer(1/32,function()
+  Timers:CreateTimer(FrameTime(),function()
     DebugPrint(2,"[SMASH] [TIMER] [PLATFORMS] MovePlatform")
     if not IsValidEntity(hPlatform) then return end
     if not hPlatform.count then 
@@ -105,20 +106,22 @@ function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirect
       end
       hPlatform.count = 0 
     end
+
     hPlatform:SetAbsOrigin(hPlatform:GetAbsOrigin() + direction * flSpeed)
-    -- Move units on the platform along
-    for k,v in pairs(hPlatform.unitsOnPlatform) do
-      if not k:IsNull() then
-        k:SetAbsOrigin(k:GetAbsOrigin() + direction * flSpeed)
-      end
-    end
+    hPlatform.collider.box[1] = hPlatform.collider.box[1] + direction * flSpeed
+    hPlatform.collider.box[2] = hPlatform.collider.box[2] + direction * flSpeed
+    hPlatform.collider.box[3] = hPlatform.collider.box[3] + direction * flSpeed
+    hPlatform.collider.box[4] = hPlatform.collider.box[4] + direction * flSpeed
+
+    hPlatform.collider.velocity = direction * flSpeed
+    hPlatform.collider.recalculate = true
 
     --[[ Move the obstruction objects along
     for k,v in pairs(hPlatform.obstructionObjects) do
       v:SetAbsOrigin(v:GetAbsOrigin()+ direction * flSpeed)
     end]]
 
-    return 1/32
+    return FrameTime()
   end)
 end
 
@@ -169,51 +172,8 @@ function RotatePlatformAroundPoint(hPlatform,vBaseLocation,flRadius,flSpeed,bClo
 end
 
 function CDOTA_BaseNPC:isOnPlatform()
-  DebugPrint(2,"[SMASH] [PLATFORMS] isOnPlatform")
-  local origin = self:GetAbsOrigin()
-  local x = origin.x
-  local z = origin.z
-
-
-  if not platform then return end
-
-  sortPlatforms()
-  self.rotation = nil
-  for k,v in pairs(platform) do
-    if v.unitsOnPlatform then
-      v.unitsOnPlatform[self] = nil
-    end
-  end
-
-  for k,v in pairs(platform) do
-    if v.unitsOnPlatform then
-      -- Check if the unit has the same x coordinates as the platform
-      if x >= v:GetAbsOrigin().x - v.radius and x <= v:GetAbsOrigin().x + v.radius then
-  
-        -- If rotation is over (X) then slide backward?
-        -- Adjust movement to the platform
-        self.rotation = v:GetAngles().x
-  
-        local distance_from_center = x - v:GetAbsOrigin().x
-        local delta_z = (-distance_from_center / 55) * self.rotation
-  
-        -- Check if the height matches as well
-        if z >= v:GetAbsOrigin().z + v.height - (Laws.flDropSpeed) + delta_z and z<= v:GetAbsOrigin().z + v.height + (Laws.flDropSpeed * 0.5) + delta_z then
-  
-          -- Slide the unit down
-          local delta_x = Laws.flMove * (self.rotation/180)
-          local delta_z = (-delta_x / 55) * self.rotation /1
-
-          --print(delta_x,delta_z)
-          self:SetAbsOrigin(Vector(self:GetAbsOrigin().x+delta_x,0,self:GetAbsOrigin().z+delta_z))
-  
-          v.unitsOnPlatform[self] = true
-          return v
-        end
-      end
-    end
-  end
-  return
+  DebugPrint(1,"[SMASH] [PLATFORMS] isOnPlatform")
+  return self:HasModifier("modifier_on_platform")
 end
 
 function CDOTA_BaseNPC:isUnderPlatform()
@@ -238,43 +198,18 @@ end
 function RotatePlatform(hPlatform,flRotation)
   DebugPrint(1,"[SMASH] [PLATFORMS] RotatePlatform")
   if not hPlatform or hPlatform:IsNull() then return end
-  
-  if not hPlatform.originalRadius  then 
-    hPlatform.originalRadius = hPlatform.radius
-  end
-  
-  flRotation = flRotation +  hPlatform:GetAngles().x
-  if math.abs(flRotation) >= 90 then
-    flRotation = -flRotation
-  end
 
-  if math.abs(flRotation) ~= 0 then
-    hPlatform.bIsWall = true
-  else
-    hPlatform.bIsWall = false
-  end
+  hPlatform.rotation = (hPlatform.rotation or 0) + flRotation
 
-  -- Update the radius
-  local delta_z = (hPlatform.originalRadius / 55) *flRotation
-  -- For updating the radius??
-  local delta_Z =(hPlatform.originalRadius / 65) *flRotation
-  local radius = math.sqrt(math.pow(hPlatform.originalRadius,2) -  math.pow(delta_Z,2)) * 1.1
-  -- Move the units on it along
-  for k,v in pairs(hPlatform.unitsOnPlatform) do
-    if IsValidEntity(k) then
-      local distance_from_center = k:GetAbsOrigin().x - hPlatform:GetAbsOrigin().x
-      local delta_z = (-distance_from_center / 55) *flRotation
-      delta_z = delta_z + hPlatform.height
+  hPlatform:GetAbsOrigin()
+  hPlatform.collider.box[1] = RotatePosition(hPlatform:GetAbsOrigin(), QAngle(hPlatform.rotation,0,0), hPlatform.collider.box[1])
+  hPlatform.collider.box[2] = RotatePosition(hPlatform:GetAbsOrigin(), QAngle(hPlatform.rotation,0,0), hPlatform.collider.box[2])
+  hPlatform.collider.box[3] = RotatePosition(hPlatform:GetAbsOrigin(), QAngle(hPlatform.rotation,0,0), hPlatform.collider.box[3])
+  hPlatform.collider.box[4] = RotatePosition(hPlatform:GetAbsOrigin(), QAngle(hPlatform.rotation,0,0), hPlatform.collider.box[4])
 
-      local correcting_x = radius / hPlatform.radius
+  hPlatform:SetAngles(hPlatform.rotation,0,0)
 
-      distance_from_center = distance_from_center * correcting_x
-      k:SetAbsOrigin(Vector(hPlatform:GetAbsOrigin().x + distance_from_center,0,hPlatform:GetAbsOrigin().z+delta_z))
-    end
-  end
-  hPlatform.radius = radius
-  -- Rotate the platform
-  hPlatform:SetAngles(flRotation,0,0)
+  hPlatform.collider.recalculate = true
 end
 
 function sortPlatforms()
@@ -341,6 +276,8 @@ function DestroyPlatform(hPlatform,flDuration)
 
   if not hPlatform.isDestructable then return end
 
+
+
   -- Do not interupt the platform movement, that doesn't matter
 
   -- Make it blink a few times before really being gone
@@ -355,7 +292,7 @@ function DestroyPlatform(hPlatform,flDuration)
       hide = hide +1
       return 1/fadeTime
     else
-      hPlatform.radius = 0
+      hPlatform.destroyed = true
       return nil
     end
   end)
@@ -366,7 +303,7 @@ function DestroyPlatform(hPlatform,flDuration)
     Timers:CreateTimer(flDuration,function()
       if not hPlatform:IsNull() then
         hPlatform:SetModel(model)
-        hPlatform.radius = radius
+        hPlatform.destroyed = nil
       end
     end)
   end
@@ -441,7 +378,7 @@ function GridNav:IsWall(pos)
 end
 
 -- Edited, overwriting this function
-function GetGroundPosition(pos,unit)
+function GetPlatformPosition(pos,unit)
  DebugPrint(2,"[SMASH] [PLATFORMS] GetGroundPosition")
   local x = pos.x
   local z = pos.z
@@ -469,4 +406,15 @@ function GetGroundPosition(pos,unit)
     end
   end
   return Vector(pos.x,0,128)
+end
+
+function ConnectLowestAndMiddle(hPlatform)
+  Timers:CreateTimer(function()
+    if hPlatform and IsValidEntity(hPlatform) then
+      local origin = Vector(hPlatform:GetAbsOrigin().x,0,hPlatform.dummy:GetAbsOrigin().z+hPlatform.radius)
+      hPlatform:SetAbsOrigin(origin)
+      hPlatform.dummy:SetAbsOrigin(origin-Vector(0,0, hPlatform.radius))
+      return FrameTime()
+    end
+  end)
 end

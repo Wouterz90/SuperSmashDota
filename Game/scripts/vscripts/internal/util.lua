@@ -119,18 +119,32 @@ function HideWearables( unit )
 end
 
 function ShowWearables( unit )
-
   for i,v in pairs(unit.hiddenWearables) do
     v:RemoveEffects(EF_NODRAW)
   end
 end
--- Thanks to TidesofDark ?
-function isPointInsidePolygon(point, polygon)
+
+
+function isPointInsidePolygon(point, polygon) -- This is used for the x,y coordiantes from the screen
   local oddNodes = false
   local j = #polygon
   for i = 1, #polygon do
       if (polygon[i].y < point.y and polygon[j].y >= point.y or polygon[j].y < point.y and polygon[i].y >= point.y) then
           if (polygon[i].x + ( point.y - polygon[i].y ) / (polygon[j].y - polygon[i].y) * (polygon[j].x - polygon[i].x) < point.x) then
+              oddNodes = not oddNodes
+          end
+      end
+      j = i
+  end
+  return oddNodes
+end
+
+function IsPointInsidePolygon(point, polygon) -- Could be used to detect collision
+  local oddNodes = false
+  local j = #polygon
+  for i = 1, #polygon do
+      if (polygon[i].z < point.z and polygon[j].z >= point.z or polygon[j].z < point.z and polygon[i].z >= point.z) then
+          if (polygon[i].x + ( point.z - polygon[i].z ) / (polygon[j].z - polygon[i].z) * (polygon[j].x - polygon[i].x) < point.x) then
               oddNodes = not oddNodes
           end
       end
@@ -239,17 +253,6 @@ function StoreSpecialKeyValues(object,ability)
       if K ~= "var_type" and K ~= "LinkedSpecialBonus" then
         local array = StringToArray(V)
         object[tostring(K)] = tonumber(array[ability:GetLevel()]) or tonumber(array[#array])
-        --[[if v["LinkedSpecialBonus"] then
-          local caster = ability:GetCaster()
-          local talentName = v["LinkedSpecialBonus"]
-          local talent = caster:FindAbilityByName(talentName)
-          --object["talent"][tostring(K)] = 0
-          if talent and talent:GetLevel() ~= 0 then
-            object["talent"][tostring(K)] = tonumber(ABILITIES_TXT[talentName]["AbilitySpecial"]["01"]["value"])
-          end
-        end]]
-        --Print to verify
-        --print(K,object[tostring(K)],object["talent"][tostring(K)])
       end
     end
   end
@@ -274,14 +277,69 @@ function Reload_AbilityKeyValues()
   for k,v in pairs(LoadKeyValues("scripts/npc/npc_abilities_custom.txt")) do ABILITIES_TXT[k] = v end
 end
 
-function GetMinMaxValue(input)
+function GetMinMaxValue(tab) -- Returns average of the minimum and the maximum
 
   local min = math.huge
   local max = -math.huge
-  for k,v in pairs (input) do
+  for k,v in pairs (tab) do
 
     if v < min then min = v end
     if v > max then max = v end
   end
   return (min+max)/2
+end
+
+function CDOTA_BaseNPC:HasModifierFromTable(tab)
+  for modifier,b in pairs(tab) do
+    if b == true and self:HasModifier(modifier) then
+      return true
+    end
+  end
+end
+
+-- Util functions
+function math.clamp(min,max,number)
+  if number > max then return max end
+  if number < min then return min end
+  return number
+end
+
+function IsNaN(value)
+  return value ~= value
+end
+
+function IsInf(value)
+  return value == math.huge or value == -math.huge
+end
+
+function CrossProduct(a,b)
+  if a.x and b.x then
+    return (a.x * b.z - a.z * b.x)
+  elseif a.x then
+    return Vec(s * a.z,-s*a.x)
+  elseif b.x then
+    return Vec(-s * a.z,s*a.x)
+  end
+  print("Error! No Vector argument in CrossProduct!")
+end
+
+function RemoveNullFromTable(tab)
+  for i=#tab,1,-1 do
+    -- Remove weird positioned stuff first
+    if tab[i].location and math.abs(tab[i].location.x) > 10000 or math.abs(tab[i].location.z) > 5000 then
+      UTIL_Remove(tab[i])
+    end
+    if tab[i].RemoveProjectile then
+      if IsValidEntity(tab[i]) then
+        UTIL_Remove(tab[i])
+      end
+    end
+    if tab[i]:IsNull() then
+      table.remove(tab, i)
+    end
+  end
+end
+
+function LengthSquared(vVector)
+  return math.pow(vVector.x,2) + math.pow(vVector.z,2)
 end

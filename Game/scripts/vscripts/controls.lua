@@ -33,7 +33,7 @@ function control:KeyEvent(keys)
       return
     end
     if hero.jumps < 2 then
-      hero:RemoveModifierByName("modifier_jump")
+      --hero:RemoveModifierByName("modifier_jump")
       --hero:RemoveModifierByName("modifier_drop")
       hero:AddNewModifier(hero,nil,"modifier_jump",{duration=Laws.flJumpDuration})
     end
@@ -70,10 +70,9 @@ function control:KeyEvent(keys)
       if hero:HasModifier("modifier_smash_root") then
         return
       end
-      hero.bUnitUsedDrop = true
-      hero:AddNewModifier(hero,nil,"modifier_drop",{})
+      hero:AddNewModifier(hero,nil,"modifier_drop",{duration = 0.4})
     elseif action == "released" then
-      hero.bUnitUsedDrop = false
+      --hero:RemoveModifierByName("modifier_drop")
     end
   end
 

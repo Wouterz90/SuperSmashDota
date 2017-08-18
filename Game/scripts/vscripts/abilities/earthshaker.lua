@@ -184,10 +184,12 @@ modifier_earthshaker_jump = class({})
 
 function modifier_earthshaker_jump:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    --self:GetParent():AddPhysicsVelocity(Vector(0,0,1600))
+    Physics2D:AddPhysicsVelocity(self:GetParent(),Vec(0,30))
+    --self:StartIntervalThink(FrameTime())
   end
 end
-
+--[[
 function modifier_earthshaker_jump:OnIntervalThink()
   -- handle lowest platform
   if self:GetParent():isUnderPlatform() and self:GetCaster():HasModifier("modifier_basic") then return end
@@ -196,14 +198,13 @@ function modifier_earthshaker_jump:OnIntervalThink()
   local z = vec[3] + Laws.flJumpSpeed
   vec = Vector(vec[1],vec[2],z)
   self:GetParent():SetAbsOrigin(vec)
-end
+end]]
 
-function modifier_earthshaker_jump:OnDestroy()
+function modifier_earthshaker_jump:OnRemoved()
   if IsServer() then
     -- Make sure the animation stays the same and not his drop animation
-    self:GetParent():AddNewModifier(self:GetParent(),self:GetAbility(),"modifier_eartshaker_slam",{})
-   
-    self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
+    self:GetParent():AddNewModifier(self:GetParent(),self:GetAbility(),"modifier_eartshaker_slam",{duration = 4})
+    --self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
 end
 
@@ -214,7 +215,7 @@ function modifier_eartshaker_slam:OnCreated()
   if IsServer() then
     StartAnimation(self:GetParent(), {duration=1, activity=ACT_DOTA_CAST_ABILITY_2, rate=4 })
     FreezeAnimation(self:GetParent(),3)
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 function modifier_eartshaker_slam:OnDestroy()
@@ -224,7 +225,7 @@ function modifier_eartshaker_slam:OnDestroy()
 end
 function modifier_eartshaker_slam:OnIntervalThink()
   --Check when the units hits the platform
-  if self:GetParent():isOnPlatform() then
+  if self:GetParent():HasModifier("modifier_on_platform") then
 
     -- Cleaning up animations, showing particles
     self:GetParent():RemoveModifierByName("modifier_animation")
@@ -270,7 +271,7 @@ earthshaker_special_bottom = class({})
 function earthshaker_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
-  if not self:GetCaster():isOnPlatform() then return false end 
+  if not self:GetCaster():HasModifier("modifier_on_platform") then return false end 
   StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_4, rate=0.2})
   self:GetCaster():AddNewModifier(self:GetCaster(),self,"modifier_smash_stun",{duration = self:GetCastPoint()})
   return true
@@ -290,39 +291,21 @@ function earthshaker_special_bottom:OnSpellStart()
 
   -- Store the platform I am on
   local my_platform
-  for k,v in pairs(platform) do
-    -- Shaking the platform
-    --[[local time = 0
-    local angles = v:GetAngles()
-    Timers:CreateTimer(1/32,function()
-      if time < 16 then
-        time = time +1
-        v:SetAngles(angles[1]+RandomInt(-0.5,0.5),angles[2],angles[3])
-        return 1/32
-      else
-        v:SetAngles(angles[1],angles[2],angles[3])
-        return
-      end
-    end)]]
-    ScreenShake(caster:GetAbsOrigin(), 20, 250, 0.75, 3000, 0, true)
-    -- Damaging all units on the platform (units are stored in per platform in platforms.lua)  
-    for a,b in pairs(v.unitsOnPlatform) do
-      if not IsValidEntity(a) then 
-        a = nil
-      else
-        if caster:GetTeamNumber() ~= a:GetTeamNumber() then
-          a:AddNewModifier(caster,self,"modifier_smash_stun",{duration = self:GetSpecialValueFor("duration")})
-          local damage = self:GetSpecialValueFor("damage") +  RandomInt(0,self:GetSpecialValueFor("damage_offset"))
-          local damageTable = {
-            victim = a,
-            attacker = caster,
-            damage = damage,
-            damage_type = DAMAGE_TYPE_MAGICAL,
-            ability = self,
-          }
-          ApplyDamage(damageTable) -- Push
-        end
-      end
+  ScreenShake(caster:GetAbsOrigin(), 20, 250, 0.75, 3000, 0, true)
+
+  local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, FIND_UNITS_EVERYWHERE, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  for k,v in pairs(units) do
+    if v:HasModifier("modifier_on_platform") then
+      v:AddNewModifier(caster,self,"modifier_smash_stun",{duration = self:GetSpecialValueFor("duration")})
+      local damage = self:GetSpecialValueFor("damage") +  RandomInt(0,self:GetSpecialValueFor("damage_offset"))
+      local damageTable = {
+        victim = v,
+        attacker = caster,
+        damage = damage,
+        damage_type = DAMAGE_TYPE_MAGICAL,
+        ability = self,
+      }
+      ApplyDamage(damageTable) -- Push
     end
   end
 end

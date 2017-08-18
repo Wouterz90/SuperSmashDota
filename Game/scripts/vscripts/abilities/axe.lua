@@ -117,7 +117,6 @@ axe_special_side = class({})
 function axe_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
-
   local caster = self:GetCaster()
   StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_2, rate=1})
   caster:EmitSound("Hero_Axe.CounterHelix")
@@ -132,17 +131,17 @@ end
 
 function axe_special_side:OnSpellStart()
   local caster = self:GetCaster()
-  local radius = self:GetSpecialValueFor("radius")
-  
+  StoreSpecialKeyValues(self)
+  local radius = self.radius
   -- Visual stuff
   StartAnimation(self:GetCaster(), {duration=self:GetSpecialValueFor("spin_duration"), activity=ACT_DOTA_CAST_ABILITY_3, rate=0.5})
-  caster:AddNewModifier(caster,self,"modifier_axe_counter_helix_smash",{duration = self:GetSpecialValueFor("spin_duration")})
+  caster:AddNewModifier(caster,self,"modifier_axe_counter_helix_smash",{duration = self.spin_duration})
 
   -- Find the units and damage them
   local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),radius)
   for k,v in pairs(units) do
-    local damage = self:GetSpecialValueFor("damage") +  RandomInt(0,self:GetSpecialValueFor("damage_offset"))
+    local damage = self.damage +  RandomInt(0,self.damage_offset)
     local damageTable = {
       victim = v,
       attacker = caster,
@@ -190,39 +189,37 @@ function axe_special_top:OnSpellStart()
   local vector = self.mouseVector
   FreezeAnimation(self:GetCaster(),0.75)
   caster.jumps = 3
-  local count = 0
+  local time = GameRules:GetGameTime()
   -- Go up first
   --StartAnimation(self:GetCaster(),{duration=0.5, activity=ACT_DOTA_CAST_ABILITY_4, rate=0.75})
-  Timers:CreateTimer(function()
-    caster:SetAbsOrigin(caster:GetAbsOrigin()+vector*jump_speed/32)
-    if count < 16 then
-      count = count +1
-      return 1/32
-    else
-      
-      -- Hit everyone in front of you
-      local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin() + caster:GetForwardVector() * (radius/2), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-      units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin() + caster:GetForwardVector() * (radius/2),radius)
-      for k,v in pairs(units) do
-        -- Deal damage
-        local damageTable = {
-          victim = v,
-          attacker = caster,
-          damage = self:GetSpecialValueFor("damage") + RandomInt(0,self:GetSpecialValueFor("damage_offset")),
-          damage_type = DAMAGE_TYPE_MAGICAL,
-          ability = self,
-        }
-        ApplyDamage(damageTable)
-      end
-      if units and #units > 0 then
-        -- Refresh this if you hit something
-        caster:EmitSound("Hero_Axe.Culling_Blade_Success")
-        self:EndCooldown()
-      else
-        caster:EmitSound("Hero_Axe.Culling_Blade_Fail")
-      end
-      return
+  Physics2D:SetStaticVelocity(self:GetCaster(),"axe_top",vector*jump_speed*FrameTime())
+  
+  --caster:SetStaticVelocity("axe_top",vector*jump_speed)
+  Timers:CreateTimer(0.5,function()
+    --caster:SetAbsOrigin(caster:GetAbsOrigin()+vector*jump_speed/32)
+    -- Hit everyone in front of you
+    local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin() + caster:GetForwardVector() * (radius/2), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+    units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin() + caster:GetForwardVector() * (radius/2),radius)
+    for k,v in pairs(units) do
+      -- Deal damage
+      local damageTable = {
+        victim = v,
+        attacker = caster,
+        damage = self:GetSpecialValueFor("damage") + RandomInt(0,self:GetSpecialValueFor("damage_offset")),
+        damage_type = DAMAGE_TYPE_MAGICAL,
+        ability = self,
+      }
+      ApplyDamage(damageTable)
     end
+    
+    if units and #units > 0 then
+      -- Refresh this if you hit something
+      caster:EmitSound("Hero_Axe.Culling_Blade_Success")
+      self:EndCooldown()
+    else
+      caster:EmitSound("Hero_Axe.Culling_Blade_Fail")
+    end
+    Physics2D:SetStaticVelocity(self:GetCaster(),"axe_top",Vec(0))
   end)
 end
 
@@ -294,18 +291,28 @@ modifier_axe_call_taunt = class({})
 
 function modifier_axe_call_taunt:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
     self.counter = 0
+    local taunt_speed = self:GetAbility():GetSpecialValueFor("taunt_speed")
+    local direction = (self:GetCaster():GetAbsOrigin() - self:GetParent():GetAbsOrigin()):Normalized()
+    --self:GetParent():AddStaticVelocity("axe_pull",direction*taunt_speed*30 )
+    Physics2D:SetStaticVelocity(self:GetParent(),"axe_pull",direction*taunt_speed)
+    --self.modifier = self:GetParent():AddNewModifier(self:GetCaster(),self:GetAbility(),"modifier_no_gravity",{})
   end
 end
 
 function modifier_axe_call_taunt:OnIntervalThink()
-  if self.counter < self:GetAbility():GetSpecialValueFor("taunt_duration") /32 then
+  if self.counter < self:GetAbility():GetSpecialValueFor("taunt_duration") /30 then
     local direction = (self:GetCaster():GetAbsOrigin() - self:GetParent():GetAbsOrigin()):Normalized()
     local taunt_speed = self:GetAbility():GetSpecialValueFor("taunt_speed")
-    self:GetParent():SetAbsOrigin(self:GetParent():GetAbsOrigin()+direction*taunt_speed)
-  else
-    self:Destroy()
+    Physics2D:SetStaticVelocity(self:GetParent(),"axe_pull",direction*taunt_speed*FrameTime())
+  
+  end
+end
+function modifier_axe_call_taunt:OnDestroy()
+  if IsServer() then
+    Physics2D:SetStaticVelocity(self:GetParent(),"axe_pull",Vec(0))
+    --self.modifier:Destroy()
   end
 end
 

@@ -4,7 +4,7 @@ function mirana_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint()*1.5, activity=ACT_DOTA_CAST_ABILITY_1, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_1, rate=self:GetCastPoint()/0.5})
   return true
 end
 
@@ -15,7 +15,7 @@ end
 
 function mirana_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
-  local radius = self:GetSpecialValueFor("radius")
+  StoreSpecialKeyValues(self)
   ability = self
 
   caster:EmitSound("Ability.Starfall")
@@ -33,130 +33,46 @@ function mirana_special_bottom:OnSpellStart()
   end)
 
   
-  local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, ability.radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   -- Not filtering for height
   for k,v in pairs(units) do
     -- Create a particle that shoots from above them
-    local projectile = {
-      --EffectName = "particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf",
-      EffectName = "venge/venge_side.vpcf",
-      --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-      --EeffectName = "",
-      --vSpawnOrigin = caster:GetAbsOrigin(),
-      vSpawnOrigin = Vector(v:GetAbsOrigin().x,0,2500),
-      fDistance = 4000,
-      fStartRadius = self:GetSpecialValueFor("star_radius"),
-      fEndRadius = self:GetSpecialValueFor("star_radius"),
-      Source = caster,
-      fExpireTime = 8,
-      vVelocity = Vector(0,0,-1) * self:GetSpecialValueFor("drop_speed"), -- RandomVector(1000),
-      UnitBehavior = PROJECTILES_DESTROY ,
-      bMultipleHits = false,
-      bIgnoreSource = true,
-      TreeBehavior = PROJECTILES_NOTHING,
-      bCutTrees = false,
-      bTreeFullCollision = false,
-      WallBehavior = PROJECTILES_NOTHING,
-      GroundBehavior = PROJECTILES_DESTROY,
-      fGroundOffset = 0,
-      nChangeMax = 1,
-      bRecreateOnChange = true,
-      bZCheck = true,
-      bGroundLock = false,
-      bProvidesVision = true,
-      iVisionRadius = self:GetSpecialValueFor("radius"),
-      iVisionTeamNumber = caster:GetTeam(),
-      bFlyingVision = false,
-      fVisionTickTime = .1,
-      fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-      
+    local loc = v:GetAbsOrigin()
+    loc.z = 2500
 
-      UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-      OnUnitHit = function(self, unit) 
+    local projectileTable = 
+    { 
+      vDirection = Vector(0,0,-1),
+      hCaster = caster,
+      vSpawnOrigin = loc,
+      flSpeed = ability.drop_speed,
+      flRadius = ability.star_radius,
+      sEffectName = "particles/units/heroes/hero_vengeful/vengeful_magic_missle.vpcf",
+      PlatformBehavior = PROJECTILES_DESTROY,
+      OnPlatformHit = function(projectile,platform)
+        DestroyPlatform(platform,5)
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit)
         local damageTable = {
           victim = unit,
           attacker = caster,
-          damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
+          damage =  ability.damage + RandomInt(0,ability.damage_offset),
           damage_type = DAMAGE_TYPE_MAGICAL,
           ability = ability,
         }
         ApplyDamage(damageTable)
 
-        caster:EmitSound("Ability.StarfallImpact")
       end,
-      OnGroundHit = function(self,loc)
-        local plat = FindNearestPlatform(loc)
-        if plat then
-          DestroyPlatform(plat,10)
-        end
+      OnFinish = function(projectile)
+        loc = projectile.location
+        
+        caster:EmitSound("Ability.StarfallImpact")
+        
       end,
     }
-    Projectiles:CreateProjectile(projectile)
-
-
-    Timers:CreateTimer(0.5,function()
-      local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-      local vSpOrigin = Vector(units[1]:GetAbsOrigin().x,0,2500)
-      -- Not filtering for height
-      local projectile = {
-        --EffectName = "particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf",
-        EffectName = "venge/venge_side.vpcf",
-        --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-        --EeffectName = "",
-        --vSpawnOrigin = caster:GetAbsOrigin(),
-        vSpawnOrigin = vSpOrigin,
-        fDistance = 4000,
-        fStartRadius = self:GetSpecialValueFor("star_radius"),
-        fEndRadius = self:GetSpecialValueFor("star_radius"),
-        Source = caster,
-        fExpireTime = 8,
-        vVelocity = Vector(0,0,-1) * self:GetSpecialValueFor("drop_speed"), -- RandomVector(1000),
-        UnitBehavior = PROJECTILES_DESTROY ,
-        bMultipleHits = false,
-        bIgnoreSource = true,
-        TreeBehavior = PROJECTILES_NOTHING,
-        bCutTrees = false,
-        bTreeFullCollision = false,
-        WallBehavior = PROJECTILES_NOTHING,
-        GroundBehavior = PROJECTILES_DESTROY,
-        fGroundOffset = 0,
-        nChangeMax = 1,
-        bRecreateOnChange = true,
-        bZCheck = true,
-        bGroundLock = false,
-        bProvidesVision = true,
-        iVisionRadius = self:GetSpecialValueFor("radius"),
-        iVisionTeamNumber = caster:GetTeam(),
-        bFlyingVision = false,
-        fVisionTickTime = .1,
-        fVisionLingerDuration = 1,
-        draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-        
-
-        UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-        OnUnitHit = function(self, unit) 
-          local damageTable = {
-            victim = unit,
-            attacker = caster,
-            damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-            damage_type = DAMAGE_TYPE_MAGICAL,
-            ability = ability,
-          }
-          ApplyDamage(damageTable)
-          caster:EmitSound("Ability.StarfallImpact")
-        end,
-        OnGroundHit = function(self,loc)
-        local plat = FindNearestPlatform(loc)
-        if plat then
-          DestroyPlatform(plat,10)
-        end
-      end,
-      }
-      if IsValidEntity(units[1]) then
-        Projectiles:CreateProjectile(projectile)
-      end
-    end)
+  Physics2D:CreateLinearProjectile(projectileTable)
   end
 end
 
@@ -265,7 +181,7 @@ function mirana_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint()*1.5, activity=ACT_DOTA_CAST_ABILITY_1, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint()*1.5, activity=ACT_DOTA_CAST_ABILITY_1, rate=self:GetCastPoint()/0.5})
   return true
 end
 
@@ -277,67 +193,60 @@ end
 function mirana_special_side:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
+  StoreSpecialKeyValues(self)
+
   local radius = self:GetSpecialValueFor("radius")
   local projectile_speed = self:GetSpecialValueFor("projectile_speed")
   local distance_factor = self:GetSpecialValueFor("stun_distance_factor")
-  
 
-  local projectile = {
-      --EffectName = "particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf",
-      EffectName = "particles/mirana/mirana_side.vpcf",
-      --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-      --EeffectName = "",
-      --vSpawnOrigin = caster:GetAbsOrigin(),
-      vSpawnOrigin = {unit=caster, attach="attach_attack1"},
-      fDistance = 4000,
-      fStartRadius = self:GetSpecialValueFor("radius"),
-      fEndRadius = self:GetSpecialValueFor("radius"),
-      Source = caster,
-      fExpireTime = 8,
-      vVelocity = self.mouseVector * self:GetSpecialValueFor("projectile_speed"), -- RandomVector(1000),
-      UnitBehavior = PROJECTILES_DESTROY ,
-      bMultipleHits = false,
-      bIgnoreSource = true,
-      TreeBehavior = PROJECTILES_NOTHING,
-      bCutTrees = false,
-      bTreeFullCollision = false,
-      WallBehavior = PROJECTILES_NOTHING,
-      GroundBehavior = PROJECTILES_NOTHING,
-      fGroundOffset = 0,
-      nChangeMax = 1,
-      bRecreateOnChange = true,
-      bZCheck = true,
-      bGroundLock = false,
-      bProvidesVision = true,
-      iVisionRadius = self:GetSpecialValueFor("radius"),
-      iVisionTeamNumber = caster:GetTeam(),
-      bFlyingVision = false,
-      fVisionTickTime = .1,
-      fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-      
 
-      UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-      OnUnitHit = function(self, unit) 
+
+  --caster:EmitSound("Hero_StormSpirit.ElectricVortexCast")
+  local projectileTable = 
+    { 
+      vDirection = ability.mouseVector,
+      hCaster = caster,
+      vSpawnOrigin = caster:GetAbsOrigin(),
+      flDuration = 8,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      sEffectName = "particles/mirana/mirana_side.vpcf",
+      PlatformBehavior = PROJECTILES_NOTHING,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit.IsSmashUnit and unit:IsRealHero() and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit)
         local damageTable = {
           victim = unit,
           attacker = caster,
-          damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
+          damage = ability.damage + RandomInt(0,ability.damage_offset),
           damage_type = DAMAGE_TYPE_MAGICAL,
           ability = ability,
         }
         ApplyDamage(damageTable)
-        local stun_duration = self:GetDistanceTraveled()/distance_factor
+        
+        local stun_duration = projectile.distanceTravelled/distance_factor
         if stun_duration > 5 then
           stun_duration = 5
         end
 
         unit:AddNewModifier(caster,ability,"modifier_smash_stun",{duration = stun_duration})
+        
         caster:EmitSound("Hero_Mirana.ProjectileImpact")
+  
+        local nFXIndex = ParticleManager:CreateParticle("particles/units/heroes/hero_mirana/mirana_spell_arrow_destruction.vpcf", PATTACH_CUSTOMORIGIN, unit)
+        ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", projectile.location, true )
+        Timers:CreateTimer(0.5,function()
+          ParticleManager:DestroyParticle(nFXIndex,false)
+          ParticleManager:ReleaseParticleIndex( nFXIndex )
+        end)
       end,
     }
-    Projectiles:CreateProjectile(projectile)
-end
+  Physics2D:CreateLinearProjectile(projectileTable) 
+  
+
+  end
 
 mirana_special_top = class({})
 
@@ -361,8 +270,8 @@ function mirana_special_top:OnSpellStart()
   local vector = self.mouseVector
   caster.jumps = 3
   caster:EmitSound("Ability.Leap")
-  local modifier = caster:AddNewModifier(caster,self,"modifier_mirana_leap_jump",{duration = self:GetSpecialValueFor("jump_duration")})
-  modifier.vector = vector
+  local modifier = caster:AddNewModifier(caster,self,"modifier_mirana_leap_jump",{duration = self:GetSpecialValueFor("jump_duration"),x=vector.x,z=vector.z})
+  --modifier.vector = vector
   caster:AddNewModifier(caster,self,"modifier_mirana_leap_ms",{duration = self:GetSpecialValueFor("buff_duration")})
   
 end
@@ -370,25 +279,28 @@ end
 LinkLuaModifier("modifier_mirana_leap_jump","abilities/mirana.lua",LUA_MODIFIER_MOTION_NONE)
 modifier_mirana_leap_jump = class({})
 
-function modifier_mirana_leap_jump:OnCreated()
+function modifier_mirana_leap_jump:OnCreated(keys)
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    --self:GetParent():SetStaticVelocity("mirana_leap",self.vector*self:GetAbility():GetSpecialValueFor("jump_speed")*30)
+    Physics2D:AddPhysicsVelocity(self:GetParent(),Vec(keys.x,keys.z)*self:GetAbility():GetSpecialValueFor("jump_speed"))
+    --self:StartIntervalThink(1/32)
   end
 end
 
 function modifier_mirana_leap_jump:OnIntervalThink()
   -- handle lowest platform
-  if self:GetParent():isUnderPlatform() and self:GetCaster():HasModifier("modifier_basic") then return end
+  --if self:GetParent():isUnderPlatform() and self:GetCaster():HasModifier("modifier_basic") then return end
   --
 
   local vec = self:GetParent():GetAbsOrigin()
   vec = vec + self.vector * self:GetAbility():GetSpecialValueFor("jump_speed")
-  self:GetParent():SetAbsOrigin(vec)
+  --self:GetParent():SetAbsOrigin(vec)
 end
 
 function modifier_mirana_leap_jump:OnDestroy()
   if IsServer() then
-    self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
+    --self:GetParent():SetStaticVelocity("mirana_leap",VECTOR_0)
+    --self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end
 end
 

@@ -155,7 +155,9 @@ function tusk_special_top:OnSpellStart()
   self.sigil = nil
   self.sigil = CreateUnitByName("npc_dota_tusk_frozen_sigil1",caster:GetAbsOrigin(),false,caster,caster:GetOwner(),caster:GetTeamNumber())
   self.sigil:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,height))
-  self.sigil:AddNewModifier(caster,self,"modifier_tusk_sigil_aura",{duration = self:GetSpecialValueFor("slow_duration")}) 
+  self.sigil:AddNewModifier(caster,self,"modifier_tusk_sigil_aura",{duration = self:GetSpecialValueFor("slow_duration")})
+  Physics2D:CreateObject("AABB",self.sigil:GetAbsOrigin(),true,false,self.sigil,50,50,"Unit")
+  self.sigil.IsSmashUnit = true 
 end
 
 modifier_tusk_sigil_dummy = class({})
@@ -171,22 +173,24 @@ function modifier_tusk_sigil_aura:OnIntervalThink()
   local unit = self:GetParent()
   local caster = self:GetCaster()
   local height = self:GetAbility():GetSpecialValueFor("height")
-  local speed = self:GetAbility():GetSpecialValueFor("speed") /32
-  caster:RemoveModifierByName("modifier_drop")
+  local speed = self:GetAbility():GetSpecialValueFor("speed")
+  --caster:RemoveModifierByName("modifier_drop")
 
   -- Destroy the unit if the hero has dropped too low due to reasons
-  if unit:GetAbsOrigin().z < caster:GetAbsOrigin().z + height+200 then
-    caster:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,speed))
-    unit:SetAbsOrigin(Vector(caster:GetAbsOrigin().x,0,unit:GetAbsOrigin().z+speed))
-  else
-    self:Destroy()
-  end
+  --if unit:GetAbsOrigin().z < caster:GetAbsOrigin().z + height+200 then
+    Physics2D:SetStaticVelocity(caster,"tusk_lift",Vec(0,20))
+    Physics2D:SetStaticVelocity(unit,"tusk_lift",Vec(0,20))
+    --caster:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,speed))
+    --unit:SetAbsOrigin(Vector(caster:GetAbsOrigin().x,0,unit:GetAbsOrigin().z+speed))
+  --else
+    --self:Destroy()
+  --end
 end
 function modifier_tusk_sigil_aura:OnDestroy()
   if IsServer() then
     UTIL_Remove(self:GetAbility().sigil)
     self:GetAbility().sigil = nil
-
+    Physics2D:SetStaticVelocity(self:GetCaster(),"tusk_lift",Vec(0,0))
     self:GetCaster():FindModifierByName("modifier_tusk_sigil_dummy")
   end
 end
@@ -266,7 +270,10 @@ function tusk_special_bottom:OnSpellStart()
   -- Start being a snowball
   caster:AddNewModifier(caster,self,"modifier_tusk_snowball",{duration = self:GetChannelTime()})
   self.dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin(),false,caster,caster:GetOwner(),caster:GetTeamNumber())
+  self.dummy:SetAbsOrigin(caster:GetAbsOrigin())
   self.dummy:AddNewModifier(caster,self,"modifier_tusk_snowball_dummy",{})
+  Physics2D:CreateObject("circle",self.dummy:GetAbsOrigin(),true,false,self.dummy,50,50,"Unit")
+  self.dummy.IsSmashUnit = true 
 
 end
 function tusk_special_bottom:OnChannelFinish(bInterrupted)
@@ -286,6 +293,7 @@ function modifier_tusk_snowball:OnCreated()
     self.speedFactor = 1
     self.speedIncrement = self:GetAbility():GetSpecialValueFor("speed_increase") -- 0.03
     self.targets = {}
+    self.direction =self:GetParent():GetForwardVector()
   end
 end
 
@@ -294,45 +302,28 @@ function modifier_tusk_snowball:OnDestroy()
     -- Remove the snowball dummy unit and make the hero visible again
     UTIL_Remove(self:GetAbility().dummy)
     self:GetParent():RemoveNoDraw()
+    Physics2D:ClearPhysicsVelocity(self:GetParent())
   end
 end
 function modifier_tusk_snowball:OnIntervalThink()
   local caster = self:GetCaster()
   local ability =self:GetAbility()
+  
   -- Movement does not interrupt but in this case that is what we want
   if caster:HasModifier("modifier_left") or caster:HasModifier("modifier_right") or caster:HasModifier("modifier_jump") then
     -- Destroy this
     self:GetCaster():InterruptChannel()
     self:Destroy()
   else
-    -- Handle visual part
-    local myPlatform
-    if caster:isOnPlatform() then
-      for k,v in pairs(platform) do
-        if v.unitsOnPlatform[caster] then
-          myPlatform = v
-          break
-        end
-      end
-    end
-    local direction
-    local angles = 0
-    if myPlatform then
-      angles = myPlatform:GetAngles().x/55
-    end
-    if caster:GetForwardVector().x > 0 then
-      direction = Vector(1,0,-angles)
-    else
-      direction = Vector(-1,0,angles)
-    end
     
     -- Increase the speed
-
-    self.speedFactor = self.speedFactor + self.speedIncrement
-  
     
+    self.speedFactor = self.speedFactor + self.speedIncrement
     local speed = self.speed * self.speedFactor
-
+    Physics2D:AddPhysicsVelocity(self:GetAbility().dummy,self.direction)
+    self:GetAbility().dummy:SetAbsOrigin(caster:GetAbsOrigin())
+    Physics2D:AddPhysicsVelocity(caster,self.direction)
+    --[[
     -- Move the hero and the rotating snowball along
     local vec = caster:GetAbsOrigin()+direction*speed
     if GridNav:IsWall(vec) then
@@ -349,7 +340,7 @@ function modifier_tusk_snowball:OnIntervalThink()
       self:GetAbility().dummy:SetAngles(self:GetAbility().dummy:GetAngles()[1] + 10*self.speedFactor,self:GetAbility().dummy:GetAngles()[2],self:GetAbility().dummy:GetAngles()[3])
     end
     
-    
+    ]]
     -- Handle damage
     local radius = ability:GetSpecialValueFor("radius")
     local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
@@ -384,7 +375,7 @@ end
 
 function modifier_tusk_snowball_dummy:GetVisualZDelta()
   -- It shouldnt be in the ground
-  return 80
+  return 20
 end
 
 

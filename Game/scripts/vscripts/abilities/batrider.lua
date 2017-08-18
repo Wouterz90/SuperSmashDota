@@ -36,13 +36,13 @@ function batrider_special_side:OnSpellStart()
     Source = caster,
     fExpireTime = ability.projectile_range/ability.projectile_speed,
     vVelocity = ability.mouseVector * ability.projectile_speed, -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_NOTHING,
+    UnitBehavior = PROJECTILES_DESTROY,
     bMultipleHits = false,
     bIgnoreSource = true,
     TreeBehavior = PROJECTILES_NOTHING,
     bCutTrees = false,
     bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_DESTROY  ,
+    WallBehavior = PROJECTILES_DESTROY,
     GroundBehavior = PROJECTILES_DESTROY,
     fGroundOffset = 0,
     nChangeMax = 1,
@@ -118,9 +118,10 @@ function batrider_special_bottom:OnSpellStart()
   
   caster:StopSound("Hero_Batrider.FlamingLasso.Loop")
   local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin(),false,caster,caster:GetOwner(),caster:GetTeamNumber())
+  Physics:Unit(dummy)
   local modifier = dummy:AddNewModifier(caster,self,"modifier_batrider_lasso_smash",{duration = self.search_duration})
-  dummy:AddNewModifier(dummy,nil,"modifier_drop",{})
   dummy:SetAbsOrigin(caster:GetAbsOrigin())
+  dummy:AddNewModifier(dummy,nil,"modifier_basic",{})
   dummy:FindAbilityByName("dummy_unit"):SetLevel(1)
 
   modifier.dummy = dummy
@@ -131,24 +132,30 @@ modifier_batrider_lasso_smash = class({})
 function modifier_batrider_lasso_smash:OnCreated()
   if IsServer() then
     StoreSpecialKeyValues(self,self:GetAbility())
+    self:StartIntervalThink(FrameTime())
+
     self:GetParent():AddNewModifier(self:GetCaster(),self:GetAbility(),"modifier_smash_stun",{}) 
     self.particle = ParticleManager:CreateParticle("particles/units/heroes/hero_batrider/batrider_flaming_lasso.vpcf", PATTACH_CUSTOMORIGIN, self:GetCaster())
     ParticleManager:SetParticleControlEnt(self.particle, 0, self:GetCaster(), PATTACH_POINT_FOLLOW, "attach_attack1", self:GetCaster():GetAbsOrigin() + Vector(0,0,50), true)
     ParticleManager:SetParticleControlEnt(self.particle, 1, self:GetParent(), PATTACH_POINT_FOLLOW, "attach_hitloc", self:GetParent():GetAbsOrigin() + Vector(0,0,0), true)
-    self:StartIntervalThink(1/30)
+    --self:OnIntervalThink()  
   end
 end
 
 
 function modifier_batrider_lasso_smash:OnIntervalThink()
-  -- If the distance is too big, break
-  if (self:GetParent():GetAbsOrigin() - self:GetCaster():GetAbsOrigin()):Length() > self.break_range then self:Destroy() end
+  -- If the distance is too big, break_range
+
+  if (self:GetParent():GetAbsOrigin() - self:GetCaster():GetAbsOrigin()):Length() > self.break_range then self:Destroy() print("DES") return end
   if (self:GetParent():GetAbsOrigin() - self:GetCaster():GetAbsOrigin()):Length() > self.pull_range then
     local direction = (self:GetParent():GetAbsOrigin() - self:GetCaster():GetAbsOrigin()):Normalized()
-    self:GetParent():SetAbsOrigin(self:GetCaster():GetAbsOrigin() + direction*self.pull_range)
+    self:GetParent():SetStaticVelocity("batrider_lasso",self:GetCaster():GetStaticVelocity()  )
+    --print(self:GetCaster():GetStaticVelocity())
+    --self:GetParent():SetAbsOrigin(self:GetCaster():GetAbsOrigin() + direction*self.pull_range)
   end
   if self:GetParent():GetUnitName() ~= "npc_dummy_unit" then
-    jumpModifiers[self:GetName()] = true
+    self:GetParent():AddNewModifier(self:GetCaster(),self:GetAbility(),"modifier_no_gravity",{duration = 2* FrameTime()})
+    --jumpModifiers[self:GetName()] = false
     -- Damage
     self.count = (self.count or 5 ) +1
     --self.count = self.count +1
@@ -166,7 +173,8 @@ function modifier_batrider_lasso_smash:OnIntervalThink()
 
   else
     -- Search for units to catch
-    jumpModifiers[self:GetName()] = false
+    --jumpModifiers[self:GetName()] = true
+
     local caster = self:GetCaster()
     local units = FindUnitsInRadius(caster:GetTeam(), self:GetParent():GetAbsOrigin(), nil, self.search_radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, FIND_CLOSEST, false)
     units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),self.search_radius)
@@ -183,6 +191,7 @@ function modifier_batrider_lasso_smash:OnDestroy()
     self:GetParent():RemoveModifierByName("modifier_smash_stun")
     ParticleManager:DestroyParticle(self.particle,false)
     ParticleManager:ReleaseParticleIndex(self.particle)
+    self:GetParent():SetStaticVelocity("batrider_lasso",Vector(0,0,0))
     if self:GetParent():GetUnitName() == "npc_dummy_unit" then
       UTIL_Remove(self:GetParent())
     end

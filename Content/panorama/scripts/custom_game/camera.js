@@ -12,6 +12,7 @@ CameraSettings() // To instantly edit
 
 function CameraSettings()	
 { 
+
 	if(debugging >= 2) {$.Msg("camera CameraSettings") }
   // Do camera stuff
   GameUI.SetCameraYaw( 0 ); 
@@ -76,53 +77,27 @@ function CameraSettings()
   
  
   GameUI.SetCameraDistance(Math.max(desiredDistanceWidth,desiredDistanceHeight))
-  //$.Msg(Math.max(desiredDistanceWidth,desiredDistanceHeight))
-  /*var x = 0, total = 0, y = 0
-  for( x in positionsZ) 
-  {
-	total = total + positionsZ[x]
-	y = x
-  }
-	
-  var hero = PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"hero")
-  if (hero)
-  {
-	GameUI.SetCameraLookAtPositionHeightOffset(Entities.GetAbsOrigin(hero)[2]+100)
-  }
-  else
-  {
-	GameUI.SetCameraLookAtPositionHeightOffset(1200)
-  }
   
-   
-  */
   
   //GameUI.SetCameraDistance( 1100 );
   var hero = PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(),"hero");
   if (hero && PlayerTables.GetTableValue(Players.GetLocalPlayer().toString(), "lifes") >= 0) 
   { 
 	var camUnit = CustomNetTables.GetTableValue("settings","cameraUnit").value
-    GameUI.SetCameraTarget(camUnit);
+	
+	GameUI.SetCameraTargetPosition(Entities.GetAbsOrigin(camUnit),0.01)
+    //	GameUI.SetCameraTarget(camUnit);
 	
     if (Entities.GetAbsOrigin(camUnit)) 
 	{ 
-		var height = Entities.GetAbsOrigin(camUnit)[2]
-		/*$.Msg(height)	
-		if (height > 3000 - 300)
-		{
-			height = 2700
-		}
-		if (height < 500)
-		{
-			height = 500	
-		}*/
+	  var height = Entities.GetAbsOrigin(camUnit)[2]
       GameUI.SetCameraLookAtPositionHeightOffset(height-100);
     }
   }
   else 
   { 
-    GameUI.SetCameraTarget(-1)
-    GameUI.SetCameraLookAtPositionHeightOffset(700);
+    //GameUI.SetCameraTarget(-1)
+    //GameUI.SetCameraLookAtPositionHeightOffset(700);
   }
 
 
@@ -258,6 +233,7 @@ function CameraSettings()
 
 
 function CancelCameraSettings(){
+
   if(debugging >= 1) {$.Msg("camera CancelCameraSettings") }
   // Place to control triangles
   var next = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("MainPanelBoxes")
@@ -273,8 +249,8 @@ function CancelCameraSettings(){
 	
 
   // Unlock the camera
-  GameUI.SetCameraTarget(-1)
-  GameUI.SetCameraLookAtPositionHeightOffset(700);
+  //GameUI.SetCameraTarget(-1)
+  //GameUI.SetCameraLookAtPositionHeightOffset(700);
 
   // Cancel the updates
   camera = 0

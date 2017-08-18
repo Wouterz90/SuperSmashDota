@@ -175,7 +175,7 @@ function rattletrap_special_top:OnSpellStart()
     fEndRadius = 200,
     Source = caster,
     fExpireTime = 0.5,--self:GetSpecialValueFor("duration"),
-    vVelocity = self.mouseVector * 8000 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
+    vVelocity = self.mouseVector * 2000 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
     UnitBehavior = PROJECTILES_DESTROY ,
     bMultipleHits = false,
     bIgnoreSource = true,

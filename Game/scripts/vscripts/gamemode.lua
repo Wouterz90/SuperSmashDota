@@ -1,12 +1,12 @@
--- Basic values
+  -- Basic values
 Laws = {
 
   
-  flJumpSpeed = 25,
+  flJumpSpeed = 35,
   flJumpDuration = 20/32,
   flJumpDeceleration = 0.925,
   flDropAcceleration = 1.015,
-  flDropSpeed = 20,
+  flDropSpeed = 40,
   flMove = 16,
 
   flPushDeceleration = 0.5, -- 0.5 per second
@@ -18,7 +18,7 @@ Laws = {
   flSideAttackFactor = 2,
 
   flMaxHeight = 3000,
-  flMinHeight = -100,
+  flMinHeight = 150,
 
   flRuneDuration = 10,
 }
@@ -32,8 +32,8 @@ BAREBONES_VERSION = "1.00"
 -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
 -- You can also change the cvar 'barebones_spew' at any time.
 -- 0 is no debug calls, 1 is giving function names, 2 also includes timers and loops.
-LUA_DEBUG_SPEW = 0 
-PANORAMA_DEBUG_SPEW = 0
+LUA_DEBUG_SPEW = 0
+--PANORAMA_DEBUG_SPEW = 0
 
 
 if GameMode == nil then
@@ -47,7 +47,10 @@ require("statcollection/init")
 require('libraries/timers')
 --require('libraries/worldpanels')
 -- This library can be used for advancted physics/motion/collision of units.  See PhysicsReadme.txt for more information.
---require('libraries/physics')
+require('libraries/physics')
+--require('libraries/matrix')
+-- My own physics shit
+require('physics2d')
 -- This library can be used for advanced 3D projectile systems.
 require('libraries/projectiles')
 require('libraries/trackingprojectile')
@@ -171,7 +174,7 @@ function GameMode:CreateCameraUnit()
   cameraDummyUnit:SetAbsOrigin(Vector(0,0,0))
   cameraDummyUnit:FindAbilityByName("dummy_unit"):SetLevel(1)
   CustomNetTables:SetTableValue("settings","cameraUnit",{value = cameraDummyUnit:entindex()})
-
+  --cameraDummyUnit:StopPhysicsSimulation()
   Timers:CreateTimer(0,function()
     GameMode:ControlCamera()
     return 1/30
@@ -194,7 +197,6 @@ function GameMode:ControlCamera()
   local horizontalMid = GetMinMaxValue(positionsTableX)
   local verticalMid = GetMinMaxValue(positionsTableZ)
   cameraDummyUnit:SetAbsOrigin(Vector(horizontalMid,0,verticalMid))
-  
 end
 --[[
   This function is called once and only once for every player when they spawn into the game for the first time.  It is also called
@@ -204,12 +206,14 @@ end
   The hero parameter is the hero entity that just spawned in
 ]]
 function GameMode:OnHeroInGame(hero)
+  if not IsValidEntity(hero) then return end
   DebugPrint(1,"[SMASH] "..hero:GetUnitName().." has spawned")
   if hero:GetUnitName() == "npc_dota_hero_wisp" then
+    hero.IsSmashUnit = false
     hero:SetAttackCapability(DOTA_UNIT_CAP_NO_ATTACK)
     hero:AddNoDraw() 
     hero:SetAbsOrigin(Vector(0,0,0))
-    hero:AddNewModifier(hero,nil,"modifier_puck_phase_shift ",{})
+    hero:AddNewModifier(hero,nil,"modifier_puck_phase_shift",{})
     return 
   end
   if not firstHeroSpawned then 
@@ -218,7 +222,6 @@ function GameMode:OnHeroInGame(hero)
   end
 
   
-  if not IsValidEntity(hero) then return end
   deadplayers = 0
   
   --print("table created for "..hero:GetUnitName())
@@ -226,11 +229,13 @@ function GameMode:OnHeroInGame(hero)
     DebugPrint(1,"[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
     -- Lock the camera on our hero
     CustomGameEventManager:Send_ServerToPlayer(hero:GetPlayerOwner(),"fix_camera",{})
-    --PlayerResource:SetCameraTarget(hero:GetPlayerID(),hero)
+    PlayerResource:SetCameraTarget(hero:GetPlayerID(),cameraDummyUnit)
     --GameRules:GetGameModeEntity():SetCameraDistanceOverride(1600)
 
+    Physics2D:CreateObject("AABB",hero:GetAbsOrigin(),true,false,hero,100,150,"Unit")
 
     -- Init hero values here -- They can be adjusted personally somewhere after, eg. axe more force, less speed
+    hero.IsSmashUnit = true
     hero.jumps = 0
     hero.amplify = 1
     hero.movespeedFactor = 1
@@ -250,7 +255,7 @@ function GameMode:OnHeroInGame(hero)
     hero:SetRespawnsDisabled(false)
     --hero:AddNewModifier(hero,nil,"modifier_jump",{duration = 1})
     Timers:CreateTimer(4,function()
-      if hero then
+      if hero and IsValidEntity(hero) then
         DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnHeroInGame")
         hero:AddNewModifier(hero,nil,"modifier_basic",{})
       end
@@ -306,6 +311,7 @@ function GameMode:OnNPCSpawned(keys)
   DebugPrint(1,"[BAREBONES] NPC Spawned",EntIndexToHScript(keys.entindex):GetUnitName())
   DebugPrintTable(1,keys)
   local npc = EntIndexToHScript(keys.entindex)
+  
   Timers:CreateTimer(0.1,function()
     DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnNPCSpawned1")
     if not npc:IsNull() and npc:IsRealHero() then
@@ -318,7 +324,8 @@ function GameMode:OnNPCSpawned(keys)
         hero:RemoveNoDraw()
       end
 
-
+      --hero:ClearStaticVelocity()
+      --hero:SetPhysicsVelocity(Vector(0,0,0))
       hero:RemoveModifierByName("modifer_smash_stun")
       --print(hero:GetUnitName()..hero:GetPlayerOwnerID())
       if not hero.firstRespawn then
@@ -330,13 +337,15 @@ function GameMode:OnNPCSpawned(keys)
         PlayerTables:SetTableValue(tostring(hero:GetPlayerOwnerID()),"charges",0)
         hero.firstRespawn = true  
       end
-      hero:SetAbsOrigin(Vector(RandomInt(-platform[1].radius,platform[1].radius),0,800))
-
-      hero:AddNewModifier(hero,nil,"modifier_jump",{duration=1})
+      --hero:SetAbsOrigin(Vector(RandomInt(-platform[1].radius,platform[1].radius),0,1100))
+      hero:SetAbsOrigin(Vec(000,1000))
+      --hero:AddNewModifier(hero,nil,"modifier_jump",{duration=1})
       hero.jumps = 0 
       Timers:CreateTimer(1/32,function()
         DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnNPCSpawned2")
-        hero:AddNewModifier(hero,nil,"modifier_basic",{})
+        if IsValidEntity(hero) then -- Only relevant for toolsmode tests
+          hero:AddNewModifier(hero,nil,"modifier_basic",{})
+        end
       end)
     end
   end)
@@ -506,6 +515,7 @@ function GameMode:InitGameMode()
   -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
   Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
   Convars:RegisterCommand( "reload_kv", Reload_AbilityKeyValues, "Reloads values from npc_abilities files", FCVAR_CHEAT )
+  Convars:RegisterCommand( "add_obj", Dynamic_Wrap(Physics2D, 'CreateObject'), "Reloads values from npc_abilities files", FCVAR_CHEAT )
 
 
   DebugPrint(1,'[BAREBONES] Done loading Barebones gamemode!\n\n')
@@ -629,7 +639,7 @@ function GameMode:SetupGame()
     "npc_dota_hero_nevermore",
   -- Int
     "npc_dota_hero_tinker",
-    "npc_dota_hero_batrider",
+    --"npc_dota_hero_batrider", -- Lasso is broken, hero isnt great either.
     "npc_dota_hero_lina",
     "npc_dota_hero_puck",
     "npc_dota_hero_zuus",
@@ -690,6 +700,7 @@ function GameMode:OnHeroDeath(hero)
   end
   
   if PlayerTables:GetTableValue(tostring(hero:GetPlayerOwnerID()),"lifes") <= -1 then
+    --hero:StopPhysicsSimulation()
     hero:SetRespawnsDisabled(true)
     CustomGameEventManager:Send_ServerToPlayer(hero:GetPlayerOwner(),"reset_camera",{})
     deadplayers = deadplayers + 1
@@ -835,8 +846,10 @@ function GameMode:FindTheOnlyConnectedTeam()
 end
 
 function GameMode:ModifierGainedFilter(keys)
+  if not keys["entindex_caster_const"] then return true end
   -- If the same modifier would be applied, check the duration so that the longest one counts.
   local modifierCasterIndex = keys["entindex_caster_const"]
+
   local caster = EntIndexToHScript(modifierCasterIndex)
   local modifierAbilityIndex = keys["entindex_ability_const"]
   if modifierAbilityIndex then

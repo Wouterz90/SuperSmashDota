@@ -45,13 +45,16 @@ function lina_special_top:OnSpellStart()
       tornado_degrees_to_spin = degrees_per_second_ending_in_same_forward_vector * .03
     end
     caster:SetForwardVector(RotatePosition(Vector(0,0,0), QAngle(0, tornado_degrees_to_spin, 0), caster:GetForwardVector()))
-    caster:SetAbsOrigin(Vector(caster_x_origin,0,caster:GetAbsOrigin().z+tornado_height))
+    caster:SetAbsOrigin(Vector(caster_x_origin,0,caster:GetAbsOrigin().z))
+    --caster:SetStaticVelocity("lina_tornado",tornado_height*30)
+    Physics2D:SetStaticVelocity(caster,"lina_tornado",tornado_height)
     --caster:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,tornado_height))
     if count < tornado_lift_duration*32 then
       
       count = count + 1
       return 1/32
     else
+      Physics2D:SetStaticVelocity(caster,"lina_tornado",Vec(0,0))
       return 
     end
   end)
@@ -78,70 +81,40 @@ function lina_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   self:GetCaster():AddNewModifier(self:GetCaster(),self,"modifier_smash_stun",{duration = self:GetCastPoint()})
+  self:GetCaster():EmitSound("Ability.LagunaBlade")
   return true
 end
 function lina_special_side:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
-  local range = ability:GetSpecialValueFor("range")
-  local radius = ability:GetSpecialValueFor("radius")
-
-  --caster:EmitSound("Ability.LagunaBladeImpact")
+  StoreSpecialKeyValues(self)
   
-  -- Do the actual projectile
-  local projectile = {
-    --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
-    EffectName = "",
-    --EffectName = "particles/axe/axe_battle_hunger.vpcf",
-    --EeffectName = "",
-    vSpawnOrigin = caster:GetAbsOrigin()+Vector(0,0,50),
-    --vSpawnOrigin = {unit=caster, attach="attach_attack1", offset=Vector(0,0,100)},
-    fDistance = range,--self:GetSpecialValueFor("distance"),
-    fStartRadius = 200,
-    fEndRadius = 200,
-    Source = caster,
-    --fExpireTime = 0.25,--self:GetSpecialValueFor("duration"),
-    vVelocity =  caster:GetForwardVector() * range*4, --self.mouseVector * range*4 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_NOTHING ,
-    bMultipleHits = false,
-    bIgnoreSource = true,
-    TreeBehavior = PROJECTILES_NOTHING,
-    bCutTrees = false,
-    bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_NOTHING,
-    GroundBehavior = PROJECTILES_NOTHING,
-    fGroundOffset = 0,
-    nChangeMax = 1,
-    bRecreateOnChange = true,
-    bZCheck = true,
-    bGroundLock = false,
-    bProvidesVision = true,
-    iVisionRadius = 200,
-    iVisionTeamNumber = caster:GetTeam(),
-    bFlyingVision = false,
-    fVisionTickTime = .1,
-    fVisionLingerDuration = 1,
-    draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-    --iPositionCP = 0,
-    --iVelocityCP = 1,
-    --ControlPoints = {[5]=Vector(100,0,0), [10]=Vector(0,0,1)},
-    --ControlPointForwards = {[4]=hero:GetForwardVector() * -1},
-    --ControlPointOrientations = {[1]={hero:GetForwardVector() * -1, hero:GetForwardVector() * -1, hero:GetForwardVector() * -1}},
-    --[[ControlPointEntityAttaches = {[0]={
-      unit = hero,
-      pattach = PATTACH_ABSORIGIN_FOLLOW,
-      attachPoint = "attach_attack1", -- nil
-      origin = Vector(0,0,0)
-    }},]]
-    --fRehitDelay = .3,
-    --fChangeDelay = 1,
-    --fRadiusStep = 10,
-    --bUseFindUnitsInRadius = false,
+  if ability.unit then
+    UTIL_Remove(ability.unit)
+    ability.unit = nil
+  end
 
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-    OnUnitHit = function(self, unit) 
+  -- Use find units in line to find a unit, check for height
+  local units = FindUnitsInLine(caster:GetTeam(),caster:GetAbsOrigin(),caster:GetAbsOrigin()+caster:GetForwardVector() * (self.range-self.radius) ,nil,self.radius,DOTA_UNIT_TARGET_TEAM_ENEMY,DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,DOTA_UNIT_TARGET_FLAG_NONE)
+  -- Create a dummy unit at the end
+  ability.unit = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+(caster:GetForwardVector()*self.range),false,caster,caster:GetOwner(),caster:GetTeamNumber())
+  ability.unit:SetAbsOrigin(caster:GetAbsOrigin()+(caster:GetForwardVector()*1*self.range)+Vector(0,0,100))
+  ability.unit:FindAbilityByName("dummy_unit"):SetLevel(1)
+  -- Fire the laguna blade at the dummy
+  local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_laguna_blade.vpcf",PATTACH_CUSTOMORIGIN,nil)
+  ParticleManager:SetParticleControlEnt( particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetOrigin(), true )
+  ParticleManager:SetParticleControlEnt( particle, 1, ability.unit, PATTACH_POINT_FOLLOW, nil, ability.unit:GetOrigin(), true )
+  -- Clean it
+  Timers:CreateTimer(1,function()
+    UTIL_Remove(ability.unit)
+    ParticleManager:DestroyParticle(particle,false)
+    ParticleManager:ReleaseParticleIndex(particle)
+  end)
+  -- Deal damage
+  for k,v in pairs(units) do
+    if math.abs(caster:GetAbsOrigin().z - v:GetAbsOrigin().z) < 200 then
       local damageTable = {
-        victim = unit,
+        victim = v,
         attacker = caster,
         damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
         damage_type = DAMAGE_TYPE_MAGICAL,
@@ -149,26 +122,9 @@ function lina_special_side:OnSpellStart()
       }
       ApplyDamage(damageTable)
       caster:EmitSound("Ability.LagunaBladeImpact")
-    end,
-    OnFinish = function(self,unit)
-    end,
-  }
-  local proj = Projectiles:CreateProjectile(projectile)
-
-  -- Create a dummy unit to show the laguna blade
-  local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+caster:GetForwardVector()*range,false,caster,caster:GetOwner(),caster:GetTeamNumber())
-  dummy:SetAbsOrigin(caster:GetAbsOrigin()+(Vector(0,0,50))+caster:GetForwardVector()*range)
-  dummy:FindAbilityByName("dummy_unit"):SetLevel(1)
-  -- Fire the laguna blade at the dummy
-  local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_laguna_blade.vpcf",PATTACH_CUSTOMORIGIN,nil)
-  ParticleManager:SetParticleControlEnt( particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetOrigin(), true )
-  ParticleManager:SetParticleControlEnt( particle, 1, dummy, PATTACH_POINT_FOLLOW, nil, dummy:GetOrigin(), true )
-  -- Clean it
-  Timers:CreateTimer(1,function()
-    UTIL_Remove(dummy)
-    ParticleManager:DestroyParticle(particle,false)
-    ParticleManager:ReleaseParticleIndex(particle)
-  end)
+    end
+  end
+  
 end
 
 lina_special_bottom = class({})
@@ -191,19 +147,22 @@ function lina_special_bottom:OnSpellStart()
   local loc = caster:GetAbsOrigin() + caster:GetForwardVector() * radius
   Timers:CreateTimer(cast_delay,function()
     -- Look for highest platform with the location to land the lsa on
+    --Replace this with a projectile
     
     local plat
     local z
     for i=#platform,1,-1 do
-      if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
-        z = platform[i]:GetAbsOrigin().z + platform[i].height
-        plat = platform[i]
-        break
+      if not platform[i].destroyed then
+        if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
+          z = platform[i]:GetAbsOrigin().z + platform[i].height
+          plat = platform[i]
+          break
+        end
       end
     end
       
     if plat then
-      DestroyPlatform(plat,10)
+      DestroyPlatform(plat,5)
     end
     
     if not z then z=0 end

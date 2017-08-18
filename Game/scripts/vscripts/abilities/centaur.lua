@@ -134,22 +134,23 @@ function centaur_special_top:OnSpellStart()
   local caster = self:GetCaster()
   local radius = self:GetSpecialValueFor("radius")
   
-  caster:AddNewModifier(caster,self,"modifier_centaur_stampede_smash",{duration = self.duration})
-  caster:AddNewModifier(caster,self,"modifier_jump",{duration =0.5})
+  caster:AddNewModifier(caster,self,"modifier_centaur_stampede_smash",{duration = self.duration,x=self.mouseVector.x,z=self.mouseVector.z})
+  
 
 end
 
 
 modifier_centaur_stampede_smash = class({})
 
-function modifier_centaur_stampede_smash:OnCreated()
+function modifier_centaur_stampede_smash:OnCreated(keys)
   if IsServer() then
+    self.direction = Vec(keys.x,keys.z)
     StoreSpecialKeyValues(self,self:GetAbility())
     self.targets = {}
-    self:StartIntervalThink(1/30)
+    self:StartIntervalThink(FrameTime())
     self:GetCaster():EmitSound("Hero_Centaur.Stampede.Movement")
-    self:GetCaster().movespeedFactor = self:GetCaster().movespeedFactor + self.bonus_speed_factor
-    self:GetCaster().jumpfactor = self:GetCaster().jumpfactor + self.bonus_speed_factor
+    --self:GetCaster().movespeedFactor = self:GetCaster().movespeedFactor + self.bonus_speed_factor
+    --self:GetCaster().jumpfactor = self:GetCaster().jumpfactor + self.bonus_speed_factor
     self.particle = ParticleManager:CreateParticle("particles/units/heroes/hero_centaur/centaur_stampede.vpcf", PATTACH_ABSORIGIN_FOLLOW, self.parent)
     ParticleManager:SetParticleControl(self.particle, 0, self:GetParent():GetAbsOrigin())
     self:AddParticle(self.particle, false, false, -1, false, false)
@@ -158,9 +159,10 @@ end
 
 function modifier_centaur_stampede_smash:OnIntervalThink()
   local caster = self:GetCaster()
-  caster.jumps = 0
+  Physics2D:SetStaticVelocity(caster,"centaur_stampede",self.direction*30)
   local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, self.radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),self.radius)
+  
   for _,unit in pairs(units) do
     if not self.targets[unit] then
       self.targets[unit] = true
@@ -179,13 +181,13 @@ end
 
 function modifier_centaur_stampede_smash:OnDestroy()
   if IsServer() then
-    self:GetCaster():StopSound("Hero_C  entaur.Stampede.Movement")
+    self:GetCaster():StopSound("Hero_Centaur.Stampede.Movement")
     self:GetCaster().jumps = 3
-    if self:GetCaster():isOnPlatform() then
-      self:GetCaster().jumps = 0
-    end
-    self:GetCaster().movespeedFactor = self:GetCaster().movespeedFactor - self.bonus_speed_factor
-    self:GetCaster().jumpfactor = self:GetCaster().jumpfactor - self.bonus_speed_factor
+    
+    
+    Physics2D:SetStaticVelocity(self:GetCaster(),"centaur_stampede",Vector(0,1)*30)
+    --self:GetCaster().movespeedFactor = self:GetCaster().movespeedFactor - self.bonus_speed_factor
+    --self:GetCaster().jumpfactor = self:GetCaster().jumpfactor - self.bonus_speed_factor
     Timers:CreateTimer(1,function()
       ParticleManager:DestroyParticle(self.particle,false)
       ParticleManager:ReleaseParticleIndex(self.particle)

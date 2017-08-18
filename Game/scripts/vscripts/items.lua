@@ -47,7 +47,9 @@ function items:CreateItem(params)
   local modifierName = "modifier_"..name
 
   self.item:AddNewModifier(self.item,nil,modifierName,{})
-  self.item:AddNewModifier(self.item,nil,"modifier_basic",{})
+  Physics2D:CreateObject("AABB",self.item:GetAbsOrigin(),true,false,self.item,50,50,"Unit")
+  self.item.IsSmashUnit = true
+  --self.item:AddNewModifier(self.item,nil,"modifier_basic",{})
   local ab = self.item:AddAbility("dummy_unit")
   ab:SetLevel(1)
 
@@ -144,8 +146,8 @@ function modifier_spell_cd_rune:DeclareFunctions()
 end
 
 function modifier_spell_cd_rune:OnIntervalThink()
-  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
+  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 100, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),100)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
     units[1]:RemoveModifierByName(self:GetName().."_buff")
 units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
@@ -201,8 +203,8 @@ function modifier_speed_rune:DeclareFunctions()
 end
 
 function modifier_speed_rune:OnIntervalThink()
-  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
+  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 100, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),100)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
     units[1]:RemoveModifierByName(self:GetName().."_buff")
     units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
@@ -259,8 +261,8 @@ function modifier_jump_rune:DeclareFunctions()
 end
 
 function modifier_jump_rune:OnIntervalThink()
-  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
+  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 100, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),100)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
     units[1]:RemoveModifierByName(self:GetName().."_buff")
     units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
@@ -318,8 +320,8 @@ function modifier_regen_rune:OnCreated()
 end
 
 function modifier_regen_rune:OnIntervalThink()
-  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
+  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 100, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),100)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
     units[1]:RemoveModifierByName(self:GetName().."_buff")
     units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
@@ -384,8 +386,8 @@ function modifier_invis_rune:OnCreated()
 end
 
 function modifier_invis_rune:OnIntervalThink()
-  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 50, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
+  local units = FindUnitsInRadius(DOTA_TEAM_NEUTRALS, self:GetParent():GetAbsOrigin() , nil, 100, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),100)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
     units[1]:RemoveModifierByName(self:GetName().."_buff")
     units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})

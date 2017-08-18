@@ -4,10 +4,11 @@ function GameMode:ConfirmHeroPick(keys)
   local heroname = keys.heroname
 
   -- If this hero has been picked do nothing?
-  if GameMode.heroesPicked[heroname] then return end
-  if PlayerTables:GetTableValue(tostring(pID.."heroes"),heroname) then return end
-  if GameMode.playersPicked[pID] then return end
-  
+  if not IsInToolsMode() then
+    if GameMode.heroesPicked[heroname] then return end
+    if PlayerTables:GetTableValue(tostring(pID.."heroes"),heroname) then return end
+    if GameMode.playersPicked[pID] then return end
+  end
   if heroname == "npc_dota_hero_wisp" then
     heroname = "npc_dota_hero_"
   end

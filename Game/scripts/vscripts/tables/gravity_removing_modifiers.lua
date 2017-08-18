@@ -10,10 +10,10 @@ jumpModifiers = {
   ["modifier_magnus_skewer_target"] = true,
   ["modifier_batrider_flying"] = true,
   ["modifier_batrider_lasso"] = true,
+  --["modifier_batrider_lasso_smash"] = true,
   ["modifier_tusk_sigil_dummy"] = true,
   ["modifier_nyx_assassin_spiked_carapace_smash"] = true,
   ["modifier_pudge_rot_smash"] = true,
-  ["modifier_batrider_lasso_smash"] = false,
   ["modifier_centaur_stampede_smash"] = true,
   ["modifier_blast_off_jump"] = true,
 }

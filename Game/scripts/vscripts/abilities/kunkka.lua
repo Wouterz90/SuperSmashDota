@@ -223,7 +223,7 @@ function kunkka_special_top:OnSpellStart()
   local radius = self:GetSpecialValueFor("radius")
   StoreSpecialKeyValues(self)
   caster.jumps = 3
-  self:EndCooldown()
+  
 
   caster:SetAbsOrigin(caster:GetAbsOrigin()+self.mouseVector*self.range)
   Timers:CreateTimer(1/10,function()

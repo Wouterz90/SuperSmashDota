@@ -34,22 +34,9 @@ function nyx_assassin_special_bottom:OnSpellStart()
   end
 
   -- Move the caster a little up to prevent it missing
-  caster:SetAbsOrigin(caster:GetAbsOrigin() + Vector(0,0,10))
+  --caster:SetAbsOrigin(caster:GetAbsOrigin() + Vector(0,0,10))
   -- Drop the projectile immediatly so it follows the platform
-  local myPlatform
-  for k,v in pairs(platform) do
-    if v.unitsOnPlatform[caster] then
-      myPlatform = v
-      break
-    end
-  end
-
-  local direction
-  if self:GetForwardVector().x > 0 then
-    direction = Vector(1,0,-myPlatform:GetAngles().x/55)
-  else
-    direction = Vector(-1,0,myPlatform:GetAngles().x/55)
-  end
+ 
 
   caster:EmitSound("Hero_NyxAssassin.Impale")
 
@@ -66,7 +53,7 @@ function nyx_assassin_special_bottom:OnSpellStart()
     fEndRadius = 200,
     Source = caster,
     --fExpireTime = self:GetSpecialValueFor("duration"),
-    vVelocity = direction * projectile_speed ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
+    vVelocity = caster:GetForwardVector() * projectile_speed ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
     UnitBehavior = PROJECTILES_NOTHING ,
     bMultipleHits = false,
     bIgnoreSource = true,
@@ -74,7 +61,7 @@ function nyx_assassin_special_bottom:OnSpellStart()
     bCutTrees = false,
     bTreeFullCollision = false,
     WallBehavior = PROJECTILES_NOTHING,
-    GroundBehavior = PROJECTILES_NOTHING,
+    GroundBehavior = PROJECTILES_FOLLOW,
     fGroundOffset = 100,
     nChangeMax = 1,
     bRecreateOnChange = true,
@@ -229,15 +216,18 @@ modifier_nyx_assassin_spiked_carapace_smash = class({})
 
 function modifier_nyx_assassin_spiked_carapace_smash:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    --self:StartIntervalThink(1/32)
+    local caster = self:GetCaster()
+    local vector = self:GetAbility().mouseVector
+    local range = self:GetAbility():GetSpecialValueFor("jump_speed")
+    caster:SetStaticVelocity("nyx_spiked",vector*range)
   end
 end
 
-function modifier_nyx_assassin_spiked_carapace_smash:OnIntervalThink()
+function modifier_nyx_assassin_spiked_carapace_smash:OnDestroy()
   local caster = self:GetCaster()
-  local vector = self:GetAbility().mouseVector
-  local range = self:GetAbility():GetSpecialValueFor("jump_speed")
-  caster:SetAbsOrigin(caster:GetAbsOrigin()+vector*range/32)
+  caster:SetStaticVelocity("nyx_spiked",VECTOR_0)
+  --caster:SetAbsOrigin(caster:GetAbsOrigin()+vector*range/32)
 end
 function modifier_nyx_assassin_spiked_carapace_smash:DeclareFunctions()
   local funcs = 

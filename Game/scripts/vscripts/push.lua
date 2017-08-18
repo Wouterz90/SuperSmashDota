@@ -12,8 +12,6 @@ function push:DamageFilter(filterTable)
   local victim = EntIndexToHScript(filterTable["entindex_victim_const"])
   local ability = EntIndexToHScript(filterTable["entindex_inflictor_const"])
 
-
-
   if not ability.GetSpecialValueFor then return end
 
   -- Damage should be filtered
@@ -46,10 +44,11 @@ function push:DamageFilter(filterTable)
   local pushFactorBasedOnTargetPower = 1 -- Not yet
   local pushFactorAmplify = 1 -- victim.Amplify -- Not yet
 
-  push_ability = push_ability * pushFactorBasedOnHealth * pushFactorBasedOnTargetPower * pushFactorAmplify * push.flPushDistance
-  
-  victim.pushDistance = push_ability
-  victim:AddNewModifier(attacker,nil,"modifier_push",{})
+  pushDistance = push_ability * pushFactorBasedOnHealth * pushFactorBasedOnTargetPower * pushFactorAmplify * push.flPushDistance
+  --victim:AddPhysicsVelocity(pushDirection * pushDistance)
+  Physics2D:AddPhysicsVelocity(victim,pushDirection * pushDistance* FrameTime())
+  --victim.pushDistance = push_ability
+  --victim:AddNewModifier(attacker,nil,"modifier_push",{})
   
   -- For tracking score
   if not attacker:IsRealHero() then

@@ -36,71 +36,51 @@ function pudge_special_side:OnSpellStart()
   local vKillswitch = Vector(((self.range/self.projectile_speed )*2),0,0)
 
   local targetLocation = caster:GetAbsOrigin() + ability.mouseVector * ability.range
-  local projectile = {
-    EffectName = "",
-    vSpawnOrigin = caster:GetAbsOrigin(),
-    fDistance = ability.range,
-    fStartRadius = ability.radius,
-    fEndRadius = ability.radius,
-    Source = caster,
-    fExpireTime = 1.5,
-    vVelocity = ability.mouseVector * ability.projectile_speed, -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_DESTROY ,
-    bMultipleHits = false,
-    bIgnoreSource = true,
-    TreeBehavior = PROJECTILES_NOTHING,
-    bCutTrees = false,
-    bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_NOTHING,
-    GroundBehavior = PROJECTILES_NOTHING,
-    fGroundOffset = 0,
-    nChangeMax = 1,
-    bRecreateOnChange = true,
-    bZCheck = true,
-    bGroundLock = false,
-    bProvidesVision = true,
-    iVisionRadius = ability.radius,
-    iVisionTeamNumber = caster:GetTeam(),
-    bFlyingVision = false,
-    fVisionTickTime = .1,
-    fVisionLingerDuration = 1,
-    draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-    
 
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-    OnUnitHit = function(self, unit) 
-      local damageTable = {
-        victim = unit,
-        attacker = caster,
-        damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-        damage_type = DAMAGE_TYPE_MAGICAL,
-        ability = ability,
-      }
-      ApplyDamage(damageTable)
+  local projectileTable = 
+    { 
+      vDirection = ability.mouseVector,
+      hCaster = caster,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flMaxDistance = ability.range,
+      sEffectName = "",
+      PlatformBehavior = PROJECTILES_NOTHING,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(self, unit) 
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+        ApplyDamage(damageTable)
+        
+        ability.target = unit
+  
+        unit:AddNewModifier(caster,ability,"modifier_smash_stun",{duration = 2})
+        caster:EmitSound("Hero_Pudge.AttackHookImpact")
+  
+        local nFXIndex = ParticleManager:CreateParticle( "particles/units/heroes/hero_pudge/pudge_meathook_impact.vpcf", PATTACH_CUSTOMORIGIN, unit)
+        ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetAbsOrigin(), true )
+        Timers:CreateTimer(0.5,function()
+          ParticleManager:DestroyParticle(nFXIndex,false)
+          ParticleManager:ReleaseParticleIndex( nFXIndex )
+        end)
+        ability:RetractHook(unit:GetAbsOrigin(),unit)
+      end,
+      OnFinish = function(projectile)
+        if not ability.target then
+          ability:RetractHook(projectile.location)
+        end
+      end,
       
-      ability.target = unit
-
-      unit:AddNewModifier(caster,ability,"modifier_smash_stun",{duration = 2})
-      caster:EmitSound("Hero_Pudge.AttackHookImpact")
-
-      local nFXIndex = ParticleManager:CreateParticle( "particles/units/heroes/hero_pudge/pudge_meathook_impact.vpcf", PATTACH_CUSTOMORIGIN, unit)
-      ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetAbsOrigin(), true )
-      Timers:CreateTimer(0.5,function()
-        ParticleManager:DestroyParticle(nFXIndex,false)
-        ParticleManager:ReleaseParticleIndex( nFXIndex )
-      end)
-
-      ability:RetractHook(unit:GetAbsOrigin(),unit)
-    end,
-    OnFinish = function(self,unit)
-      if not ability.target then
-        ability:RetractHook(unit)
-      end
-    end,
-    --ProjectileThink = function(self,pos)
-    --end,
     }
-  Projectiles:CreateProjectile(projectile)
+  Physics2D:CreateLinearProjectile(projectileTable)
 
   self.particle = ParticleManager:CreateParticle( "particles/pudge/pudge_meathook.vpcf", PATTACH_CUSTOMORIGIN, self:GetCaster() )
   ParticleManager:SetParticleAlwaysSimulate( self.particle)
@@ -118,48 +98,49 @@ function pudge_special_side:RetractHook(vLocation,hTarget)
   local ability = self
   local caster = self:GetCaster()
 
-  local proj = {
-    EffectName = "",
-    vSpawnOrigin = vLocation,
-    fDistance = (caster:GetAbsOrigin()-vLocation):Length() - 100,
-    fStartRadius = ability.radius,
-    fEndRadius = ability.radius,
-    Source = caster,
-    fExpireTime = 1.5,
-    vVelocity = (caster:GetAbsOrigin()-vLocation):Normalized() * ability.projectile_speed, -- RandomVector(1000),
-    --vVelocity = -ability.mouseVector * ability.projectile_speed, -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_NOTHING ,
-    bMultipleHits = false,
-    bIgnoreSource = true,
-    TreeBehavior = PROJECTILES_NOTHING,
-    bCutTrees = false,
-    bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_NOTHING,
-    GroundBehavior = PROJECTILES_NOTHING,
-    fGroundOffset = 0,
-    nChangeMax = 1,
-    bRecreateOnChange = true,
-    bZCheck = true,
-    bGroundLock = false,
-    bProvidesVision = true,
-    iVisionRadius = ability.radius,
-    iVisionTeamNumber = caster:GetTeam(),
-    bFlyingVision = false,
-    fVisionTickTime = .1,
-    fVisionLingerDuration = 1,
-    draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-    
 
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-    OnUnitHit = function(self, unit) 
-    end,
-    OnFinish = function(self,unit)
+
+  local projectileTable = 
+    { 
+      vDirection = (caster:GetAbsOrigin()-vLocation):Normalized(),
+      vSpawnOrigin = vLocation,
+      hCaster = caster,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flMaxDistance = (caster:GetAbsOrigin()-vLocation):Length() - 100,
+      sEffectName = "",
+      PlatformBehavior = PROJECTILES_NOTHING,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_NOTHING,
+      UnitTest = function(projectile, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(self, unit) 
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+        ApplyDamage(damageTable)
+        
+        ability.target = unit
+  
+        unit:AddNewModifier(caster,ability,"modifier_smash_stun",{duration = 2})
+        caster:EmitSound("Hero_Pudge.AttackHookImpact")
+  
+        local nFXIndex = ParticleManager:CreateParticle( "particles/units/heroes/hero_pudge/pudge_meathook_impact.vpcf", PATTACH_CUSTOMORIGIN, unit)
+        ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", caster:GetAbsOrigin(), true )
+        Timers:CreateTimer(0.5,function()
+          ParticleManager:DestroyParticle(nFXIndex,false)
+          ParticleManager:ReleaseParticleIndex( nFXIndex )
+        end)
+        ability:RetractHook(unit:GetAbsOrigin(),unit)
+      end,
+      OnFinish = function(projectile)
      -- Destory particles etc
       if hTarget then
-        local platformHeight = FindNearestPlatform(vLocation):GetAbsOrigin().z or unit.z+50
-        hTarget:SetAbsOrigin(Vector(unit.x,0, platformHeight+ 20))
-        hTarget:AddNewModifier(caster,ability,"modifier_jump",{duration = 0.1})
-        hTarget.jumps = 0
+        hTarget:SetAbsOrigin(projectile.location)
         hTarget:RemoveModifierByNameAndCaster("modifier_smash_stun",caster)  
       end
       local hHook = caster:GetTogglableWearable( DOTA_LOADOUT_TYPE_WEAPON )
@@ -171,13 +152,14 @@ function pudge_special_side:RetractHook(vLocation,hTarget)
       StopSoundOn( "Hero_Pudge.AttackHookExtend", caster)
       caster:EmitSound( "Hero_Pudge.AttackHookRetractStop")    
     end,
-    ProjectileThink = function(self,pos)
+    OnProjectileThink = function(projectile)
       if hTarget then
-        hTarget:SetAbsOrigin(pos+Vector(0,0,50))
+        hTarget:SetAbsOrigin(projectile.location)
       end
     end,
+      
     }
-    Projectiles:CreateProjectile(proj)
+  Physics2D:CreateLinearProjectile(projectileTable)
 
   if not hTarget  then 
     ParticleManager:SetParticleControlEnt( ability.particle, 1, ability:GetCaster(), PATTACH_POINT_FOLLOW, "attach_weapon_chain_rt", ability:GetCaster():GetAbsOrigin(), true);
@@ -209,7 +191,7 @@ function pudge_special_bottom:OnAbilityPhaseStart()
   StoreSpecialKeyValues(self)
   
   caster:EmitSound("Hero_Pudge.Dismember")
-  StartAnimation(caster, {duration=self.duration, activity=ACT_DOTA_CHANNEL_ABILITY_4  , rate=1 })
+  StartAnimation(caster, {duration=self.duration, activity=ACT_DOTA_CHANNEL_ABILITY_4  , rate=self:GetCastPoint()/0.3 })
   return true
 end
 
@@ -336,18 +318,23 @@ modifier_pudge_rot_smash = class({})
 function modifier_pudge_rot_smash:OnCreated()
   if IsServer() then
     self:GetCaster():EmitSound("Hero_Pudge.Rot")
-    self:StartIntervalThink(1/30)
+    self:StartIntervalThink(FrameTime())
+    self.duration = self:GetRemainingTime()
     self:GetCaster():SetAbsOrigin(self:GetCaster():GetAbsOrigin()+Vector(0,0,self:GetAbility().jump_speed))
     local nFXIndex = ParticleManager:CreateParticle("particles/units/heroes/hero_pudge/pudge_rot.vpcf", PATTACH_ABSORIGIN_FOLLOW, self:GetParent())
     ParticleManager:SetParticleControl(nFXIndex, 1, Vector(self:GetAbility().radius, 1, self:GetAbility().radius))
     self:AddParticle(nFXIndex, false, false, -1, false, false)
+
   end
 end
 function modifier_pudge_rot_smash:OnIntervalThink()
   local caster = self:GetCaster()
   local ability = self:GetAbility()
   --print(ability.jump_speed)
-  caster:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,ability.jump_speed))
+  --caster:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,ability.jump_speed))
+  local pct_duration = (self:GetRemainingTime()/self.duration)
+  --self:GetCaster():AddPhysicsVelocity(Vector(0,0,120*pct_duration))
+  Physics2D:AddPhysicsVelocity(self:GetParent(),Vec(0,2*pct_duration))
 
   local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, ability.radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),ability.radius)

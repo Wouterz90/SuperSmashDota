@@ -42,6 +42,12 @@ modifier_magnus_skewer = class({})
 function modifier_magnus_skewer:OnCreated()
   if IsServer() then
     local caster = self:GetCaster()
+    local ability = self:GetAbility()
+    local direction = ability.mouseVector 
+    local speed = ability:GetSpecialValueFor("speed")
+
+    --caster:SetStaticVelocity("magnus_skewer",direction*speed*30)
+
     self:StartIntervalThink(1/30)
     self.targets = {}
 
@@ -55,11 +61,11 @@ function modifier_magnus_skewer:OnIntervalThink()
   local caster = self:GetCaster()
   local ability = self:GetAbility()
   local direction = ability.mouseVector 
-  local speed = ability:GetSpecialValueFor("speed")
+  local speed = ability:GetSpecialValueFor("speed") *1.5
   local radius = ability:GetSpecialValueFor("radius")
 
-  caster:SetAbsOrigin(caster:GetAbsOrigin()+direction*speed)
-
+  --caster:SetAbsOrigin(caster:GetAbsOrigin()+direction*speed)
+  Physics2D:SetStaticVelocity(caster,"magnataur_skewer",direction*speed)
   local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
   units = FilterUnitsBasedOnHeight(units,caster:GetAbsOrigin(),radius)
   for k,v in pairs(units) do
@@ -75,8 +81,8 @@ function modifier_magnus_skewer:OnIntervalThink()
       self.targets[v] = true
       v:EmitSound("Hero_Magnataur.Skewer.Target")
     end
-    v:SetAbsOrigin(caster:GetAbsOrigin()+(direction*speed)+RandomVector(5))
-    v:AddNewModifier(caster,ability,"modifier_magnus_skewer_target",{duration = 1/30})
+    --v:SetAbsOrigin(caster:GetAbsOrigin()+(direction*speed)+RandomVector(5))
+    v:AddNewModifier(caster,ability,"modifier_magnus_skewer_target",{duration = 2*FrameTime()})
     v:AddNewModifier(caster,ability,"modifier_magnus_skewer_target_slow",{duration = ability:GetSpecialValueFor("slow_duration")})
   end
 
@@ -86,6 +92,13 @@ end
 
 function modifier_magnus_skewer:OnDestroy()
   if IsServer() then
+
+    local caster = self:GetCaster()
+    local ability = self:GetAbility()
+
+
+    Physics2D:SetStaticVelocity(caster,"magnataur_skewer",Vec(0))
+
     ParticleManager:DestroyParticle(self.particle, false)
     ParticleManager:ReleaseParticleIndex(self.particle)
 
@@ -99,6 +112,23 @@ function modifier_magnus_skewer:OnDestroy()
 end
 
 modifier_magnus_skewer_target = class({})
+
+function modifier_magnus_skewer_target:OnCreated()
+  if IsServer() then
+    self:StartIntervalThink(FrameTime())
+  end
+end
+function modifier_magnus_skewer_target:OnIntervalThink()
+  Physics2D:ClearPhysicsVelocity(self:GetParent())
+  Physics2D:AddPhysicsVelocity(self:GetParent(),Physics2D:GetStaticVelocity(self:GetCaster()))
+end
+
+function modifier_magnus_skewer_target:OnDestroy()
+  if IsServer() then
+    Physics2D:ClearPhysicsVelocity(self:GetParent())
+    --Physics2D:SetStaticVelocity(self:GetParent(),"magnataur_skewer",Vec(0))
+  end
+end
 
 modifier_magnus_skewer_target_slow = class({})
 
@@ -200,53 +230,45 @@ function magnataur_special_side:OnSpellStart()
   local caster = self:GetCaster()
   local ability = self
   self:GetCaster():EmitSound("Hero_Magnataur.ShockWave.Particle")
+  StoreSpecialKeyValues(self)
 
-  local projectile = {
-    EffectName = "particles/magnus/magnataur_shockwave.vpcf",
-    --EffectName = "particles/storm/stormspirit_base_attack.vpcf",
-    --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-    --EeffectName = "",
-    --vSpawnOrigin = caster:GetAbsOrigin(),
-    vSpawnOrigin = caster:GetAbsOrigin()+Vector(0,0,50),
-    fDistance = self:GetSpecialValueFor("range"),
-    fStartRadius = self:GetSpecialValueFor("radius"),
-    fEndRadius = self:GetSpecialValueFor("radius"),
-    Source = caster,
-    fExpireTime = self:GetSpecialValueFor("range")/self:GetSpecialValueFor("projectile_speed"),
-    vVelocity = self.mouseVector * self:GetSpecialValueFor("projectile_speed"), -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_NOTHING ,
-    bMultipleHits = false,
-    bIgnoreSource = true,
-    TreeBehavior = PROJECTILES_NOTHING,
-    bCutTrees = false,
-    bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_NOTHING,
-    GroundBehavior = PROJECTILES_NOTHING,
-    fGroundOffset = 0,
-    nChangeMax = 1,
-    bRecreateOnChange = true,
-    bZCheck = true,
-    bGroundLock = false,
-    bProvidesVision = true,
-    iVisionRadius = self:GetSpecialValueFor("radius"),
-    iVisionTeamNumber = caster:GetTeam(),
-    bFlyingVision = false,
-    fVisionTickTime = .1,
-    fVisionLingerDuration = 1,
-    draw = false,--IsInToolsMode(),--             draw = {alpha=1, color=Vector(200,0,0)},
-
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
-    OnUnitHit = function(self, unit)
-      caster:EmitSound("Hero_Magnataur.ShockWave.Target")
-      local damageTable = {
-        victim = unit,
-        attacker = caster,
-        damage = ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-        damage_type = DAMAGE_TYPE_MAGICAL,
-        ability = ability,
-      }
-      ApplyDamage(damageTable)
-    end,
+  local projectileTable = 
+    { 
+      vDirection = ability.mouseVector,
+      hCaster = caster,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flMaxDistance = ability.range,
+      sEffectName = "particles/magnus/magnataur_shockwave.vpcf",
+      PlatformBehavior = PROJECTILES_NOTHING,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_NOTHING,
+      UnitTest = function(projectile, unit) return unit.IsSmashUnit and unit:IsRealHero() and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit) 
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage = ability.damage + RandomInt(0,ability.damage_offset),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+        local casterLoc = caster:GetAbsOrigin()
+        caster:SetAbsOrigin(projectile.location)
+        ApplyDamage(damageTable)
+        caster:SetAbsOrigin(casterLoc)
+        
+  
+        caster:EmitSound("Hero_Magnataur.ShockWave.Target")
+  
+        local nFXIndex = ParticleManager:CreateParticle("particles/units/heroes/hero_magnataur/magnataur_shockwave_hit.vpcf", PATTACH_CUSTOMORIGIN, unit)
+        ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", projectile.location, true )
+        Timers:CreateTimer(0.5,function()
+          ParticleManager:DestroyParticle(nFXIndex,false)
+          ParticleManager:ReleaseParticleIndex( nFXIndex )
+        end)
+      end,
     }
-  Projectiles:CreateProjectile(projectile)
+  Physics2D:CreateLinearProjectile(projectileTable) 
+
 end

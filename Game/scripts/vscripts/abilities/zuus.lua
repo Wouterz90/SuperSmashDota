@@ -3,7 +3,7 @@ function zuus_special_top:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_4, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_4, rate=self:GetCastPoint()/0.2})
   if caster.jumps > 2 then return false end
   return true
 end
@@ -83,7 +83,7 @@ function zuus_special_side:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_1, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_1, rate=self:GetCastPoint()/0.2})
   return true
 end
 
@@ -94,116 +94,63 @@ end
 
 function zuus_special_side:OnSpellStart()
   local caster = self:GetCaster()
+  StoreSpecialKeyValues(self)
   local range = self:GetSpecialValueFor("range")
   local radius = self:GetSpecialValueFor("radius") *2
   local vector = self.mouseVector
   local ability = self
-  local direction
-  if caster:GetForwardVector().x > 0 then
-    direction = Vector(1,0,0)
-  else
-    direction = Vector(-1,0,0)
-  end
-  ability.targets = {}
-  local bounceCenter
-  --  print(radius)
+
+  -- Shoot a linear projectile that searches for target, once acquired, it becomes a tracking projectile till another unit is closer and in search range 
+
+  local projectileTable = 
+    { 
+      vDirection = ability.mouseVector,
+      hCaster = caster,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flDuration = ability.max_duration,
+      sEffectName = "particles/units/heroes/hero_zuus/zuus_base_attack.vpcf",
+      PlatformBehavior = PROJECTILES_BOUNCE,
+      OnPlatformHit = function(projectile,unit)
+        caster:EmitSound("Hero_Disruptor.ThunderStrike.Target") 
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit.IsSmashUnit and unit:IsRealHero() and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit) 
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage = ability.damage + RandomInt(0,ability.damage_offset),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+        local casterLoc = caster:GetAbsOrigin()
+        caster:SetAbsOrigin(projectile.location)
+        ApplyDamage(damageTable)
+        caster:SetAbsOrigin(casterLoc)
+        
+        ability.target = unit
   
-
-  --Create a unit and drop it till it hits a platform
-  local dummy = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin()+Vector(0,0,range),false,caster,caster:GetOwner(),caster:GetTeamNumber())
-  dummy:SetAbsOrigin(caster:GetAbsOrigin()+direction*50)
-  dummy:FindAbilityByName("dummy_unit"):SetLevel(1)
-  dummy:AddNewModifier(caster,self,"modifier_zuus_arc_dummy",{})
-
-
+        caster:EmitSound("Hero_Zuus.ArcLightning.Target")
   
-
-  Timers:CreateTimer(1/32,function()
-    if not dummy:isOnPlatform() then
-      
-      if dummy:GetAbsOrigin().z < 300 then return end
-      dummy:SetAbsOrigin(dummy:GetAbsOrigin()+Vector(direction.x*(radius/8),0,-radius/8))
-      return 1/32
-    else
-      
-      local bounceCenter = dummy:GetAbsOrigin()+direction*radius+Vector(0,0,-20 )
-      -- Make the unit bounce on a platform
-      local halfarcTable = {
-        Vector(-8/8,0,0) * radius,
-        Vector(-7/8,0,1/16) * radius,
-        Vector(-6/8,0,2/16) * radius,
-        Vector(-5/8,0,3/16) * radius,
-        Vector(-4/8,0,4/16) * radius,
-        Vector(-3/8,0,5/16) * radius,
-        Vector(-2/8,0,6/16) * radius,
-        Vector(-1/8,0,7/16) * radius,
-        Vector(0/8,0,8/16) * radius,
-        Vector(1/8,0,7/16) * radius,
-        Vector(2/8,0,6/16) * radius,
-        Vector(3/8,0,5/16) * radius,
-        Vector(4/8,0,4/16) * radius,
-        Vector(5/8,0,3/16) * radius,
-        Vector(6/8,0,2/16) * radius,
-        Vector(7/8,0,1/16) * radius,
-      }
-
-      --Invert the x values if direction is negative
-      if direction.x < 0 then
-        for k,v in pairs (halfarcTable) do
-          halfarcTable[k] = Vector(-1*v.x,v.y,v.z)
+        local nFXIndex = ParticleManager:CreateParticle( "particles/units/heroes/hero_zuus/zuus_base_attack_explosion.vpcf", PATTACH_CUSTOMORIGIN, unit)
+        ParticleManager:SetParticleControlEnt( nFXIndex, 0, unit, PATTACH_POINT_FOLLOW, "attach_hitloc", projectile.location, true )
+        Timers:CreateTimer(0.5,function()
+          ParticleManager:DestroyParticle(nFXIndex,false)
+          ParticleManager:ReleaseParticleIndex( nFXIndex )
+        end)
+      end,
+      OnProjectileThink = function(projectile,location)
+        local units = FindUnitsInRadius(caster:GetTeam(), location, nil, ability.search_radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO, 0, FIND_CLOSEST, false)
+        units = FilterUnitsBasedOnHeight(units,location,ability.search_radius)
+        if units[1] then
+          projectile.target = units[1]
+          projectile.IsProjectile = "Tracking"
         end
-      end
-      caster:EmitSound("Hero_Disruptor.ThunderStrike.Target")
-      local bouncecontroller = 0
-      Timers:CreateTimer(1/32,function()
-        -- Check for new targets
-        local units = FindUnitsInRadius(caster:GetTeam(), dummy:GetAbsOrigin(), nil, radius/2, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-        units = FilterUnitsBasedOnHeight(units,dummy:GetAbsOrigin(),radius/2)
-        for k,v in pairs (units) do
-          if not self.targets[v] then
-            self.targets[v] = true
-            local damageTable = {
-              victim = v,
-              attacker = caster,
-              damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-              damage_type = DAMAGE_TYPE_MAGICAL,
-              ability = ability,
-            }
-            ApplyDamage(damageTable)
-            UTIL_Remove(dummy)
-            return
-          end
-        end
-        bouncecontroller = bouncecontroller +1
-        if bouncecontroller > 16 then
-          -- Remove if no longer bouncing on a platform
-          if not dummy:isOnPlatform() then
-            UTIL_Remove(dummy)
-            --ParticleManager:DestroyParticle(particle,true)
-            --ParticleManager:ReleaseParticleIndex(particle)
-            return nil
-          end
-          bouncecontroller = 1
-          bounceCenter = bounceCenter + direction * (radius*2)
-          -- Bouncing sound
-          caster:EmitSound("Hero_Disruptor.ThunderStrike.Target") 
-        end
-        dummy:SetAbsOrigin(bounceCenter+halfarcTable[bouncecontroller])
-        return 1/32
-      end)
-    end
-  end)
-end
-
-LinkLuaModifier("modifier_zuus_arc_dummy","abilities/zuus.lua",LUA_MODIFIER_MOTION_NONE)
-modifier_zuus_arc_dummy = class({})
-
-
-function modifier_zuus_arc_dummy:GetEffectName()
-  return "particles/zuus/zuus_bouncing_arc.vpcf"
-end
-function modifier_zuus_arc_dummy:GetEffectAttachType()
-  return PATTACH_ABSORIGIN
+      end,
+    }
+  Physics2D:CreateLinearProjectile(projectileTable) 
+         
 end
 
 zuus_special_bottom = class({})
@@ -212,7 +159,7 @@ function zuus_special_bottom:OnAbilityPhaseStart()
   if not self:GetCaster():CanCast(self) then return false end
   if not self:IsCooldownReady() then return false end
   local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_1, rate=1})
+  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_1, rate=self:GetCastPoint()/0.4})
   return true
 end
 
@@ -223,147 +170,62 @@ end
 
 function zuus_special_bottom:OnSpellStart()
   local caster = self:GetCaster()
-  local range = self:GetSpecialValueFor("range")
-  local radius = self:GetSpecialValueFor("radius")
+  StoreSpecialKeyValues(self)
+  local range = self.range
+  local radius = self.radius
   local vector = self.mouseVector
   local ability = self
-  local direction
-   if caster:GetForwardVector().x > 0 then
-    direction = Vector(1,0,0)
-  else
-    direction = Vector(-1,0,0)
-  end
-
+  local direction = caster:GetForwardVector()
   local loc = caster:GetAbsOrigin() + direction * range
+  loc.z = 2500
   --caster:EmitSound("Ability.LightStrikeArray")
 
-  -- Look for highest platform with the location to land the spell on 
-  local plat
-  local z
-  for i=#platform,1,-1 do
-    if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
-      z = platform[i]:GetAbsOrigin().z + platform[i].height
-      plat = platform[i]
-      break
-    end
-  end
+  -- Fire a bolt from 2500 height
+  -- A projectile is used to determine that first platform
+
+  local projectileTable = 
+    { 
+      vDirection = Vector(0,0,-1),
+      hCaster = caster,
+      vSpawnOrigin = loc,
+      flSpeed = 6000,
+      flRadius = ability.radius,
+      sEffectName = "",
+      PlatformBehavior = PROJECTILES_DESTROY,
+      OnPlatformHit = function(projectile,platform)
+        DestroyPlatform(platform,5)
+      end,
+      UnitBehavior = PROJECTILES_NOTHING,
+      UnitTest = function(projectile, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit)
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage =  ability.damage + RandomInt(0,ability.damage_offset),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+        local casterLoc = caster:GetAbsOrigin()
+        caster:SetAbsOrigin(projectile.location)
+        ApplyDamage(damageTable)
+        caster:SetAbsOrigin(casterLoc)
+      end,
+      OnFinish = function(projectile)
+        loc = projectile.location
+        local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_zuus/zuus_lightning_bolt.vpcf", PATTACH_WORLDORIGIN, caster)
     
-  if plat then
-    DestroyPlatform(plat,10)
-  end
-
-  if not z then z=0 end
-
-  loc = Vector(loc.x,0,z)
-
+        ParticleManager:SetParticleControl(particle, 0, loc)
+        ParticleManager:SetParticleControl(particle, 1, Vector(loc.x,loc.y,2500))
+        ParticleManager:SetParticleControl(particle, 2, loc)
+      
+        Timers:CreateTimer(1,function()
+          ParticleManager:DestroyParticle(particle,false)
+          ParticleManager:ReleaseParticleIndex(particle)
+        end)
+      end,
+    }
+  Physics2D:CreateLinearProjectile(projectileTable)
+  
   caster:EmitSound("Hero_Zuus.LightningBolt")
-  local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_zuus/zuus_lightning_bolt.vpcf", PATTACH_WORLDORIGIN, caster)
-    
-  ParticleManager:SetParticleControl(particle, 0, loc)
-  ParticleManager:SetParticleControl(particle, 1, Vector(loc.x,loc.y,2500))
-  ParticleManager:SetParticleControl(particle, 2, loc)
 
-  Timers:CreateTimer(1,function()
-    ParticleManager:DestroyParticle(particle,false)
-    ParticleManager:ReleaseParticleIndex(particle)
-  end)
-
-  local units = FindUnitsInRadius(caster:GetTeam(),loc, nil, self:GetSpecialValueFor("radius"), DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-  --units = FilterUnitsBasedOnHeight(units,loc,radius) -- Not using this, we check if the unit is higher than the location
-  for k,v in pairs(units) do
-    if v:GetAbsOrigin().z >= loc.z - 50 then
-      local damageTable = {
-        victim = v,
-        attacker = caster,
-        damage = self:GetSpecialValueFor("damage") + RandomInt(0,self:GetSpecialValueFor("damage_offset")),
-        damage_type = DAMAGE_TYPE_MAGICAL,
-        ability = self
-      } 
-      ApplyDamage(damageTable)
-    end
-  end
 end
-
---[[zuus_special_bottom = class({})
-
-function zuus_special_bottom:OnAbilityPhaseStart()
-  if not self:GetCaster():CanCast(self) then return false end
-  if not self:IsCooldownReady() then return false end
-  local caster = self:GetCaster()
-  StartAnimation(self:GetCaster(), {duration=self:GetCastPoint(), activity=ACT_DOTA_CAST_ABILITY_1, rate=1})
-  caster:EmitSound("Hero_Zuus.GodsWrath.PreCast")
-  return true
-end
-
-function zuus_special_bottom:OnAbilityPhaseInterrupted()
-  local caster = self:GetCaster()
-  caster:StopSound("Hero_Zuus.GodsWrath.PreCast")
-  EndAnimation(caster)
-end
-
-function zuus_special_bottom:OnSpellStart()
-  local caster = self:GetCaster()
-  local range = self:GetSpecialValueFor("range")
-  local radius = self:GetSpecialValueFor("radius")
-  local vector = self.mouseVector
-  local ability = self
-  
-  caster:EmitSound("Hero_Zuus.GodsWrath")
-  -- Get every hero
-  
-  for i=0, 3 do
-    local hero = PlayerResource:GetSelectedHeroEntity(i)
-
-    if hero and hero ~= caster then  
-
-      local loc = hero:GetAbsOrigin()
-      --caster:EmitSound("Ability.LightStrikeArray")
-
-      -- Look for highest platform with the location to land the spell on 
-      local plat
-      local z
-      for i=#platform,1,-1 do
-        if loc.x > platform[i]:GetAbsOrigin().x - platform[i].radius and loc.x < platform[i]:GetAbsOrigin().x + platform[i].radius then
-          z = platform[i]:GetAbsOrigin().z + platform[i].height
-          plat = platform[i]
-          break
-        end
-      end
-        
-      if plat then
-        DestroyPlatform(plat,10)
-      end
-        
-      if not z then z=0 end
-
-      loc = Vector(loc.x,0,z)
-
-      local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_zuus/zuus_lightning_bolt.vpcf", PATTACH_WORLDORIGIN, caster)
-        
-      ParticleManager:SetParticleControl(particle, 0, loc)
-      ParticleManager:SetParticleControl(particle, 1, Vector(loc.x,loc.y,2500))
-      ParticleManager:SetParticleControl(particle, 2, loc)
-
-      Timers:CreateTimer(1,function()
-        ParticleManager:DestroyParticle(particle,false)
-        ParticleManager:ReleaseParticleIndex(particle)
-      end)
-
-      local units = FindUnitsInRadius(caster:GetTeam(),loc, nil, self:GetSpecialValueFor("radius"), DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-      --units = FilterUnitsBasedOnHeight(units,loc,radius) -- Not using this, we check if the unit is higher than the location
-      for k,v in pairs(units) do
-        if v:GetAbsOrigin().z >= loc.z - 50 then
-          caster:EmitSound("Hero_Zuus.GodsWrath.Target")
-          local damageTable = {
-            victim = v,
-            attacker = caster,
-            damage = self:GetSpecialValueFor("damage") + RandomInt(0,self:GetSpecialValueFor("damage_offset")),
-            damage_type = DAMAGE_TYPE_MAGICAL,
-            ability = self
-          } 
-          ApplyDamage(damageTable)
-        end
-      end
-    end
-  end
-end]]
