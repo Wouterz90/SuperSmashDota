@@ -5,8 +5,7 @@ function GameMode:ConfirmHeroPick(keys)
 
   -- If this hero has been picked do nothing?
   --if not IsInToolsMode() then
-  print("DSSSSSSSSSSSSSSSS")
-    PrintTable(PlayerTables:GetAllTableValues(tostring(pID.."heroes"))) 
+
     if GameMode.heroesPicked[heroname] then DebugPrint(1,"[SMASH] [HERO SELECTION] Already picked by another player") return end
     if PlayerTables:GetTableValue(tostring(pID.."heroes"),heroname) then DebugPrint(1,"[SMASH] [HERO SELECTION] Already picked in another round") return end
     if GameMode.playersPicked[pID] then return end
