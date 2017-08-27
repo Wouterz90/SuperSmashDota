@@ -18,7 +18,7 @@ function MapSmall()
 
   i= 2
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform512_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[i]:SetAbsOrigin(Vector(200,0,900))
+  platform[i]:SetAbsOrigin(Vector(650,0,900))
   platform[i].height = 64
   platform[i].mapRadius = 1024
   platform[i].radius = 256
@@ -34,7 +34,7 @@ function MapSmall()
       
   i = 3
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform512_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[i]:SetAbsOrigin(Vector(-000,0,1400))
+  platform[i]:SetAbsOrigin(Vector(-650,0,900))
   platform[i].height = 64
   platform[i].mapRadius = 1024
   platform[i].radius = 276
@@ -44,21 +44,14 @@ function MapSmall()
   platform[i].IsPassable = true
   platform[i].velocity = Vec(0,0)
   platform[i].unitsOnPlatform = {}
+  --MovePlatform(platform[i],6,"up",4)
 
   Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"Platform")
-  --[[
-  platform[i].collider = Physics:AddCollider(tostring(i), Physics:ColliderFromProfile("platform"))
-  local vectors = {Vector(-platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,platform[i].height),Vector(-platform[i].radius,0,platform[i].height)}
-  vectors[1] = vectors[1] + platform[i]:GetAbsOrigin() 
-  vectors[2] = vectors[2] + platform[i]:GetAbsOrigin() 
-  vectors[3] = vectors[3] + platform[i]:GetAbsOrigin() 
-  vectors[4] = vectors[4] + platform[i]:GetAbsOrigin() 
-  platform[i].collider.box = vectors
-  MovePlatform(platform[3],6,"up",4)]]
+
   
   i = 4
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/round_ball_360x3.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[i]:SetAbsOrigin(Vector(-500,0,1100))
+  platform[i]:SetAbsOrigin(Vector(0,0,1200))
   --MakePhysicsUnit(platform[i])
   platform[i].radius = 140
   platform[i].IsPlatform = true
@@ -67,21 +60,21 @@ function MapSmall()
   platform[i].colliderName = tostring(i)
   platform[i].unitsOnPlatform = {}
   Physics2D:CreateObject("circle",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius,platform[i].radius,"Platform")
+  --MovePlatform(platform[i],6,"down",4)
   --platform[i].velocity = Vec(-4,0)
 
-
+  --[[
   i = 5
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/round_ball_360x3.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   platform[i]:SetAbsOrigin(Vector(700,0,1500))
-  --MakePhysicsUnit(platform[i])
   platform[i].radius = 140
   platform[i].IsPlatform = true
   platform[i].IsPassable = false
   platform[i].isDestructable = true
   platform[i].colliderName = tostring(i)
   platform[i].unitsOnPlatform = {}
-  Physics2D:CreateObject("circle",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius,platform[i].radius,"platform")
-  --platform[i].velocity = Vec(0,-3)
+  Physics2D:CreateObject("circle",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius,platform[i].radius,"platform")]]  
+
 
 end
 
@@ -89,67 +82,58 @@ function MapMedium()
   local i = 1
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/base_platform_medium.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
   platform[i]:SetAbsOrigin(Vector(0,0,256))
-  platform[i].height = 256
+  platform[i].height = 512
   platform[i].mapRadius = 800
   platform[i].radius = 1536
   platform[i].colliderName = tostring(i)
+  platform[i].IsPlatform = true
+  platform[i].unitsOnPlatform = {}
 
-  platform[i].collider = Physics:AddCollider(tostring(i), Physics:ColliderFromProfile("baseplatform"))
-  local vectors = {Vector(-platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,platform[i].height),Vector(-platform[i].radius,0,platform[i].height)}
-  vectors[1] = vectors[1] + platform[i]:GetAbsOrigin() 
-  vectors[2] = vectors[2] + platform[i]:GetAbsOrigin() 
-  vectors[3] = vectors[3] + platform[i]:GetAbsOrigin() 
-  vectors[4] = vectors[4] + platform[i]:GetAbsOrigin() 
-  platform[i].collider.box = vectors
+  Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"BasePlatform")
 
   i = 2
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[i]:SetAbsOrigin(Vector(1000,0,1300))
+  platform[i]:SetAbsOrigin(Vector(950,0,1200))
+  platform[i].height = 64
+  platform[i].mapRadius = 1024
   platform[i].radius = 128
-  platform[i].height = 32
-  MovePlatform(platform[2],6,"down",3)
   platform[i].colliderName = tostring(i)
-
-  platform[i].collider = Physics:AddCollider(tostring(i), Physics:ColliderFromProfile("platform"))
-  local vectors = {Vector(-platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,platform[i].height),Vector(-platform[i].radius,0,platform[i].height)}
-  vectors[1] = vectors[1] + platform[i]:GetAbsOrigin() 
-  vectors[2] = vectors[2] + platform[i]:GetAbsOrigin() 
-  vectors[3] = vectors[3] + platform[i]:GetAbsOrigin() 
-  vectors[4] = vectors[4] + platform[i]:GetAbsOrigin() 
-  platform[i].collider.box = vectors
+  platform[i].isDestructable = true
+  platform[i].IsPlatform = true
+  platform[i].IsPassable = true
+  platform[i].unitsOnPlatform = {}
+  --
+  Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"Platform")
+  MovePlatform(platform[i],6,Vec(0,-1),3)
 
   
   i = 3
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform512_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[i]:SetAbsOrigin(Vector(0,0,1000))
+  platform[i]:SetAbsOrigin(Vector(0,0,1200))
+  platform[i].height = 64
+  platform[i].mapRadius = 1024
   platform[i].radius = 256
-  platform[i].height = 32
   platform[i].colliderName = tostring(i)
-
-  platform[i].collider = Physics:AddCollider(tostring(i), Physics:ColliderFromProfile("platform"))
-  local vectors = {Vector(-platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,platform[i].height),Vector(-platform[i].radius,0,platform[i].height)}
-  vectors[1] = vectors[1] + platform[i]:GetAbsOrigin() 
-  vectors[2] = vectors[2] + platform[i]:GetAbsOrigin() 
-  vectors[3] = vectors[3] + platform[i]:GetAbsOrigin() 
-  vectors[4] = vectors[4] + platform[i]:GetAbsOrigin() 
-  platform[i].collider.box = vectors
-
+  platform[i].isDestructable = true
+  platform[i].IsPlatform = true
+  platform[i].IsPassable = true
+  platform[i].unitsOnPlatform = {}
+  Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"Platform")
   --MovePlatform(platform[3],6,"up",3)
   i = 4
   platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-  platform[i]:SetAbsOrigin(Vector(-1000,0,1300))
+  platform[i]:SetAbsOrigin(Vector(-950,0,1200))
+  platform[i].height = 64
+  platform[i].mapRadius = 1024
   platform[i].radius = 128
-  platform[i].height = 32
   platform[i].colliderName = tostring(i)
-
-  platform[i].collider = Physics:AddCollider(tostring(i), Physics:ColliderFromProfile("platform"))
-  local vectors = {Vector(-platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,-platform[i].height), Vector(platform[i].radius,0,platform[i].height),Vector(-platform[i].radius,0,platform[i].height)}
-  vectors[1] = vectors[1] + platform[i]:GetAbsOrigin() 
-  vectors[2] = vectors[2] + platform[i]:GetAbsOrigin() 
-  vectors[3] = vectors[3] + platform[i]:GetAbsOrigin() 
-  vectors[4] = vectors[4] + platform[i]:GetAbsOrigin() 
-  platform[i].collider.box = vectors
-  MovePlatform(platform[4],6,"down",3)
+  platform[i].isDestructable = true
+  platform[i].IsPlatform = true
+  platform[i].IsPassable = true
+  platform[i].unitsOnPlatform = {}
+  --
+  Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"Platform")
+  MovePlatform(platform[i],6,Vec(0,-1),3)
 end
 
 function MapSmallWalls()
@@ -203,31 +187,38 @@ end
 
 function MapSmallDestructable()
   for i=0,8 do
+    
     platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-    platform[i]:SetAbsOrigin(Vector(-1024+i*256,0,512))
-    platform[i]:SetModelScale(1)
+    platform[i]:SetAbsOrigin(Vector(-1024+i*256,0,500))
+    platform[i].colliderName = tostring(i)
     platform[i].radius = 128
-    platform[i].height = 32
+    platform[i].height = 64
     platform[i].isDestructable = true
-    platform[i].canDropThrough = false
-    platform[i].mapRadius = 1536
+    platform[i].IsPlatform = true
+    platform[i].IsPassable = true
+    platform[i].mapRadius = 800
     platform[i].unitsOnPlatform = {}
+    platform[i].velocity = Vec(0,0)
+    Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"Platform")
   end
-  platform[1].mapRadius = 1536
+  platform[1].mapRadius = 800
 end
 
 function MapLargeDestructable()
   for i=0,12 do
     platform[i] = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/platform256_128_64.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-    platform[i]:SetAbsOrigin(Vector(-1536+i*256,0,512))
-    platform[i]:SetModelScale(1)
+    platform[i]:SetAbsOrigin(Vector(-1024+i*256,0,256))
+    platform[i].colliderName = tostring(i)
     platform[i].radius = 128
-    platform[i].height = 32
+    platform[i].height = 64
     platform[i].isDestructable = true
-    platform[i].canDropThrough = false
-    platform[i].mapRadius = 1536
+    platform[i].IsPlatform = true
+    platform[i].IsPassable = true
+    platform[i].mapRadius = 800
     platform[i].unitsOnPlatform = {}
+    Physics2D:CreateObject("AABB",platform[i]:GetAbsOrigin(),false,false,platform[i],platform[i].radius*2,platform[i].height,"Platform")
   end
+  platform[1].mapRadius = 800
 end
 
 function MapFerrisWheel()

@@ -12,12 +12,10 @@
 		{
 			_class = "C_OP_RenderModels"
 			m_nManualFrameField = 18
-			m_nSubModelField = 19
-			m_nBodyGroupField = 19
 			m_bManualAnimFrame = true
 			m_bOrientZ = true
 			m_nSkin = 1
-			m_nModelCP = 1
+			m_nModelCP = 9
 			m_hOverrideMaterial = resource:"materials/models/heroes/storm_spirit/storm_v2_staticremnant_2.vmat"
 			m_bSuppressTint = true
 			m_ModelList = 
@@ -29,6 +27,7 @@
 			m_bAnimated = true
 			m_bForceDrawInterlevedWithSiblings = true
 			m_nLOD = 1
+			m_bOriginalModel = true
 		},
 	]
 	m_Operators = 

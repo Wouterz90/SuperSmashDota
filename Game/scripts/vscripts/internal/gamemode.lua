@@ -13,7 +13,9 @@ function GameMode:_InitGameMode()
   GameRules:SetPreGameTime( PRE_GAME_TIME)
   -- Set the time 0 or 10 depending on ally selection
 
+  GameRules:SetCustomGameAllowHeroPickMusic(false )
   GameRules:SetShowcaseTime(0)
+  GameRules:SetStrategyTime(0)
   
   GameRules:SetPostGameTime( POST_GAME_TIME )
   GameRules:SetTreeRegrowTime( TREE_REGROW_TIME )

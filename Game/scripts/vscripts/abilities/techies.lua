@@ -37,126 +37,78 @@ function techies_special_side:OnSpellStart()
     else
       direction = Vector(-1,0,0)
     end
-    self.mineDummy = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/rolling_mine.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
-    self.mineDummy:SetAngles(0,0,90)
-    self.mineDummy:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,150))
-    self.mine = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin(),false,caster,caster:GetOwner(),caster:GetTeamNumber())
+    self.mine = SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/rolling_mine.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
+    self.mine:SetAngles(0,0,90)
     self.mine:SetAbsOrigin(caster:GetAbsOrigin()+Vector(0,0,150))
-    self.mine:FindAbilityByName("dummy_unit"):SetLevel(1)
-    self.mine:AddNewModifier(caster,self,"modifier_basic",{})
-    self.mine:AddNewModifier(caster,self,"modifier_techies_rolling_mine",{}).direction = direction
+    
+    --self.mine:FindAbilityByName("dummy_unit"):SetLevel(1)
+    Physics2D:CreateObject("circle",self.mine:GetAbsOrigin(),true,false,self.mine,50,0,"Unit")
+    self.mine.IsSmashUnit = true
+    self.mine.NoFriction = true
+    Physics2D:AddPhysicsVelocity(self.mine,Vec(caster:GetForwardVector().x * 15),0)
 
     local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_techies/techies_remote_mine_plant.vpcf", PATTACH_CUSTOMORIGIN_FOLLOW, self.mineDummy)
     ParticleManager:SetParticleControlEnt(particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_remote", caster:GetAbsOrigin(), true)
-    ParticleManager:SetParticleControl(particle, 1, self.mineDummy:GetAbsOrigin())
-    ParticleManager:SetParticleControl(particle, 4, self.mineDummy:GetAbsOrigin())
+    ParticleManager:SetParticleControl(particle, 1, self.mine:GetAbsOrigin())
+    ParticleManager:SetParticleControl(particle, 4, self.mine:GetAbsOrigin())
     ParticleManager:ReleaseParticleIndex(particle)
 
     self:EndCooldown()
   else
-    self.mine:RemoveModifierByName("modifier_techies_rolling_mine")
+    self:BlowUpMine()
   end
   
-  
 end
 
-modifier_techies_rolling_mine = class({})
-
-function modifier_techies_rolling_mine:OnCreated()
-  if IsServer() then
-    StoreSpecialKeyValues(self,self:GetAbility())
-    self:StartIntervalThink(1/30)
-  end
-end
-
-function modifier_techies_rolling_mine:OnRemoved()
-  if IsServer() then
-    local mine = self:GetParent()
-    local origin = mine:GetAbsOrigin()
-    local mineDummy = self:GetAbility().mineDummy
-
-    if IsValidEntity(self:GetParent()) then
-      mine:StopSound("Hero_EarthSpirit.RollingBoulder.Loop")
-      mine:StopSound("DOTA_Item.Radiance.Target.Loop")
-
-      local particle = ParticleManager:CreateParticle("particles/techies/techies_remote_mines_detonate.vpcf", PATTACH_ABSORIGIN, self:GetCaster())
-      ParticleManager:SetParticleControl(particle, 0, origin)
-      ParticleManager:SetParticleControl(particle, 1, Vector(self.radius, 1, 1))
-      ParticleManager:SetParticleControl(particle, 3, origin)
-      ParticleManager:ReleaseParticleIndex(particle)
-
-      self:GetCaster():EmitSound("Hero_Techies.LandMine.Detonate")
-
-      local platforms = FindPlatformsInRadius(origin,self.radius/6) 
-      for k,v in pairs(platforms) do
-        DestroyPlatform(v)
-      end
-
-      local units = FindUnitsInRadius(self:GetCaster():GetTeam(), self:GetParent():GetAbsOrigin(), nil, self.radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
-      units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),self.radius)
-      for k,v in pairs(units) do
-        local damageTable = {
-          victim = v,
-          attacker = self:GetCaster(),
-          damage = self.damage + RandomInt(0,self.damage_offset),
-          damage_type = DAMAGE_TYPE_MAGICAL,
-          ability = self:GetAbility(),
-        }
-        local casterLoc = self:GetCaster():GetAbsOrigin()
-        self:GetCaster():SetAbsOrigin(origin)
-        ApplyDamage(damageTable)
-        self:GetCaster():SetAbsOrigin(casterLoc)
-      end
-      if (self:GetCaster():GetAbsOrigin() -mine:GetAbsOrigin()):Length() < self.radius then
-        local damageTable = {
-          victim = self:GetCaster(),
-          attacker = self:GetCaster(),
-          damage = 0.5*self.damage + RandomInt(0,self.damage_offset),
-          damage_type = DAMAGE_TYPE_MAGICAL,
-          ability = self:GetAbility(),
-        }
-        ApplyDamage(damageTable)
-      end
-    end
-
-    self:GetAbility():StartCooldown(self:GetAbility():GetCooldown(1))
-    CustomGameEventManager:Send_ServerToPlayer(self:GetCaster():GetPlayerOwner(),"show_cooldown",{sAbilityName = self:GetAbility():GetAbilityName(),ability = self:GetAbility():entindex(), nCooldown = self:GetAbility():GetCooldown(1)})
-    self:GetAbility().mine = nil
-    self:GetAbility().mineDummy = nil
-    UTIL_Remove(mineDummy)
-    Timers:CreateTimer(1,function()
-      UTIL_Remove(mine)
-    end)
-    
-  end
-end
-
-function modifier_techies_rolling_mine:OnIntervalThink()
-  local mine = self:GetParent()
-  local mineDummy = self:GetAbility().mineDummy
-  if mine:isOnPlatform() then
-    mine:StopSound("DOTA_Item.Radiance.Target.Loop")
-    mine:EmitSound("Hero_EarthSpirit.RollingBoulder.Loop")
-  else
-    mine:StopSound("Hero_EarthSpirit.RollingBoulder.Loop")
-    mine:EmitSound("DOTA_Item.Radiance.Target.Loop")
-  end
-  if mine:GetAbsOrigin().z < 100 then 
-    self:Destroy()
+function techies_special_side:BlowUpMine()
+  if not self.mine then return end
+  if self.mine:IsNull() then
+    UTIL_Remove(self.mine)
+    self.mine = nil
     return
   end
-  local platform = mine:isOnPlatform()
-  if platform then 
-    if platform:GetAngles().x ~= 0 then
-      self.direction = Vector(platform:GetAngles().x,0,0):Normalized()
-    end
+  local origin = self.mine:GetAbsOrigin()
+  local particle = ParticleManager:CreateParticle("particles/techies/techies_remote_mines_detonate.vpcf", PATTACH_ABSORIGIN, self:GetCaster())
+  ParticleManager:SetParticleControl(particle, 0, origin)
+  ParticleManager:SetParticleControl(particle, 1, Vector(self.radius, 1, 1))
+  ParticleManager:SetParticleControl(particle, 3, origin)
+  ParticleManager:ReleaseParticleIndex(particle)
+
+  self:GetCaster():EmitSound("Hero_Techies.LandMine.Detonate")
+
+  local platforms = FindPlatformsInRadius(origin,self.radius/6) 
+  for k,v in pairs(platforms) do
+    DestroyPlatform(v)
   end
-  
-  mine:SetAbsOrigin(mine:GetAbsOrigin()+self.direction*(self.rolling_speed/30))
-  mineDummy:SetAbsOrigin(mine:GetAbsOrigin()+Vector(0,0,50))
-  mineDummy:SetAngles(self:GetAbility().mineDummy:GetAngles()[1] + (10*self.direction.x) , self:GetAbility().mineDummy:GetAngles()[2],self:GetAbility().mineDummy:GetAngles()[3])
+
+  local units = FindUnitsInRadius(self:GetCaster():GetTeam(), self.mine:GetAbsOrigin(), nil, self.radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC, 0, 0, false)
+  units = FilterUnitsBasedOnHeight(units,self.mine:GetAbsOrigin(),self.radius)
+  for k,v in pairs(units) do
+    local damageTable = {
+      victim = v,
+      attacker = self:GetCaster(),
+      damage = self.damage + RandomInt(0,self.damage_offset),
+      damage_type = DAMAGE_TYPE_MAGICAL,
+      ability = self,
+    }
+    DealDamage(damageTable,self.mine:GetAbsOrigin())
+  end
+
+  if (self:GetCaster():GetAbsOrigin() -self.mine:GetAbsOrigin()):Length() < self.radius then
+    local damageTable = {
+      victim = self:GetCaster(),
+      attacker = self:GetCaster(),
+      damage = 0.5*self.damage + RandomInt(0,self.damage_offset),
+      damage_type = DAMAGE_TYPE_MAGICAL,
+      ability = self,
+    }
+    ApplyDamage(damageTable)
+  end
+
+  UTIL_Remove(self.mine)
+  self.mine = nil
+
 end
-    
 
 techies_special_bottom = class({})
 
@@ -194,8 +146,11 @@ function techies_special_bottom:OnSpellStart()
   local mine = CreateUnitByName("npc_dummy_unit",caster:GetAbsOrigin(),false,caster,caster:GetOwner(),caster:GetTeamNumber())
   mine:SetAbsOrigin(caster:GetAbsOrigin())
   mine:FindAbilityByName("dummy_unit"):SetLevel(1)
-  mine:AddNewModifier(caster,self,"modifier_basic",{})
+  Physics2D:CreateObject("AABB",mine:GetAbsOrigin(),true,false,mine,75,50,"Unit")
   mine:AddNewModifier(caster,self,"modifier_techies_land_mine_smash",{})
+  mine:AddNewModifier(caster,self,"modifier_basic",{})
+
+  mine.IsSmashUnit = true
 
 end
 
@@ -206,6 +161,7 @@ function modifier_techies_land_mine_smash:DeclareFunctions()
   {
     MODIFIER_PROPERTY_MODEL_CHANGE,
     MODIFIER_PROPERTY_MODEL_SCALE,
+
   }
   return funcs
 end
@@ -226,6 +182,8 @@ function modifier_techies_land_mine_smash:OnCreated()
     ParticleManager:SetParticleControl(particle, 0, self:GetParent():GetAbsOrigin())
     ParticleManager:SetParticleControl(particle, 3, self:GetParent():GetAbsOrigin())
     self:AddParticle(particle, false, false, -1, false, false)
+  else
+    self:GetParent().delta_z = -40
   end
 end
 
@@ -328,8 +286,8 @@ end
 modifier_blast_off_jump = class({})
 function modifier_blast_off_jump:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
-
+    
+    Physics2D:AddPhysicsVelocity(self:GetParent(),Vec(0,30))
     local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_techies/techies_blast_off_trail.vpcf", PATTACH_ABSORIGIN_FOLLOW, self:GetParent())
     ParticleManager:SetParticleControl(particle, 0, self:GetParent():GetAbsOrigin())
     ParticleManager:SetParticleControl(particle, 1, self:GetParent():GetAbsOrigin())
@@ -338,22 +296,10 @@ function modifier_blast_off_jump:OnCreated()
 end
 
 
-function modifier_blast_off_jump:OnIntervalThink()
-  -- handle lowest platform
-  if self:GetParent():isUnderPlatform() and self:GetCaster():HasModifier("modifier_basic") then return end
-  --  
-  self.count = (self.count or 0) + 1
-  
-  local vec = self:GetParent():GetAbsOrigin()
-  local z = vec[3] + Laws.flJumpSpeed * 1.25  * math.pow(Laws.flJumpDeceleration, self.count)
-  vec = Vector(vec[1],vec[2],z)
-  self:GetParent():SetAbsOrigin(vec)
-end
-  
 
 function modifier_blast_off_jump:OnDestroy()
   if IsServer() then
-    self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
+    
     self:GetParent():AddNewModifier(self:GetParent(),self:GetAbility(),"modifier_blast_off_explosive_landing",{})
   end
 end
@@ -371,7 +317,7 @@ function modifier_blast_off_explosive_landing:OnDestroy()
   if IsServer() then
     self:GetParent():EmitSound("Hero_Techies.Suicide")
 
-    local origin = self:GetParent():GetAbsOrigin()
+    local origin = self:GetParent():GetAbsOrigin() -Vec(0,50)
     local particle = ParticleManager:CreateParticle("particles/techies/techies_remote_mines_detonate.vpcf", PATTACH_ABSORIGIN, self:GetCaster())
     ParticleManager:SetParticleControl(particle, 0, origin)
     ParticleManager:SetParticleControl(particle, 1, origin)
@@ -407,7 +353,7 @@ function modifier_blast_off_explosive_landing:OnDestroy()
 end
 
 function modifier_blast_off_explosive_landing:OnIntervalThink()
-  if self:GetParent():isOnPlatform() then
+  if self:GetParent():HasModifier("modifier_on_platform") then
     self:Destroy()
   end
 end

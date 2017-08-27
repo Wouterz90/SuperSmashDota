@@ -141,39 +141,51 @@
 	[
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_e.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_f.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_g.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_h.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_i.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_j.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_glow_c.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_off_terror_smoke_swrl.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_off_terror_head_glow.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_black.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_blackb.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_white.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror_glowsoft.vpcf"

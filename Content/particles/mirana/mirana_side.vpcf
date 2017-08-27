@@ -41,6 +41,7 @@
 			m_nField = 4
 			m_RateMin = 1.0
 			m_RateMax = 2.0
+			m_bDisableOperator = true
 		},
 		{
 			_class = "C_OP_FadeInSimple"

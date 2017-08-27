@@ -22,35 +22,39 @@ function spawnPlatform()
   platform = {}
   
   -- Get map name from nettable or pick it randomly
+  local mapnames = {
+  [1] = "MapSmall",
+  [2] = "MapMedium",
+}
   --
-  mapnames2 = {
+ local mapnames2 = {
     [1] = "MapSmall",
     [2] = "MapSmallDestructable",
-    [3] = "MapSliders",
+    --[[[3] = "MapSliders",
     [4] = "MapSmallFunnel",
     [5] = "MapFerrisWheel",
-    [6] = "MapPyramidSmall",
+    [6] = "MapPyramidSmall",]]
   }
-  mapnames3 = {
+  local mapnames3 = {
     [1] = "MapSmall",
     [2] = "MapSmallDestructable",
     [3] = "MapMedium",
     [4] = "MapLargeDestructable",
-    [5] = "MapSliders",
+    --[[[5] = "MapSliders",
     [6] = "MapFerrisWheel",
     [7] = "MapPyramidSmall",
     [8] = "MapPyramidLarge",
-    [9] = "MapSmallFunnel",
+    [9] = "MapSmallFunnel",]]
   }
-  mapnames4 = {
+  local mapnames4 = {
     [1] = "MapMedium",
     [2] = "MapLargeDestructable",
-    [3] = "MapSliders",
+    --[[3] = "MapSliders",
     [4] = "MapFerrisWheel",
-    [5] = "MapPyramidLarge",
+    [5] = "MapPyramidLarge",]]
   }
   if PlayerResource:GetTeamPlayerCount() == 1 then
-    mapname = "MapSmall"--mapnames3[RandomInt(1,#mapnames3)]
+    mapname =  mapnames3[RandomInt(1,#mapnames3)]
   elseif PlayerResource:GetTeamPlayerCount() == 2 then
     mapname = mapnames2[RandomInt(1,#mapnames2)]
   elseif PlayerResource:GetTeamPlayerCount() == 3 then
@@ -73,20 +77,10 @@ function ClearPlatforms()
   platform = nil
 end
 
-function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirection inputs are (up,down,left,right)
+function MovePlatform(hPlatform,flSpeed,vDirection,flTimeTilLReverse) -- sDirection inputs are (up,down,left,right)
   DebugPrint(1,"[SMASH] [PLATFORMS] MovePlatform")
-  local directions = {
-    up = Vector(0,0,1),
-    down = Vector(0,0,-1),
-    left = Vector(-1,0,0),
-    right = Vector(1,0,0),
-  }
+  local direction = vDirection:Normalized()
 
-  if not directions[sDirection] then
-    print("Directions is not properly passed, inputs are up,down,left,right as string") 
-    return
-  end
-  local direction = directions[sDirection]
 
   -- Start moving in the direction
   Timers:CreateTimer(FrameTime(),function()
@@ -98,28 +92,20 @@ function MovePlatform(hPlatform,flSpeed,sDirection,flTimeTilLReverse) -- sDirect
       hPlatform.count = hPlatform.count + 1
     end
     -- Turn around
-    if not flTimeTilLReverse or hPlatform.count > flTimeTilLReverse * 32 then
-      if sDirection == "up" or sDirection == "down" then
-        direction.z = direction.z*-1
-      else
-        direction.x = direction.x*-1
-      end
+    if flTimeTilLReverse and hPlatform.count > flTimeTilLReverse * 30 then
+      direction = direction * -1
       hPlatform.count = 0 
     end
 
     hPlatform:SetAbsOrigin(hPlatform:GetAbsOrigin() + direction * flSpeed)
-    hPlatform.collider.box[1] = hPlatform.collider.box[1] + direction * flSpeed
-    hPlatform.collider.box[2] = hPlatform.collider.box[2] + direction * flSpeed
-    hPlatform.collider.box[3] = hPlatform.collider.box[3] + direction * flSpeed
-    hPlatform.collider.box[4] = hPlatform.collider.box[4] + direction * flSpeed
-
-    hPlatform.collider.velocity = direction * flSpeed
-    hPlatform.collider.recalculate = true
-
-    --[[ Move the obstruction objects along
-    for k,v in pairs(hPlatform.obstructionObjects) do
-      v:SetAbsOrigin(v:GetAbsOrigin()+ direction * flSpeed)
-    end]]
+    --Physics2D:SetStaticVelocity(hPlatform,"platform_movement", direction * flSpeed)
+    for k,v in pairs(hPlatform.unitsOnPlatform) do
+      if not k:IsNull() then
+        --Physics2D:SetStaticVelocity(k,"platform_movement", direction * flSpeed)
+        k:SetAbsOrigin(k:GetAbsOrigin() + direction   * flSpeed)
+      end
+    end
+      
 
     return FrameTime()
   end)
@@ -167,7 +153,7 @@ function RotatePlatformAroundPoint(hPlatform,vBaseLocation,flRadius,flSpeed,bClo
     end
     hPlatform.oldPos = newPos
     hPlatform.rotationCount = count + direction
-    return 1/32
+    return FrameTime()
   end)
 end
 

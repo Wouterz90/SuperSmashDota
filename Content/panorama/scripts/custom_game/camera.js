@@ -6,7 +6,9 @@ var colorPlayer3 = "green"
 var colorPlayer4 = "yellow"
 var colorTeam1 = "red"
 var colorTeam2 = "blue"
+var ServerFrameTime = 1/30
 var debugging = 0
+var cameraHeight
 var camera = 1
 CameraSettings() // To instantly edit
 
@@ -86,18 +88,21 @@ function CameraSettings()
 	var camUnit = CustomNetTables.GetTableValue("settings","cameraUnit").value
 	
 	GameUI.SetCameraTargetPosition(Entities.GetAbsOrigin(camUnit),0.01)
-    //	GameUI.SetCameraTarget(camUnit);
+	
+    //GameUI.SetCameraTarget(camUnit);
 	
     if (Entities.GetAbsOrigin(camUnit)) 
 	{ 
-	  var height = Entities.GetAbsOrigin(camUnit)[2]
-      GameUI.SetCameraLookAtPositionHeightOffset(height-100);
+	  if (!cameraHeight) {cameraHeight = Entities.GetAbsOrigin(camUnit)[2]}
+	  h = Entities.GetAbsOrigin(camUnit)[2]
+	  cameraHeight = cameraHeight+((h-cameraHeight)/3)
+      GameUI.SetCameraLookAtPositionHeightOffset(cameraHeight);
     }
   }
   else 
   { 
-    //GameUI.SetCameraTarget(-1)
-    //GameUI.SetCameraLookAtPositionHeightOffset(700);
+    GameUI.SetCameraTarget(-1)
+    GameUI.SetCameraLookAtPositionHeightOffset(700);
   }
 
 
@@ -227,7 +232,7 @@ function CameraSettings()
   // Repeat and repeat
 	//if (camera == 1)
 	//{
-		$.Schedule(0.01, function(){CameraSettings();})
+		$.Schedule(0.001, function(){CameraSettings();})
 	//}
 }
 

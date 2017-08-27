@@ -12,6 +12,10 @@ items.categories = {
     "jump_rune", -- Bounty
     "regen_rune", --regen
   }
+  --[[creeps = {
+    --Throwable object that spawns a creep
+    "creep_egg",
+  }]]
 }
  
 RUNE_BONUS_ATTACKDAMAGE_FACTOR = 0.5
@@ -74,7 +78,7 @@ LinkLuaModifier("modifier_basic_attack_rune","items.lua",LUA_MODIFIER_MOTION_NON
 
 function modifier_basic_attack_rune:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 
@@ -90,7 +94,7 @@ function modifier_basic_attack_rune:OnIntervalThink()
   units = FilterUnitsBasedOnHeight(units,self:GetParent():GetAbsOrigin(),50)
   if units[1] and units[1]:GetUnitName() ~= "npc_dummy_unit" then
     units[1]:RemoveModifierByName(self:GetName().."_buff")
-units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
+    units[1]:AddNewModifier(self:GetParent(),nil,self:GetName().."_buff",{duration = Laws.flRuneDuration})
     units[1]:EmitSound("General.RunePickUp")
     UTIL_Remove(self:GetParent())
   end
@@ -111,7 +115,9 @@ function modifier_basic_attack_rune_buff:OnCreated()
 end
 
 function modifier_basic_attack_rune_buff:OnRefresh()
-  self:OnCreated()
+  if IsServer() then
+    self:SetDuration(Laws.flRuneDuration,false)
+  end
 end
 function modifier_basic_attack_rune_buff:OnDestroy()
   if IsServer() then
@@ -134,7 +140,7 @@ LinkLuaModifier("modifier_spell_cd_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
 
 function modifier_spell_cd_rune:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 
@@ -190,7 +196,7 @@ LinkLuaModifier("modifier_speed_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
 
 function modifier_speed_rune:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 
@@ -226,7 +232,9 @@ function modifier_speed_rune_buff:OnCreated()
   end
 end
 function modifier_speed_rune_buff:OnRefresh()
-  self:OnCreated()
+  if IsServer() then
+    self:SetDuration(Laws.flRuneDuration,false)
+  end
 end
 
 function modifier_speed_rune_buff:OnDestroy()
@@ -249,7 +257,7 @@ LinkLuaModifier("modifier_jump_rune","items.lua",LUA_MODIFIER_MOTION_NONE)
 
 function modifier_jump_rune:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 
@@ -285,7 +293,9 @@ function modifier_jump_rune_buff:OnCreated()
 end
 
 function modifier_jump_rune_buff:OnRefresh()  
-  self:OnCreated()
+  if IsServer() then
+    self:SetDuration(Laws.flRuneDuration,false)
+  end
 end
 
 function modifier_jump_rune_buff:OnDestroy()
@@ -315,7 +325,7 @@ end
 
 function modifier_regen_rune:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 
@@ -381,7 +391,7 @@ end
 
 function modifier_invis_rune:OnCreated()
   if IsServer() then
-    self:StartIntervalThink(1/32)
+    self:StartIntervalThink(FrameTime())
   end
 end
 
@@ -416,3 +426,4 @@ function modifier_invis_rune_buff:GetModifierInvisibilityLevel()
   end
   return self:GetStackCount()
 end
+

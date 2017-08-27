@@ -30,6 +30,7 @@
 			m_flAlphaScale = 10.0
 			m_flRadiusScale = 90.0
 			m_hTexture = resource:"materials/particle/beam_fire_02.vtex"
+			m_bDisableOperator = true
 		},
 	]
 	m_Operators = 
@@ -87,6 +88,12 @@
 		{
 			_class = "C_OP_ColorInterpolate"
 		},
+		{
+			_class = "C_OP_MaxVelocity"
+			m_flMaxVelocity = 9000.0
+			m_nOverrideCP = 2
+			m_nOverrideCPField = -1
+		},
 	]
 	m_Initializers = 
 	[
@@ -113,6 +120,7 @@
 		{
 			_class = "C_INIT_VelocityFromCP"
 			m_nControlPoint = 1
+			m_bDisableOperator = true
 		},
 		{
 			_class = "C_INIT_RandomRadius"
@@ -130,29 +138,16 @@
 	m_Children = 
 	[
 		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_trail_1.vpcf"
-		},
-		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_trail_2.vpcf"
-		},
-		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_trail_3.vpcf"
-		},
-		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_trail_1b.vpcf"
-		},
-		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_trail_1c.vpcf"
-		},
-		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_trail_1d.vpcf"
+			m_ChildRef = resource:"particles/units/heroes/hero_ogre_magi/ogre_magi_ignite_trail_1b.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_bEndCap = true
 			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_explosion.vpcf"
+			m_bDisableChild = true
 		},
 		{
-			m_ChildRef = resource:"particles/units/heroes/hero_batrider/batrider_flamebreak_launch.vpcf"
+			m_ChildRef = resource:"particles/units/heroes/hero_jakiro/jakiro_base_attack_fire_trail.vpcf"
 		},
 	]
 	m_controlPointConfigurations = 
@@ -182,6 +177,15 @@
 					m_entityName = "self"
 				},
 			]
+		},
+	]
+	m_ForceGenerators = 
+	[
+		{
+			_class = "C_OP_AttractToControlPoint"
+			m_fForceAmount = 1000000.0
+			m_fFalloffPower = 0.0
+			m_nControlPointNumber = 1
 		},
 	]
 }

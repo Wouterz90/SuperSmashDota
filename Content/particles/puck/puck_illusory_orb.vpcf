@@ -72,6 +72,7 @@
 	[
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_puck/puck_illusory_orb_main.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_puck/puck_illusory_orb_sphere_sparks.vpcf"
@@ -82,6 +83,7 @@
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_puck/puck_illusory_orb_launch.vpcf"
+			m_bDisableChild = true
 		},
 		{
 			m_ChildRef = resource:"particles/units/heroes/hero_puck/puck_illusory_orb_mist.vpcf"
@@ -96,6 +98,9 @@
 			m_flDelay = 2.35
 			m_ChildRef = resource:"particles/units/heroes/hero_puck/puck_illusory_orb_expire.vpcf"
 			m_bDisableChild = true
+		},
+		{
+			m_ChildRef = resource:"particles/units/heroes/hero_lich/lich_chain_frost_trail.vpcf"
 		},
 	]
 	m_controlPointConfigurations = 

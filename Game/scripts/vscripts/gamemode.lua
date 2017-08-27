@@ -32,7 +32,11 @@ BAREBONES_VERSION = "1.00"
 -- Set this to true if you want to see a complete debug output of all events/processes done by barebones
 -- You can also change the cvar 'barebones_spew' at any time.
 -- 0 is no debug calls, 1 is giving function names, 2 also includes timers and loops.
-LUA_DEBUG_SPEW = 0
+
+LUA_DEBUG_SPEW = 1
+--if not IsInToolsMode() then
+--  LUA_DEBUG_SPEW = 0
+--end
 --PANORAMA_DEBUG_SPEW = 0
 
 
@@ -151,15 +155,18 @@ function GameMode:OnAllPlayersLoaded()
   
 
   for i=0,3 do
-    if PlayerResource:IsValidPlayerID(i) then
+    if PlayerResource:IsValidTeamPlayerID(i) then
       local player = PlayerResource:GetPlayer(i)
       if player ~= nil then
         --player:MakeRandomHeroSelection()
         --PlayerResource:SetHasRepicked(i)
-        PlayerTables:CreateTable(tostring(i).."heroes",{},true)
-        player.id = i
-        player.team = i+2
-        table.insert(GameMode.Players, player)
+        -- Only run this once
+        if not PlayerTables:TableExists(tostring(i).."heroes") then
+          PlayerTables:CreateTable(tostring(i).."heroes",{},true)
+          player.id = i
+          player.team = i+2
+          table.insert(GameMode.Players, player)
+        end
       end
     end
   end
@@ -196,7 +203,9 @@ function GameMode:ControlCamera()
 
   local horizontalMid = GetMinMaxValue(positionsTableX)
   local verticalMid = GetMinMaxValue(positionsTableZ)
+
   cameraDummyUnit:SetAbsOrigin(Vector(horizontalMid,0,verticalMid))
+
 end
 --[[
   This function is called once and only once for every player when they spawn into the game for the first time.  It is also called
@@ -226,6 +235,7 @@ function GameMode:OnHeroInGame(hero)
   
   --print("table created for "..hero:GetUnitName())
   if hero:IsRealHero() then
+    --
     DebugPrint(1,"[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
     -- Lock the camera on our hero
     CustomGameEventManager:Send_ServerToPlayer(hero:GetPlayerOwner(),"fix_camera",{})
@@ -250,6 +260,7 @@ function GameMode:OnHeroInGame(hero)
 
 
     -- Make sure we control the hero and it doesn't control itself
+    hero:SetIdleAcquire(false)
     hero:SetAttackCapability(DOTA_UNIT_CAP_NO_ATTACK)
     hero:SetMoveCapability(DOTA_UNIT_CAP_MOVE_NONE)
     hero:SetRespawnsDisabled(false)
@@ -373,7 +384,8 @@ function GameMode:OnGameInProgress()
   }
 
   Timers:CreateTimer(RandomInt(20,40),function()
-    if platform then
+    if platform and not ITEMSPAWN then
+      ITEMSPAWN = true
       DebugPrint(1,"[SMASH] [TIMERS] Gamemode, OnGameInProgress")
       items:CreateItem({categoryName = "runes",layAroundDuration=10})
       return RandomInt(20,40)
@@ -403,14 +415,16 @@ function GameMode:Reset()
   DebugPrint(1,"[SMASH] The game is resetting after a round")
   if not self.playersLeft then self.playersLeft = 0 end
 
+
+
   for i=0,DOTA_MAX_TEAM_PLAYERS do
     if PlayerResource:IsValidPlayerID(i) and PlayerResource:GetSelectedHeroEntity(i) then
       PlayerResource:GetSelectedHeroEntity(i):RemoveModifierByName("modifier_basic")
       PlayerResource:GetSelectedHeroEntity(i):RemoveModifierByName("modifier_drop")
+      --UTIL_Remove(PlayerResource:GetSelectedHeroEntity(i))
       PlayerResource:ReplaceHeroWith(i,"npc_dota_hero_wisp",0,0)
     end
   end
-
 
 
   -- Remove all the platforms
@@ -472,7 +486,8 @@ function GameMode:Reset()
   
   heroPickTimerStarted = false
   GameMode["lifeTable"] = {}
-  GameMode:HeroPickStarted()
+  GameRules:ResetToHeroSelection()
+  --GameMode:HeroPickStarted()
 
 end
 function DeclareWinningTeam(winningTeam)
@@ -544,15 +559,18 @@ end
 function GameMode:CheckLeftoverPlayers(keys)
 
   DebugPrint(1,"GameMode:CheckLeftoverPlayers")
+  print("AAAAAAAAAAAA")
   Timers:CreateTimer(0.1,function()
-    local hero = PlayerResource:GetSelectedHeroEntity(keys.PlayerID)
-    if not hero:IsAlive() then
-      hero:RespawnHero(false,false,false)
+    if IsValidEntity(hero) then
+      local hero = PlayerResource:GetSelectedHeroEntity(keys.PlayerID)
+      if not hero:IsAlive() then
+        hero:RespawnHero(false,false,false)
+      end
+      Say(PlayerResource:GetPlayer(keys.PlayerID),"I am out!",false)
+      PlayerTables:SetTableValue(tostring(keys.PlayerID),"lifes",0)
+      hero:ForceKill(false)
     end
-    Say(PlayerResource:GetPlayer(keys.PlayerID),"I am out!",false)
-    PlayerTables:SetTableValue(tostring(keys.PlayerID),"lifes",0)
-    hero:ForceKill(false)
-
+    print("BBBBBBBBBBBBBb")
     PlayerResource:UpdateTeamSlot(keys.PlayerID,DOTA_TEAM_NOTEAM,0)
     local winning = GameMode:FindTheOnlyConnectedTeam()
     if winning then 
@@ -561,13 +579,14 @@ function GameMode:CheckLeftoverPlayers(keys)
       return
     end
 
-
+    print("CCCCCCCCCCCC")
     if GameRules:PlayerHasCustomGameHostPrivileges(PlayerResource:GetPlayer(keys.PlayerID)) then
       statCollection:submitRound(true)
       DeclareWinningTeam(1)
     else
       -- Show screen to player (Done clientside)
-    end 
+    end
+    print("DDDDDDDDDDDDD") 
   end)
 end
 
@@ -630,15 +649,16 @@ function GameMode:SetupGame()
     "npc_dota_hero_magnataur",
     "npc_dota_hero_phoenix",
     "npc_dota_hero_pudge",
-    "npc_dota_hero_kunkka",
+    --"npc_dota_hero_kunkka",
     "npc_dota_hero_centaur",
   -- Agi
     "npc_dota_hero_mirana",
-    "npc_dota_hero_nyx_assassin",
+    --"npc_dota_hero_nyx_assassin",
     "npc_dota_hero_vengefulspirit",
     "npc_dota_hero_nevermore",
   -- Int
     "npc_dota_hero_tinker",
+    "npc_dota_hero_rubick",
     --"npc_dota_hero_batrider", -- Lasso is broken, hero isnt great either.
     "npc_dota_hero_lina",
     "npc_dota_hero_puck",

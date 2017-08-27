@@ -4,16 +4,18 @@ function GameMode:ConfirmHeroPick(keys)
   local heroname = keys.heroname
 
   -- If this hero has been picked do nothing?
-  if not IsInToolsMode() then
-    if GameMode.heroesPicked[heroname] then return end
-    if PlayerTables:GetTableValue(tostring(pID.."heroes"),heroname) then return end
+  --if not IsInToolsMode() then
+  print("DSSSSSSSSSSSSSSSS")
+    PrintTable(PlayerTables:GetAllTableValues(tostring(pID.."heroes"))) 
+    if GameMode.heroesPicked[heroname] then DebugPrint(1,"[SMASH] [HERO SELECTION] Already picked by another player") return end
+    if PlayerTables:GetTableValue(tostring(pID.."heroes"),heroname) then DebugPrint(1,"[SMASH] [HERO SELECTION] Already picked in another round") return end
     if GameMode.playersPicked[pID] then return end
-  end
+  --end
   if heroname == "npc_dota_hero_wisp" then
     heroname = "npc_dota_hero_"
   end
   if heroname == "npc_dota_hero_" then
-    GetRandomHero(pID)
+    GetRandomHero(pID,false,false)
   else
     
     fullHeroname = heroname
@@ -32,7 +34,7 @@ function GameMode:ConfirmHeroPick(keys)
       DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] ConfirmHeroPick")
       for i=0, 3 do
         if not GameMode.playersPicked[i] and PlayerResource:IsValidTeamPlayerID(i) and PlayerResource:GetTeam(i) ~= DOTA_TEAM_NOTEAM then
-          GetRandomHero(i,true)
+          GetRandomHero(i,true,false)
         end
       end
       -- Remove the pick screen and play!
@@ -48,28 +50,28 @@ function GameMode:ConfirmHeroPick(keys)
   end
 end
 
-function GetRandomHero(pID,bForced)
+function GetRandomHero(pID,bForced,bStrategyPhase)
   DebugPrint(1,"[SMASH][HERO SELECTION] GetRandomHero")
   local random = RandomInt(1,#allowedHeroes)
   local fullHeroname = allowedHeroes[random]
-  
+  bStrategyPhase = bStrategyPhase or false
   
   heroname=string.sub(allowedHeroes[random], 15)
   
   Timers:CreateTimer(function()
     DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] GetRandomHero")
-    if not PlayerResource:GetSelectedHeroEntity(pID) then
-      return 0.1
-    else
+    --if not PlayerResource:GetSelectedHeroEntity(pID) then
+    --  return 0.1
+    --else
       while GameMode.heroesPicked[fullHeroname] or PlayerTables:GetTableValue(tostring(pID.."heroes"),fullHeroname) do
         random = RandomInt(1,#allowedHeroes)
         fullHeroname = allowedHeroes[random]
         DebugPrint(2,"[SMASH] [HERO SELECTION] Looping in hero HeroSelection")
       end
       heroname=string.sub(fullHeroname, 15)
-      SubmitHeroPick(pID,heroname,bForced)
-      return nil
-    end
+      SubmitHeroPick(pID,heroname,bForced,bStrategyPhase)
+      --return nil
+    --end
   end)
 end
 
@@ -77,7 +79,7 @@ function RandomForAll()
   DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] RandomForAll")
   for i=0,3 do
     if PlayerResource:IsValidPlayerID(i) then
-      GetRandomHero(i,true)
+      GetRandomHero(i,true,false)
     end
   end
   Timers:CreateTimer(10,function()
@@ -96,12 +98,12 @@ function GameMode:HeroPickStarted()
   -- Check if all random is active
   if  CustomNetTables:GetTableValue("settings","HeroSelection").value == "2" then
     Timers:CreateTimer(1,function()
-      CustomGameEventManager:Send_ServerToAllClients("kill_ally_selection_screen",{})
-      CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
+      --CustomGameEventManager:Send_ServerToAllClients("kill_ally_selection_screen",{})
+      --CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
       RandomForAll()
     end)
   else
-    CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
+    --CustomGameEventManager:Send_ServerToAllClients("pick_heroes",{})
     
   end
 end
@@ -124,7 +126,7 @@ function ReplaceHero(pID,heroname)
   
 end
 
-function SubmitHeroPick(pID,heroname,bForcedRandom)
+function SubmitHeroPick(pID,heroname,bForcedRandom,bStrategyPhase)
   DebugPrint(1,"[SMASH] [TIMER] [HERO SELECTION] SubmitHeroPick")
   CustomGameEventManager:Send_ServerToAllClients("hero_pick_accepted",{pid=pID,heroname=heroname})
   --[[local playerID = "Player"..pID
@@ -137,21 +139,25 @@ function SubmitHeroPick(pID,heroname,bForcedRandom)
   GameMode.playersPicked[pID] = true
   fullHeroname = "npc_dota_hero_"..heroname
   -- Somehow replace hero doesn't always return something anymore
-  Timers:CreateTimer(1/30,function()
-    local check = ReplaceHero(pID,fullHeroname)
+  --Timers:CreateTimer(1/30,function()
+    local check = PlayerResource:GetSelectedHeroEntity(pID) --ReplaceHero(pID,fullHeroname)
     if check then
       if not bForcedRandom then
         -- Stun heroes so they dont do stuff while we cant see it
-        PlayerResource:GetSelectedHeroEntity(pID):AddNewModifier(PlayerResource:GetSelectedHeroEntity(pID),nil,"modifier_smash_stun",{})
+        PlayerResource:GetSelectedHeroEntity(pID):AddNewModifier(PlayerResource:GetSelectedHeroEntity(pID),nil,"modifier_smash_stun",{duration = 5})
       end
       GameMode.heroesPicked[fullHeroname] = true
       PlayerTables:SetTableValue(tostring(pID.."heroes"),PlayerResource:GetSelectedHeroEntity(pID):GetUnitName(),true)
       return false
     else
-      print("ReplaceHeroWith Failed...")
-      return 1/30
+
+      local hero = CreateHeroForPlayer(fullHeroname,PlayerResource:GetPlayer(pID) )
+      PlayerTables:SetTableValue(tostring(pID.."heroes"),fullHeroname,true)
+      --if not bStrategyPhase then 
+        UTIL_Remove(hero)
+      --end
     end
-  end)
+  --end)
   
   
   

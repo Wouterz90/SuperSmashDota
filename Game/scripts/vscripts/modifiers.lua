@@ -49,6 +49,7 @@ end
 function modifier_smash_stun:OnCreated()
   if IsServer() then
     Timers:CreateTimer(0,function()
+      if self:IsNull() or self:GetParent():IsNull() then return end
       if not self.dontColor then
         self:GetParent():SetRenderColor(0,0,0)
       end
@@ -174,7 +175,6 @@ end
 modifier_no_gravity = class({})
 modifier_corrected = class({})
 
-
 modifier_on_platform = class({})
 
 
@@ -189,3 +189,6 @@ function modifier_on_platform:OnRefresh(keys)
     end
   end
 end
+
+
+

@@ -59,7 +59,7 @@ function GameMode:StoreAlliedRequest(keys)
     hasStoredRequestedAllies = nil
     Timers:CreateTimer(ALLY_DISPLAY_TIME,function()
       DebugPrint(1,"[SMASH] [TIMER] [ALLY SELECTION] SetWantedAlliesAsSelf2")
-      GameMode:HeroPickStarted()
+      --GameMode:HeroPickStarted()
     end)
   end)
 end

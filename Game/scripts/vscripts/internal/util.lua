@@ -343,3 +343,10 @@ end
 function LengthSquared(vVector)
   return math.pow(vVector.x,2) + math.pow(vVector.z,2)
 end
+
+function DealDamage(keys,vLocation)
+  local casterLoc = keys.attacker:GetAbsOrigin()
+  keys.attacker:SetAbsOrigin(vLocation)
+  ApplyDamage(keys)
+  keys.attacker:SetAbsOrigin(casterLoc)
+end

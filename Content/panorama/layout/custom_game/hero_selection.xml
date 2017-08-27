@@ -9,7 +9,7 @@
 	 <include src="s2r://panorama/scripts/hud/dota_hud_pregame.vjs_c" />
   </scripts>
   
-<Panel class="Hero_Selection" hittest="true" visible="false">
+<Panel class="Hero_Selection" hittest="true" visible="true">
 	
     <Panel id="Hero_Selection_Main" class="Hero_Selection_Main" hittest="true">
 			
@@ -38,15 +38,17 @@
 		
 			<Panel id="HeroPickContainerRow4" class="HeroPickContainerRow" hittest="false">
 				<DOTAHeroImage id="HeroPickrattletrap" class="heroImage" heroname="npc_dota_hero_rattletrap" heroimagestyle="portrait" onactivate="selectedHero('rattletrap')"/>
-				<DOTAHeroImage id="HeroPickbatrider" class="heroImage" heroname="npc_dota_hero_batrider" heroimagestyle="portrait" onactivate="selectedHero('batrider')"/>
-				<DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHero('nyx_assassin')"/>
-				<DOTAHeroImage id="HeroPickkunkka" class="heroImage" heroname="npc_dota_hero_kunkka" heroimagestyle="portrait" onactivate="selectedHero('kunkka')"/>
+				<DOTAHeroImage id="HeroPicktechies" class="heroImage" heroname="npc_dota_hero_techies" heroimagestyle="portrait" onactivate="selectedHero('techies')"/>
+				<DOTAHeroImage id="HeroPickrubick" class="heroImage" heroname="npc_dota_hero_rubick" heroimagestyle="portrait" onactivate="selectedHero('rubick')"/>
 				<DOTAHeroImage id="HeroPickrandom" class="heroImage" heroname="npc_dota_hero_wisp" heroimagestyle="portrait" onactivate="selectedHero('')"/>
 			</Panel>
 			
 			<Panel id="HeroPickContainerRow5" class="HeroPickContainerRow" hittest="false">
-				<DOTAHeroImage id="HeroPicktechies" class="heroImage" heroname="npc_dota_hero_techies" heroimagestyle="portrait" onactivate="selectedHero('techies')"/>
-				<!--
+				
+				<!-- These heroes have problems /arent made/ are boring
+				<DOTAHeroImage id="HeroPickkunkka" class="heroImage" heroname="npc_dota_hero_kunkka" heroimagestyle="portrait" onactivate="selectedHero('kunkka')"/>
+				<DOTAHeroImage id="HeroPickbatrider" class="heroImage" heroname="npc_dota_hero_batrider" heroimagestyle="portrait" onactivate="selectedHero('batrider')"/>
+				DOTAHeroImage id="HeroPicknyx_assassin" class="heroImage" heroname="npc_dota_hero_nyx_assassin" heroimagestyle="portrait" onactivate="selectedHero('nyx_assassin')"/>
 				<DOTAHeroImage id="HeroPickbrewmaster" class="heroImage" heroname="npc_dota_hero_brewmaster" heroimagestyle="portrait" onactivate="selectedHero('brewmaster')"/>
 				<DOTAHeroImage id="HeroPickinvoker" class="heroImage" heroname="npc_dota_hero_invoker" heroimagestyle="portrait" onactivate="selectedHero('invoker')"/>
 				<DOTAHeroImage id="HeroPicknecrolyte" class="heroImage" heroname="npc_dota_hero_necrolyte" heroimagestyle="portrait" onactivate="selectedHero('necrolyte')"/>
@@ -189,9 +191,9 @@
     <Button id="LockHero" class="LockHeroButton" onactivate="LockHeroAndReady()">
         <Label text="#custom_game_team_select_lock_start" />
     </Button>
-	<Panel id="CountDownBarHS" class="CountDownBarHS">
+	<!--<Panel id="CountDownBarHS" class="CountDownBarHS">
 		<Label class ="pickTime" text ="Time to pick left"/>	
-	</Panel>
+	</Panel>-->
 </Panel>
 </root>
 

@@ -51,6 +51,11 @@
 			m_fDrag = 0.05
 			m_nOpEndCapState = 1
 		},
+		{
+			_class = "C_OP_MaxVelocity"
+			m_flMaxVelocity = 9000.0
+			m_nOverrideCP = 2
+		},
 	]
 	m_Initializers = 
 	[
@@ -74,6 +79,7 @@
 		{
 			_class = "C_INIT_VelocityFromCP"
 			m_nControlPoint = 1
+			m_bDisableOperator = true
 		},
 		{
 			_class = "C_INIT_PositionOffset"
@@ -144,6 +150,15 @@
 					m_entityName = "self"
 				},
 			]
+		},
+	]
+	m_ForceGenerators = 
+	[
+		{
+			_class = "C_OP_AttractToControlPoint"
+			m_fForceAmount = 1000000.0
+			m_fFalloffPower = 0.0
+			m_nControlPointNumber = 1
 		},
 	]
 }

@@ -50,7 +50,7 @@ function Physics2D:CreateTrackingProjectile(keys)
   elseif keys.iSourceAttachment then
       location = keys.hCaster:GetAttachmentOrigin( keys.iSourceAttachment )
   else
-      location = keys.hCaster:GetAbsOrigin()
+      location = keys.hCaster:GetAbsOrigin() + Vec(0,50)
   end
 
   local unit =SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/development/invisiblebox.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
@@ -66,7 +66,7 @@ function Physics2D:CreateTrackingProjectile(keys)
   unit.creationTime = GameRules:GetGameTime()
   if keys.flDuration then unit.duration = keys.flDuration end
   unit.speed = keys.flSpeed * FrameTime()
-  if flAcceleration then unit.acceleration = keys.flAcceleration end
+  if keys.flAcceleration then unit.acceleration = keys.flAcceleration end
   unit.turnRate = turnRate or 1
   unit.startRadius = keys.flRadius
   if keys.flMaxDistance then unit.maxDistance = keys.flMaxDistance end
@@ -144,7 +144,7 @@ function Physics2D:CreateLinearProjectile(keys)
   elseif keys.iSourceAttachment then
       location = keys.hCaster:GetAttachmentOrigin( keys.iSourceAttachment )
   else
-      location = keys.hCaster:GetAbsOrigin()
+      location = keys.hCaster:GetAbsOrigin() + Vec(0,50)
   end
 
   local unit =SpawnEntityFromTableSynchronous("prop_dynamic", {model = "models/development/invisiblebox.vmdl", DefaultAnim=animation, targetname=DoUniqueString("prop_dynamic")})
@@ -160,7 +160,7 @@ function Physics2D:CreateLinearProjectile(keys)
   unit.creationTime = GameRules:GetGameTime()
   if keys.flDuration then unit.duration = keys.flDuration end
   unit.speed = keys.flSpeed * FrameTime()
-  if flAcceleration then unit.acceleration = keys.flAcceleration end
+  if keys.flAcceleration then unit.acceleration = keys.flAcceleration end
   unit.turnRate = turnRate or 1
   unit.startRadius = keys.flRadius
   --if not keys.flEndRadius then unit.endRadius = keys.flStartRadius end
@@ -259,7 +259,7 @@ function Physics2D:CreateObject(sType,vLocation,bGravity,bCanHaveVelocity,hUnit,
   hUnit.unit = hUnit or nil
   hUnit.material = sMaterial
   hUnit.bVelocity = bCanHaveVelocity
-  hUnit.draw = LUA_DEBUG_SPEW > 0 
+  hUnit.draw = false
   hUnit.type = sType
   hUnit.location = vLocation
   hUnit.width = flWidth
@@ -285,6 +285,7 @@ end
 function AABBvsAABB(a,b)
   local normal
   local penetration
+  if not a.pos or not b.pos then return end
   -- Vector From A to B
   local n = b.pos - a.pos
 
@@ -341,6 +342,7 @@ function CirclevsCircle(a,b)
   local normal
   local penetration
   -- Vector from A to B
+  if not a.pos or not b.pos then return end
   local n = b.pos - a.pos
   
   local r = math.pow(a.radius + b.radius,2)
@@ -374,6 +376,7 @@ end
 
 function CirclevsAABB(a,b)
   -- Vector from A to B
+  if not a.pos or not b.pos then return end
   local n = b.pos - a.pos
   -- Closest point on A to center of B
   local closest = Vec(n.x,n.z)
@@ -433,6 +436,67 @@ function CirclevsAABB(a,b)
   return {a=a,b=b,normal=normal:Normalized(),penetration=penetration}
 end
 
+function AABBvsCircle(a,b)
+  -- Vector from A to B
+  local n = a.pos - b.pos
+  -- Closest point on A to center of B
+  local closest = Vec(n.x,n.z)
+  -- Calculate half extents along each axis
+  local amin = a.pos - Vec(a.width/2,a.height/2)
+  local amax = a.pos + Vec(a.width/2,a.height/2)
+
+  local x_extent = (amax.x - amin.x)/2
+  local z_extent = (amax.z - amin.z)/2
+
+  -- Clamp point to edges of the AABB
+  closest.x = math.clamp( -x_extent, x_extent, closest.x )
+  closest.z = math.clamp( -z_extent, z_extent, closest.z )
+
+  local bInside = false
+
+  -- Circle is inside the AABB, so we need to clamp the circle's center
+  -- to the closest edge
+  if n == closest then
+    bInside = true
+    -- Find closest axis
+    if math.abs(n.x) > math.abs(n.z) then
+      -- Clamp to closest extent
+      if closest.x > 0 then
+        closest.x = x_extent
+      else
+        closest.x = -x_extent
+      end
+      -- z axis is shorter
+    else
+      -- Clamp to closest extent
+      if closest.z > 0 then
+        closest.z = z_extent
+      else
+        closest.z = -z_extent
+      end
+    end
+  end
+  local normal = n - closest
+
+
+  local d = LengthSquared(normal)
+  local r = b.radius
+
+  -- Early out of the radius is shorter than distance to closest point and
+  -- Circle not inside the AABB
+  if d > r*r and not bInside then return end
+  d = math.sqrt(d)
+
+  if bInside then
+    normal = normal
+    penetration = r-d
+  else
+    normal = -normal
+    penetration = r-d
+  end
+  return {a=a,b=b,normal=normal:Normalized(),penetration=penetration}
+end
+
 function Physics2D:ProjectileHitUnit(projectile,unit)
   if projectile.destroyed then return end
   if projectile.hitByProjectile.unit then return end
@@ -470,6 +534,23 @@ function Physics2D:ProjectileHitPlatform(projectile,platform)
   return
 end
 
+function Physics2D:ProjectileHitProjectile(a,b)
+  if a.destroyed then return end
+  if b.destroyed then return end
+  if a.OnProjectileHit then
+    local status, out = pcall(a.OnProjectileHit, a, b)
+    if not status then
+      print('[PROJECTILES] OnProjectileHit Error!: ' .. out)
+    end
+  end
+  if b.OnProjectileHit then
+    local status, out = pcall(b.OnProjectileHit, b, a)
+    if not status then
+      print('[PROJECTILES] OnProjectileHit Error!: ' .. out)
+    end
+  end
+end
+
 function ResolveCollision( collision )
   -- Calculate relative velocity
 
@@ -487,13 +568,20 @@ function ResolveCollision( collision )
   -- Do not resolve if velocities are separating
   if velAlongNormal > 0 then return end
 
+  if a.IsProjectile and b.IsProjectile then
+    if a.ProjectileBehavior or b.ProjectileBehavior then
+      Physics2D:ProjectileHitProjectile(a,b)
+    end
+    return
+  end
+
   -- Check if one is a unit and the other a projectile
   if a.IsProjectile and b.IsSmashUnit then
     if a.UnitBehavior then
       if not Physics2D:ProjectileHitUnit(a,b) then
         return
       end
-      if b.UnitBehavior then
+      if a.UnitBehavior ~= PROJECTILES_BOUNCE then
         return
       end
     end
@@ -503,7 +591,7 @@ function ResolveCollision( collision )
       if not Physics2D:ProjectileHitUnit(b,a) then
         return
       end
-      if a.UnitBehavior ~= PROJECTILES_BOUNCE then
+      if b.UnitBehavior ~= PROJECTILES_BOUNCE then
         return
       end
     return
@@ -535,13 +623,13 @@ function ResolveCollision( collision )
     if normal.z >= 0 then
       if b.HasModifier then
         b.jumps = 0
-        b:AddNewModifier(b,nil,"modifier_on_platform",{duration = 2*FrameTime()})
+        b:AddNewModifier(b,nil,"modifier_on_platform",{duration = 4*FrameTime()})
         b.IsOnPlatfrom = a
-        table.insert(a.unitsOnPlatform, b)
+        a.unitsOnPlatform[b] = GameRules:GetGameTime() + (FrameTime()*4)
       end
       
     end
-    if b.IsSmashUnit and a.IsPassable then
+    if b.IsSmashUnit and a.IsPassable and b.HasModifier then
       -- Check z values to decide if you can jump through
       if b:HasModifier("modifier_drop") then
         return
@@ -555,11 +643,11 @@ function ResolveCollision( collision )
     if normal.z <= 0 then
       if a.HasModifier then
         a.jumps = 0
-        a:AddNewModifier(b,nil,"modifier_on_platform",{duration = 2*FrameTime()})
-        table.insert(b.unitsOnPlatform, a)
+        a:AddNewModifier(b,nil,"modifier_on_platform",{duration = 4*FrameTime()})
+        b.unitsOnPlatform[a] = GameRules:GetGameTime() + (FrameTime()*4)
       end
     end
-    if a.IsSmashUnit and b.IsPassable then
+    if a.IsSmashUnit and b.IsPassable and a.HasModifier then
       -- Check z values to decide if you can jump through
       if a:HasModifier("modifier_drop") then
         return
@@ -585,6 +673,7 @@ function ResolveCollision( collision )
   a.velocity =  a.velocity - a.inv_mass * impulse
   b.velocity =  b.velocity + b.inv_mass * impulse
 
+  if a.NoFriction or b.NoFriction then return end
   -- Solve for the tangent vector
   local tangent = rv - rv:Dot(normal) * normal
   tangent = tangent:Normalized()
@@ -635,7 +724,7 @@ function CorrectPosition(collision)
   -- If only one of them is a platform overwrite it
   if a.IsPlatform and not b.IsPlatform then
     movingUnit = b
-    if b.IsSmashUnit and a.IsPassable then
+    if b.IsSmashUnit and a.IsPassable and b.HasModifier then
       -- Check z values to decide if you can jump through
       if b:HasModifier("modifier_drop") then
         return
@@ -644,9 +733,10 @@ function CorrectPosition(collision)
         return
       end
     end
+    a.unitsOnPlatform[b] = GameRules:GetGameTime() + (FrameTime()*4)
   elseif b.IsPlatform and not a.IsPlatform then
     movingUnit = a
-    if a.IsSmashUnit and b.IsPassable then
+    if a.IsSmashUnit and b.IsPassable and a.HasModifier  then
       -- Check z values to decide if you can jump through
       if a:HasModifier("modifier_drop") then
         return
@@ -655,10 +745,12 @@ function CorrectPosition(collision)
         return
       end
     end
+    b.unitsOnPlatform[a]  = GameRules:GetGameTime() + (FrameTime()*4)
   end
 
   if movingUnit then -- Only one unit moves, simply fix that
     --local orig = Vec(normal.x,math.min(0,normal.z))
+
     movingUnit:SetAbsOrigin(movingUnit:GetAbsOrigin() + (normal * penetration))
   else
     -- Simply calculate % of mass and use that to resolve it
@@ -731,7 +823,7 @@ function Physics2D:Think()
 
   -- Do static movement
   for _,unit in pairs(Physics2D.units) do
-    if unit.draw or LUA_DEBUG_SPEW > 0 then
+    if unit.draw then
       local origin = unit:GetAbsOrigin() or unit.location
       if unit.type == "circle" then
         DebugDrawSphere(origin,Vector(255,0,0),1,unit.radius,true,2*FrameTime())
@@ -750,7 +842,13 @@ function Physics2D:Think()
     end
     --unit.IsOnPlatfom = nil
     if unit.unitsOnPlatform then 
-      unit.unitsOnPlatform = {}
+      for k,v in pairs(unit.unitsOnPlatform) do
+        if k:IsNull() or v < GameRules:GetGameTime() then
+         --table.remove(unit.unitsOnPlatform,k)
+          unit.unitsOnPlatform[k] = nil
+
+        end
+      end
     end
   end
 
@@ -767,11 +865,13 @@ function Physics2D:Think()
               if self.units[j]["type"] == "AABB" then
                 collision = AABBvsAABB(self.units[i],self.units[j])
               elseif self.units[j]["type"] == "circle" then
-                collision = CirclevsAABB(self.units[j],self.units[i]) 
+                collision = AABBvsCircle(self.units[i],self.units[j])
               end
             elseif self.units[i]["type"] == "circle" then
               if self.units[j]["type"] == "AABB" then
-                collision = CirclevsAABB(self.units[i],self.units[j])
+                --collision = CirclevsAABB(self.units[i],self.units[j])
+                collision = CirclevsAABB(self.units[i],self.units[j]) 
+                --collision = AABBvsCircle(self.units[j],self.units[i])
               elseif self.units[j]["type"] == "circle" then
                 --collision = CirclevsCircle(self.units[i],self.units[j])
               end
@@ -906,7 +1006,10 @@ function Physics2D:CalculateVelocity(hUnit)
   -- Static velocity is caused by movement and is stored by name so it can be removed
 
   if hUnit.IsPlatform then return Vec(0) end
-
+  if hUnit.IsTimeLocked then
+    hUnit.vOriginalVelocity = hUnit.velocity
+    return Vec(0)
+  end
 
   if hUnit.IsProjectile then
     if hUnit.IsProjectile == "Tracking" then
@@ -919,7 +1022,7 @@ function Physics2D:CalculateVelocity(hUnit)
     --end
     return hUnit.velocity
   else
-    hUnit.velocity = hUnit.velocity*0.99
+    --hUnit.velocity = hUnit.velocity*0.99
     if LengthSquared(hUnit.velocity) < 0.5 then
       hUnit.velocity = Vec(0)
     end
@@ -930,30 +1033,38 @@ function Physics2D:CalculateVelocity(hUnit)
   -- Gravity
   local vel = (hUnit.velocity)
   if hUnit.gravity then
-    vel = vel + Vec(0,-0.75)
-    vel.z = math.max(-15,vel.z)
+    vel = vel + Vec(0,-1)
+    vel.z = math.max(-20,vel.z)
   end
   -- Maximum velocity for units
   if hUnit.IsSmashUnit then
-    vel = vel * 0.99
+    vel = vel * 0.986
     vel.z = math.min(45,vel.z)
   end
+  vel.y=0
   return vel
 end
 
 function Physics2D:RotateRollingUnits(hUnit)
+  if hUnit.IsPlatform then return end
   local vel = hUnit.velocity
   local angles = hUnit:GetAngles()
   local velRotation = 0.5*vel.x
   hUnit:SetAngles(angles.x+velRotation,angles.y,angles.z)
 end
 
-function Physics2D:GetStaticVelocity(hUnit)
+function Physics2D:GetStaticVelocity(hUnit,sName)
+  if hUnit.IsTimeLocked then return Vec(0) end
+  if sName then return hUnit.staticVelTable.sName end
   local sum = Vec(0,0)
   for k,v in pairs(hUnit.staticVelTable) do
     sum = sum + v
   end
   return sum
+end
+
+function Physics2D:ClearStaticVelocity(hUnit)
+  hUnit.staticVelTable = {}
 end
 
 function Physics2D:SetStaticVelocity(hUnit,sName,vVelocity)

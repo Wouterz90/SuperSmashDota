@@ -5,7 +5,7 @@ function GameMode:_OnGameRulesStateChange(keys)
   end
   DebugPrint(1, '[BAREBONES] _OnGameRulesStateChange' )
   local newState = GameRules:State_Get()
-
+  print(newState)
   if newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
     self.bSeenWaitForPlayers = true
   elseif newState == DOTA_GAMERULES_STATE_INIT then
@@ -24,6 +24,15 @@ function GameMode:_OnGameRulesStateChange(keys)
         end
       end
     end]]
+  elseif newState == DOTA_GAMERULES_STATE_STRATEGY_TIME  then
+    for i = 0,DOTA_MAX_TEAM_PLAYERS do
+      if PlayerResource:IsValidTeamPlayerID(i) then
+        if not PlayerResource:HasSelectedHero(i)   then
+          GetRandomHero(i,true,true)
+        end
+      end
+    end
+
   elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
     
     GameMode:OnGameInProgress()

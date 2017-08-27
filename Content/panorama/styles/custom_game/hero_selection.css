@@ -3,7 +3,7 @@
 {
   width:100%;
   height: 100%;
-  z-index: 3;
+  z-index: 1;
 
 }
 .Hero_Selection_Main
@@ -88,8 +88,8 @@
   border-radius: 25px;
   box-shadow: #ffffff80 4px 4px 4px -6px;
   opacity: 1;
-  height:200px;
-  width:150px; 
+  height:190px;
+  width:140px; 
 }
 .Hero_Selection_Abilities
 {
@@ -117,6 +117,19 @@
   opacity: 1;
   horizontal-align:center;
 }
+.SelectedHero:Hover
+{
+  margin-left:10px;
+  margin-top: 15px;
+  margin-right:10px;
+  margin-bottom:5px;
+  height:190px;
+  width:140px; 
+  border-radius: 25px;
+  opacity: 1;
+  horizontal-align:center;
+  box-shadow: #ffffff80 4px 4px 4px -6px;
+}
 
 .Hero_Selection_Abilities_Bar
 {
@@ -139,9 +152,9 @@
 }
 .abilityImage:Hover
 {
-  margin-left:25px;
+  margin-left:20px;
   margin-top: 10px;
-  margin-right:25px;
+  margin-right:20px;
   margin-bottom:5px;
   border-radius: 25px;
   box-shadow: #ffffff80 4px 4px 4px -6px;
@@ -422,7 +435,7 @@
 	background-color: gradient( linear, 0% 30%, 60% 90%, from( red ), to( darkred ) );
 	margin-top:96%;
 	margin-left:47.5%;
-	z-index:4;
+	z-index:1;
 }
 
 .pickTime

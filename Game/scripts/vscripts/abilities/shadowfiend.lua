@@ -118,71 +118,69 @@ function nevermore_special_bottom:OnAbilityPhaseInterrupted()
   EndAnimation(caster)
 end
 
--- Made based on ( https://github.com/Pizzalol/SpellLibrary/blob/master/game/scripts/vscripts/heroes/hero_phoenix/fire_spirits.lua) by Ractidous
 function nevermore_special_bottom:OnSpellStart() 
   local caster = self:GetCaster()
   local direction = self.mouseVector
   local ability = self
+  StoreSpecialKeyValues(self)
 
-  local radius = self:GetSpecialValueFor("radius")
-  local range = self:GetSpecialValueFor("range")
-  local projectile_speed = self:GetSpecialValueFor("projectile_speed")
+
+  local radius = self.radius
+  local range = self.range
+  local projectile_speed = self.projectile_speed
   caster:StopSound("Hero_Nevermore.RequiemOfSoulsCast")
   caster:EmitSound("Hero_Nevermore.RequiemOfSouls")
-  for i=1,18 do
-    local direction = RotatePosition(Vector(0,0,0), QAngle(i*20,0,0), caster:GetAbsOrigin()):Normalized()
 
-    local projectile = {
-      --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
-      EffectName = "particles/shadowfiend/requiem_projectile.vpcf",
-      --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-      --EeffectName = "",
-      --vSpawnOrigin = caster:GetAbsOrigin(),
-      vSpawnOrigin = caster:GetAbsOrigin()+direction*(000 +(200*math.fmod(i, 2))),
-      fDistance = range,
-      fStartRadius = radius,
-      fEndRadius = radius,
-      Source = caster,
-      fExpireTime = 4,
-      vVelocity = direction * projectile_speed, -- RandomVector(1000),
-      UnitBehavior = PROJECTILES_NOTHING,
-      bMultipleHits = false,
-      bIgnoreSource = true,
-      TreeBehavior = PROJECTILES_NOTHING,
-      bCutTrees = false,
-      bTreeFullCollision = false,
-      WallBehavior = PROJECTILES_NOTHING,
-      GroundBehavior = PROJECTILES_NOTHING,
-      fGroundOffset = 0,
-      nChangeMax = 1,
-      bRecreateOnChange = true,
-      bZCheck = true,
-      bGroundLock = false,
-      bProvidesVision = true,
-      iVisionRadius = radius,
-      iVisionTeamNumber = caster:GetTeam(),
-      bFlyingVision = false,
-      fVisionTickTime = .1,
-      fVisionLingerDuration = 1,
-      draw = false,--             draw = {alpha=1, color=Vector(200,0,0)},
-
-      UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetUnitName() ~= "npc_dota_hero_announcer" and unit:GetUnitName() ~= "npc_dota_hero_announcer_killing_spree" end,
-      OnUnitHit = function(self, unit)
+  local projectileTable = 
+    { 
+      --vDirection = direction,
+      hCaster = caster,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flMaxDistance = ability.range,
+      sEffectName = "particles/shadowfiend/nevermore_base_attack.vpcf",
+      PlatformBehavior = PROJECTILES_NOTHING,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit.IsSmashUnit and unit:IsRealHero() and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit) 
+  
         local damageTable = {
           victim = unit,
-          attacker = ability:GetCaster(),
-          damage = ability:GetSpecialValueFor("damage")+RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
+          attacker = caster,
+          damage = ability.damage + RandomInt(0,ability.damage_offset),
           damage_type = DAMAGE_TYPE_MAGICAL,
           ability = ability,
-        } 
-        local oldLoc = caster:GetAbsOrigin()
-        caster:SetAbsOrigin(unit:GetAbsOrigin()-direction*5) 
-        ApplyDamage(damageTable)
-        caster:SetAbsOrigin(oldLoc)
+        }
+
+        
+        DealDamage(damageTable,projectile.location)
+  
+        caster:EmitSound("Hero_Phoenix.FireSpirits.ProjectileHit")
+
+        --local particle = ParticleManager:CreateParticle( "particles/generic_gameplay/dust_impact.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster )
+        --ParticleManager:SetParticleControlEnt( particle, 0, projectile, PATTACH_POINT_FOLLOW, "attach_hitloc", projectile:GetAbsOrigin(), true )
+        Timers:CreateTimer(0.5,function()
+          --ParticleManager:DestroyParticle(particle,false) 
+          --ParticleManager:ReleaseParticleIndex(particle)
+        end)
+        
+        
       end,
+  
     }
-    Projectiles:CreateProjectile(projectile)
+  
+
+
+
+  for i=1,12 do
+    local direction = RotatePosition(Vector(0,0,0), QAngle(i*30,0,0), caster:GetAbsOrigin()):Normalized()
+    projectileTable.vDirection = direction
+    --projectileTable.vSpawnOrigin = caster:GetAbsOrigin() + direction * 1
+    Physics2D:CreateLinearProjectile(projectileTable)
   end
+  
 end
 
 nevermore_special_top = class({})

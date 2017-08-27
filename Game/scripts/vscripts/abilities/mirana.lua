@@ -281,8 +281,9 @@ modifier_mirana_leap_jump = class({})
 
 function modifier_mirana_leap_jump:OnCreated(keys)
   if IsServer() then
+    StoreSpecialKeyValues(self,self:GetAbility())
     --self:GetParent():SetStaticVelocity("mirana_leap",self.vector*self:GetAbility():GetSpecialValueFor("jump_speed")*30)
-    Physics2D:AddPhysicsVelocity(self:GetParent(),Vec(keys.x,keys.z)*self:GetAbility():GetSpecialValueFor("jump_speed"))
+    Physics2D:SetStaticVelocity(self:GetParent(),"mirana_leap",Vec(keys.x,keys.z)*self.jump_speed)
     --self:StartIntervalThink(1/32)
   end
 end
@@ -299,6 +300,9 @@ end
 
 function modifier_mirana_leap_jump:OnDestroy()
   if IsServer() then
+    local vel = Physics2D:GetStaticVelocity(self:GetParent(),"mirana_leap")
+    Physics2D:SetStaticVelocity(self:GetParent(),"mirana_leap",Vec(0))
+    --Physics2D:AddPhysicsVelocity(self:GetParent(),Vec(vel.x*0.5,0))
     --self:GetParent():SetStaticVelocity("mirana_leap",VECTOR_0)
     --self:GetParent():AddNewModifier(self:GetParent(),nil,"modifier_drop",{})
   end

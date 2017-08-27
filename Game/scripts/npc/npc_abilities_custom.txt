@@ -318,12 +318,12 @@
       "07"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"    "200"
+        "radius"    "100"
       }
       "08"
       {
         "var_type"      "FIELD_INTEGER"
-        "projectile_speed"    "800"
+        "projectile_speed"    "600"
       }
     }
   }
@@ -416,7 +416,7 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "range"      "700"
+        "range"      "550"
       }
       "02"
       {
@@ -451,7 +451,7 @@
       "08"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"      "150"
+        "radius"      "50"
       }
 
     }
@@ -481,7 +481,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"    "250"
+        "radius"    "50"
       }
       "03"
       {
@@ -1136,7 +1136,7 @@
       "03"
       {
         "var_type"      "FIELD_INTEGER"
-        "jump_speed"    "40"
+        "jump_speed"    "25"
       }
       "04"
       {
@@ -1411,7 +1411,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"    "200"
+        "radius"    "75"
       }
       "03"
       {
@@ -2031,7 +2031,7 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "dash_length"    "600"
+        "dash_length"    "300"
       }
       "04"
       {
@@ -2075,12 +2075,12 @@
       "01"
       {
         "var_type"      "FIELD_INTEGER"
-        "drop_speed_factor"    "2"
+        "projectile_speed"    "500"
       }
-      "04"
+      "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"        "250"
+        "radius"        "100"
         // Explosion has 1.5x radius
       }
       "03"
@@ -2137,7 +2137,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"        "150"
+        "radius"        "50"
       }
       "03"
       {
@@ -2174,7 +2174,7 @@
         "var_type"      "FIELD_FLOAT"
         "duration"    "3"
       }
-      "09"
+      "10"
       {
         "var_type"      "FIELD_FLOAT"
         "attack_speed_slow"    "70"
@@ -2435,7 +2435,7 @@
       "02"
       {
         "var_type"      "FIELD_INTEGER"
-        "radius"        "175"
+        "radius"        "75"
       }
       "03"
       {
@@ -3309,6 +3309,177 @@
       {
         "var_type"      "FIELD_FLOAT"
         "jump_duration"       "0.85"
+      }
+    }
+  }
+  "rubick_special_side"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "rubick_spell_steal"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/rubick/rubick_special_side.lua"
+    "AbilityCastPoint"        "0.1"
+    "AbilityCooldown"       "6"
+    "precache"
+    {
+      
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "900"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_radius"        "75"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "0"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "0"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "0" // Initial
+      }
+      "06"
+      {
+        "var_type" "FIELD_INTEGER"
+        "range" "900"
+      }
+    }
+  }
+  "rubick_special_top"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "rubick_telekinesis"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/rubick/rubick_special_top.lua"
+    "AbilityCastPoint"        "0.25"
+    "AbilityCooldown"       "4"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_batrider.vsndevts"
+      "particle"  "particles/batrider/batrider_flamebreak.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "500"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "radius"        "50"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "10"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "2"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1" // Initial
+      }
+      "06"
+      {
+        "var_type" "FIELD_FLOAT"
+        "lift_duration" "1.1"
+      }
+       "07"
+      {
+        "var_type" "FIELD_INTEGER"
+        "lift_speed" "30"
+      }
+      "08"
+      {
+        "var_type" "FIELD_FLOAT"
+        "stun_duration" "0.5"
+      }
+    }
+  }
+   "rubick_special_bottom"
+  {
+    "BaseClass"                 "ability_lua"
+    "AbilityTextureName"      "rubick_fade_bolt"
+    "MaxLevel"                "1"
+    "AbilityBehavior"        "DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+    //"AbilityCastAnimation"      "ACT_DOTA_OVERRIDE_ABILITY_1"
+    "ScriptFile"            "abilities/rubick/rubick_special_bottom.lua"
+    "AbilityCastPoint"        "0.2"
+    "AbilityCooldown"       "5"
+    "precache"
+    {
+      "soundfile" "soundevents/game_sounds_heroes/game_sounds_batrider.vsndevts"
+      "particle"  "particles/batrider/batrider_flamebreak.vpcf"
+    }
+    "AbilitySpecial"
+    {
+      "01"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_speed"    "1500"
+      }
+      "02"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "projectile_radius"        "35"
+      }
+      "03"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage"       "15"
+      }
+      "04"
+      {
+        "var_type"      "FIELD_INTEGER"
+        "damage_offset"       "3"
+      }
+      "05"
+      {
+        "var_type"      "FIELD_FLOAT"
+        "push"       "1.5" // Initial
+      }
+      "06"
+      {
+        "var_type" "FIELD_INTEGER"
+        "search_radius" "500"
+      }
+      "07"
+      {
+        "var_type" "FIELD_INTEGER"
+        "range" "1000"
+      }
+      "08"
+      {
+        "var_type" "FIELD_FLOAT"
+        "damage_reduction" "0.4"
+      }
+      "09"
+      {
+        "var_type" "FIELD_FLOAT"
+        "duration" "3"
       }
     }
   }

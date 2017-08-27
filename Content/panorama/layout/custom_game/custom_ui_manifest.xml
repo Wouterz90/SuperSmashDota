@@ -40,7 +40,68 @@
     GameUI.CustomUIConfig().team_colors[DOTATeam_t.DOTA_TEAM_CUSTOM_6] = "#1bc0d8;";
     GameUI.CustomUIConfig().team_colors[DOTATeam_t.DOTA_TEAM_CUSTOM_7] = "#c7e40d;";
     GameUI.CustomUIConfig().team_colors[DOTATeam_t.DOTA_TEAM_CUSTOM_8] = "#8c2af4;";
-
+	var PlayerTables = GameUI.CustomUIConfig().PlayerTables
+	var hudElements = $.GetContextPanel().GetParent().GetParent().FindChildTraverse("HUDElements");
+	var dotaHud = $.GetContextPanel().GetParent().GetParent().GetParent()
+	var customUI = dotaHud.FindChildTraverse("PreGame")
+	var heroSelection
+	
+	GameEvents.Subscribe("game_rules_state_change", function()
+    {	
+		if (Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_INIT) || Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD) || Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP))
+        {
+		}
+		else if (Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_HERO_SELECTION))
+        {	
+		
+			if (heroSelection === undefined)
+			{
+				heroSelection = $.CreatePanel( "Panel", customUI, "" )
+				heroSelection.BLoadLayout( "file://{resources}/layout/custom_game/hero_selection.xml", false, false )
+			}	
+			heroSelection.style.visibility = "visible"
+			GameEvents.SendCustomGameEventToClient("pick_heroes",Players.GetLocalPlayer(),{})
+		}
+		else if (Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_STRATEGY_TIME))
+		{
+			
+			dotaHud.style.visibility = "collapse"
+		}
+		else
+		{
+			dotaHud.style.visibility = "visible"
+		}
+		
+		
+    });	
+	GameEvents.Subscribe("player_reconnected", function()
+	{	
+		if (Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_INIT) || Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD) || Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP))
+        {
+		}
+		else if (Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_HERO_SELECTION))
+        {	
+		
+			if (heroSelection === undefined)
+			{
+				heroSelection = $.CreatePanel( "Panel", customUI, "" )
+				heroSelection.BLoadLayout( "file://{resources}/layout/custom_game/hero_selection.xml", false, false )
+			}	
+			heroSelection.style.visibility = "visible"
+		}
+		else if (Game.GameStateIs(DOTA_GameState.DOTA_GAMERULES_STATE_STRATEGY_TIME))
+		{
+			
+			dotaHud.style.visibility = "collapse"
+		}
+		else
+		{
+			dotaHud.style.visibility = "visible"
+		}
+		
+		
+    });	
+				
   </script> 
 
   <Panel>
@@ -54,10 +115,11 @@
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/selection.xml" />
 	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/barebones_attachments.xml" />
 	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/map_selection.xml" />
+	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/ally_selection.xml" />
     -->
     
-    <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/hero_selection.xml" />
-	<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/ally_selection.xml" />
+    <CustomUIElement type="HeroSelection" layoutfile="file://{resources}/layout/custom_game/hero_selection.xml" />
+	
 
     <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/control_panel.xml" />
     

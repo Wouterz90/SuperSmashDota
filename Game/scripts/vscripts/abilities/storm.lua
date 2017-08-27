@@ -139,7 +139,13 @@ function modifier_storm_spirit_special_top_counter:OnCreated()
 end
 
 function modifier_storm_spirit_special_top_counter:OnIntervalThink()
-  if not self:GetCaster() or PlayerResource:GetSelectedHeroEntity(self.pID):GetUnitName() ~= "npc_dota_hero_storm_spirit" then
+  
+  if not PlayerResource:GetSelectedHeroEntity(self.pID) then self:Destroy() return end
+  if not self:GetCaster() then self:Destroy() return end
+  if not PlayerResource:GetSelectedHeroEntity(self.pID).GetUnitName then return end
+  
+  --print(PlayerResource:GetSelectedHeroEntity(self.pID):GetUnitName())
+  if PlayerResource:GetSelectedHeroEntity(self.pID):GetUnitName() ~= "npc_dota_hero_storm_spirit" then
     self:Destroy()
     return
   end

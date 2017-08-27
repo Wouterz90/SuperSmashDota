@@ -154,75 +154,66 @@ end
 
 function rattletrap_special_top:OnSpellStart()
   local caster = self:GetCaster()
-  local radius = self:GetSpecialValueFor("radius")
-  local range = self:GetSpecialValueFor("range")
+  StoreSpecialKeyValues(self)
+  local radius = self.radius
+  local range = self.range
   local ability = self
   local vector = self.mouseVector
+
   caster.jumps = 3
-  
+  ability.particle = ParticleManager:CreateParticle("particles/units/heroes/hero_rattletrap/rattletrap_hookshot_b.vpcf", PATTACH_CUSTOMORIGIN_FOLLOW, caster)
+  ParticleManager:SetParticleControlEnt(ability.particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_attack1", caster:GetAbsOrigin(), true)
+  ParticleManager:SetParticleControl(ability.particle, 3, caster:GetAbsOrigin())
   caster:EmitSound("Hero_Rattletrap.Hookshot.Fire")
 
-  -- Fire a projectile to determine if a unit would be hit
-  local projectile = {
-    --EffectName = "particles/test_particle/ranged_tower_good.vpcf",
-    EffectName = "",
-    --EffectName = "particles/units/heroes/hero_puck/puck_illusory_orb.vpcf",
-    --EeffectName = "",
-    vSpawnOrigin = caster:GetAbsOrigin(),
-    --vSpawnOrigin = {unit=caster, attach="attach_attack1", offset=Vector(0,0,0)},
-    fDistance = range,
-    fStartRadius = 200,
-    fEndRadius = 200,
-    Source = caster,
-    fExpireTime = 0.5,--self:GetSpecialValueFor("duration"),
-    vVelocity = self.mouseVector * 2000 ,--self.mouseVector * (self:GetSpecialValueFor("distance")/self:GetSpecialValueFor("duration")), -- RandomVector(1000),
-    UnitBehavior = PROJECTILES_DESTROY ,
-    bMultipleHits = false,
-    bIgnoreSource = true,
-    TreeBehavior = PROJECTILES_NOTHING,
-    bCutTrees = false,
-    bTreeFullCollision = false,
-    WallBehavior = PROJECTILES_NOTHING,
-    GroundBehavior = PROJECTILES_NOTHING,
-    fGroundOffset = 0,
-    nChangeMax = 1,
-    bRecreateOnChange = false,
-    bZCheck = true,
-    bGroundLock = false,
-    bProvidesVision = true,
-    iVisionRadius = 200,
-    iVisionTeamNumber = caster:GetTeam(),
-    bFlyingVision = false,
-    fVisionTickTime = .1,
-    fVisionLingerDuration = 1,
-    draw = false,
-    UnitTest = function(self, unit) return unit:GetUnitName() ~= "npc_dummy_unit" and unit:GetTeamNumber() ~= caster:GetTeamNumber() and unit:GetTeamNumber() ~= DOTA_TEAM_NEUTRALS end,
-    OnUnitHit = function(self, unit)
-      local damageTable = {
-        victim = unit,
-        attacker = caster,
-        damage =  ability:GetSpecialValueFor("damage") + RandomInt(0,ability:GetSpecialValueFor("damage_offset")),
-        damage_type = DAMAGE_TYPE_MAGICAL,
-        ability = ability,
-      }
-      ApplyDamage(damageTable)
-    end,
-    OnFinish = function(self,unit)
-        ability.particle = ParticleManager:CreateParticle("particles/units/heroes/hero_rattletrap/rattletrap_hookshot_b.vpcf", PATTACH_CUSTOMORIGIN_FOLLOW, caster)
+  local projectileTable = 
+    { 
+      vDirection = ability.mouseVector,
+      hCaster = caster,
+      flSpeed = ability.projectile_speed,
+      flRadius = ability.radius,
+      flMaxDistance = ability.range,
+      --sEffectName = "particles/mirana/mirana_side.vpcf",
+      PlatformBehavior = PROJECTILES_NOTHING,
+      OnPlatformHit = function(projectile,unit)
+      end,
+      UnitBehavior = PROJECTILES_DESTROY,
+      UnitTest = function(projectile, unit) return unit.IsSmashUnit and unit:IsRealHero() and unit:GetTeamNumber() ~= caster:GetTeamNumber() end,
+      OnUnitHit = function(projectile,unit) 
+  
+        local damageTable = {
+          victim = unit,
+          attacker = caster,
+          damage = ability.damage + RandomInt(0,ability.damage_offset),
+          damage_type = DAMAGE_TYPE_MAGICAL,
+          ability = ability,
+        }
+
+        unit:AddNewModifier(caster,ability,"modifier_smash_stun",{duration = ability.stun_duration})
+        DealDamage(damageTable,projectile.location)
+  
+        caster:EmitSound("Hero_Phoenix.FireSpirits.ProjectileHit")
+      end,
+      OnFinish = function(projectile)
+        
         ParticleManager:SetParticleControlEnt(ability.particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_attack1", caster:GetAbsOrigin(), true)
-        ParticleManager:SetParticleControl(ability.particle, 3, unit)
+        ParticleManager:SetParticleControl(ability.particle, 3, projectile.location)
         Timers:CreateTimer(0.1,function()
           if ability.particle then
             ParticleManager:DestroyParticle(ability.particle,false)
             ParticleManager:ReleaseParticleIndex(ability.particle)
           end
         end)
-        caster:SetAbsOrigin(unit)
-    end,
-  }
-  local proj = Projectiles:CreateProjectile(projectile)
-  
+        caster:SetAbsOrigin(projectile.location)
+      end,
+      OnProjectileThink = function(projectile,location)
+        ParticleManager:SetParticleControlEnt(ability.particle, 0, caster, PATTACH_POINT_FOLLOW, "attach_attack1", caster:GetAbsOrigin(), true)
+        ParticleManager:SetParticleControl(ability.particle, 3, projectile.location)
+      end,
+    }
+  Physics2D:CreateLinearProjectile(projectileTable)
 end
+  
 
 
 

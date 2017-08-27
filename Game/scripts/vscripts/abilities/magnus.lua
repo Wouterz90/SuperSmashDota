@@ -46,7 +46,9 @@ function modifier_magnus_skewer:OnCreated()
     local direction = ability.mouseVector 
     local speed = ability:GetSpecialValueFor("speed")
 
-    --caster:SetStaticVelocity("magnus_skewer",direction*speed*30)
+    if caster.velocity.z < 0 then
+      caster.velocity.z = 0
+    end
 
     self:StartIntervalThink(1/30)
     self.targets = {}
