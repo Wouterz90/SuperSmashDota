@@ -16,6 +16,13 @@ function basic_attack_mid:OnAbilityPhaseStart()
   return true
 end
 
+function basic_attack_mid:OnAbilityPhaseInterrupted()
+  -- Cancel animations!
+  local caster = self:GetCaster()
+  --caster:StopSound("hero_Crystal.attack")
+  EndAnimation(caster)
+end
+
 
 function basic_attack_mid:IsHiddenAbilityCastable()
   return true
